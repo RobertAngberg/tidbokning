@@ -30,9 +30,13 @@ export default async function TjänsterPage() {
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-stone-800">Våra Tjänster</h1>
-          <p className="text-stone-600">Utforska vårt utbud av professionella tjänster</p>
+        <div className="text-center space-y-3">
+          <h1 className="text-6xl text-white font-[family-name:var(--font-newsreader)]">
+            Våra Tjänster
+          </h1>
+          <p className="text-xl text-white font-[family-name:var(--font-newsreader)]">
+            Utforska vårt utbud av professionella tjänster
+          </p>
         </div>
 
         {tjänster.length === 0 ? (
