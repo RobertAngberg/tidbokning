@@ -5,7 +5,7 @@ import { bokningar, tjanster, anvandare } from "../db/schema";
 import type { Bokning, Tjanst, Anvandare } from "../db/schema";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
-import { bokningSchema, type BokningInput } from "@/_lib/validators/bokning";
+import { bokningSchema, type BokningInput } from "../../_lib/validators/bokning";
 
 type BokningResult = { success: true; bokning: Bokning } | { success: false; error: string };
 
@@ -123,7 +123,7 @@ export async function hämtaTillgängligaTider(
     // Generera alla möjliga tider mellan 09:00-17:00
     const tidslots: TillgängligTid[] = [];
     for (let hour = 9; hour <= 16; hour++) {
-      for (let minute of [0, 30]) {
+      for (const minute of [0, 30]) {
         tidslots.push({
           tid: `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`,
           tillgänglig: true,

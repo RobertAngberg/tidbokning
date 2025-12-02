@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../_components/Card";
 import { Input } from "../_components/Input";
-import { Badge } from "../_components/Badge";
 import { Button } from "../_components/Button";
 import {
   Select,
@@ -27,7 +26,7 @@ import { useBokningar } from "../_lib/hooks/useBokningar";
 import { uppdateraBokningsstatus, raderaBokning } from "../_server/actions/bokningar";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
-import { Pencil, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import type { Bokning, Anvandare, Tjanst } from "../_server/db/schema";
 
 interface BokningsListaProps {
@@ -60,7 +59,7 @@ export function BokningsLista({ bokningar: initialBokningar }: BokningsListaProp
     }
   };
 
-  const filteredBokningar = bokningar.filter((bokning) => {
+  const filteredBokningar = bokningar.filter((bokning: (typeof bokningar)[0]) => {
     const matchesStatus = filter === "alla" || bokning.status === filter;
     const matchesSearch =
       bokning.kund?.namn.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -68,38 +67,6 @@ export function BokningsLista({ bokningar: initialBokningar }: BokningsListaProp
       bokning.tjanst?.namn.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesStatus && matchesSearch;
   });
-
-  const statusText = (status: string) => {
-    switch (status) {
-      case "bekraftad":
-        return "Bekräftad";
-      case "vaentande":
-        return "Väntande";
-      case "installld":
-        return "Inställd";
-      case "slutford":
-        return "Slutförd";
-      default:
-        return status;
-    }
-  };
-
-  const statusVariant = (
-    status: string
-  ): "default" | "secondary" | "destructive" | "outline" | "success" => {
-    switch (status) {
-      case "bekraftad":
-        return "success";
-      case "vaentande":
-        return "secondary";
-      case "installld":
-        return "destructive";
-      case "slutford":
-        return "outline";
-      default:
-        return "outline";
-    }
-  };
 
   return (
     <Card className="h-full flex flex-col">
@@ -138,7 +105,7 @@ export function BokningsLista({ bokningar: initialBokningar }: BokningsListaProp
           <p className="text-muted-foreground text-sm">Inga bokningar hittades</p>
         ) : (
           <div className="space-y-4">
-            {filteredBokningar.map((bokning) => (
+            {filteredBokningar.map((bokning: (typeof bokningar)[0]) => (
               <div key={bokning.id} className="border rounded-lg p-4">
                 <div className="flex justify-between items-start gap-4">
                   <div className="flex-1">

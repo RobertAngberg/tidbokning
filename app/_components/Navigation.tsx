@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useRef } from "react";
 
 export function Navigation() {
   const pathname = usePathname();
-  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const navRef = useRef<HTMLDivElement>(null);
 
   const links = [
@@ -16,59 +15,53 @@ export function Navigation() {
     { href: "/tjanster", label: "Tjänster" },
   ];
 
-  useEffect(() => {
-    updateIndicator();
-  }, [pathname]);
-
-  const updateIndicator = () => {
-    const activeIndex = links.findIndex((link) => link.href === pathname);
-    if (activeIndex !== -1 && navRef.current) {
-      const linkElements = navRef.current.querySelectorAll("a");
-      const activeLink = linkElements[activeIndex] as HTMLElement;
-      setIndicatorStyle({
-        left: activeLink.offsetLeft,
-        width: activeLink.offsetWidth,
-      });
-    }
-  };
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    const target = e.currentTarget;
-    setIndicatorStyle({
-      left: target.offsetLeft,
-      width: target.offsetWidth,
-    });
-  };
-
   return (
     <nav className="border-b bg-background">
       <div className="max-w-6xl mx-auto px-8">
         <div className="flex items-center gap-8 h-16">
-          <Link href="/" className="font-bold text-xl">
+          <Link href="/" className="font-bold text-xl flex items-center gap-2 mr-12">
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className="text-cyan-500"
+            >
+              <rect
+                x="3"
+                y="4"
+                width="18"
+                height="18"
+                rx="2"
+                stroke="currentColor"
+                strokeWidth="2"
+              />
+              <path d="M3 10h18" stroke="currentColor" strokeWidth="2" />
+              <path d="M8 2v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <path d="M16 2v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              <circle cx="8" cy="15" r="1" fill="currentColor" />
+              <circle cx="12" cy="15" r="1" fill="currentColor" />
+              <circle cx="16" cy="15" r="1" fill="currentColor" />
+            </svg>
             Tidbokning
           </Link>
-          <div className="relative" ref={navRef}>
-            <div className="flex gap-6">
+          <div className="flex items-center" ref={navRef}>
+            <div className="flex gap-8 items-center">
               {links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  onClick={(e) => handleClick(e, link.href)}
-                  className={`text-sm font-medium transition-colors hover:text-primary active:scale-95 py-1 ${
-                    pathname === link.href ? "text-primary" : "text-muted-foreground"
+                  className={`text-lg transition-colors hover:text-cyan-500 active:scale-95 font-[family-name:var(--font-newsreader)] leading-none flex items-center ${
+                    pathname === link.href
+                      ? "text-white font-bold bg-cyan-500 px-4 py-2 rounded-full"
+                      : "text-muted-foreground font-medium"
                   }`}
                 >
-                  {link.label}
+                  <span className="translate-y-0.5">{link.label}</span>
                 </Link>
               ))}
             </div>
-            <div
-              className="absolute bottom-0 h-0.5 bg-primary transition-all duration-300 ease-out"
-              style={{
-                left: `${indicatorStyle.left}px`,
-                width: `${indicatorStyle.width}px`,
-              }}
-            />
           </div>
         </div>
       </div>

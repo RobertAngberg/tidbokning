@@ -93,15 +93,6 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
     setSelectedDate(new Date(year, month + 1, 1));
   };
 
-  const isToday = (date: Date) => {
-    const today = new Date();
-    return (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    );
-  };
-
   const hasBooking = (date: Date) => {
     return daysWithBookings.some(
       (bookingDate) =>
@@ -189,7 +180,6 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
               {/* Alla dagar */}
               {days.map((date) => {
                 const selected = isSelected(date);
-                const today = isToday(date);
                 const booked = hasBooking(date);
 
                 return (
@@ -262,7 +252,7 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
               </div>
             ) : (
               <div className="space-y-3">
-                {sorteradeBokningar.map((bokning, idx) => (
+                {sorteradeBokningar.map((bokning) => (
                   <div
                     key={bokning.id}
                     className="group relative border-2 border-stone-200 rounded-xl p-5 hover:bg-amber-50/30 transition-all hover:shadow-md hover:border-amber-200"

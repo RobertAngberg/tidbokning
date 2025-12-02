@@ -26,27 +26,24 @@ export function BokningsKalender({ tjänster, onSelectTime }: BokningsKalenderPr
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (selectedDate && selectedTjanst) {
-      fetchAvailableTimes();
-    } else {
-      setAvailableTimes([]);
+    async function loadTimes() {
+      if (selectedDate && selectedTjanst) {
+        setIsLoading(true);
+        try {
+          const times = await hämtaTillgängligaTider(selectedDate, selectedTjanst);
+          setAvailableTimes(times);
+        } catch (error) {
+          console.error("Fel vid hämtning av tider:", error);
+          setAvailableTimes([]);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        setAvailableTimes([]);
+      }
     }
+    loadTimes();
   }, [selectedDate, selectedTjanst]);
-
-  async function fetchAvailableTimes() {
-    if (!selectedDate || !selectedTjanst) return;
-
-    setIsLoading(true);
-    try {
-      const times = await hämtaTillgängligaTider(selectedDate, selectedTjanst);
-      setAvailableTimes(times);
-    } catch (error) {
-      console.error("Fel vid hämtning av tider:", error);
-      setAvailableTimes([]);
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);

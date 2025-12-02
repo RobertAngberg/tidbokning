@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { hämtaBokningar } from "@/_server/actions/bokningar";
+import { hämtaBokningar } from "../../_server/actions/bokningar";
 
 export function useBokningar() {
   return useQuery({

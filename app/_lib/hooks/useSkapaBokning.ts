@@ -1,8 +1,8 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { skapaBokning } from "@/_server/actions/bokningar";
-import type { BokningInput } from "@/_lib/validators/bokning";
+import { skapaBokning } from "../../_server/actions/bokningar";
+import type { BokningInput } from "../validators/bokning";
 
 export function useSkapaBokning() {
   const queryClient = useQueryClient();

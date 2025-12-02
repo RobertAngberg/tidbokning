@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../_components/Card";
 import { Input } from "../_components/Input";
 import { Label } from "../_components/Label";
@@ -20,17 +20,14 @@ import type { Tjanst } from "../_server/db/schema";
 export function BokningsFormular({ tjänster }: { tjänster: Tjanst[] }) {
   const [message, setMessage] = useState("");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const [selectedTime, setSelectedTime] = useState("");
+  const now = new Date();
+  const nextHour = new Date(now);
+  nextHour.setHours(now.getHours() + 1, 0, 0, 0);
+  const [selectedTime, setSelectedTime] = useState(
+    `${nextHour.getHours().toString().padStart(2, "0")}:00`
+  );
   const [selectedTjänst, setSelectedTjänst] = useState("");
   const skapaBokning = useSkapaBokning();
-
-  // Auto-fyll tiden med nästa hela timme
-  useEffect(() => {
-    const now = new Date();
-    const nextHour = new Date(now);
-    nextHour.setHours(now.getHours() + 1, 0, 0, 0);
-    setSelectedTime(`${nextHour.getHours().toString().padStart(2, "0")}:00`);
-  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -55,11 +52,11 @@ export function BokningsFormular({ tjänster }: { tjänster: Tjanst[] }) {
       },
       {
         onSuccess: (result) => {
-          if (result.success) {
+          if (result && "success" in result && result.success) {
             setMessage("✅ Bokningen är klar!");
             (e.target as HTMLFormElement).reset();
             setSelectedDate(new Date());
-          } else {
+          } else if (result && "error" in result) {
             setMessage(result.error);
           }
         },

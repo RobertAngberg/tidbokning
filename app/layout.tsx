@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Lato, Newsreader } from "next/font/google";
 import "./globals.css";
-import { Providers } from "./_lib/Providers";
+import { QueryProvider } from "./_lib/providers";
 import { Navigation } from "./_components/Navigation";
 
-const inter = Inter({ subsets: ["latin"] });
+const lato = Lato({ subsets: ["latin"], weight: ["400", "700"] });
+const newsreader = Newsreader({
+  subsets: ["latin"],
+  variable: "--font-newsreader",
+});
 
 export const metadata: Metadata = {
   title: "Tidbokning - Boka dina tider enkelt",
@@ -18,11 +22,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sv" suppressHydrationWarning>
-      <body className={inter.className}>
-        <Providers>
+      <body className={`${lato.className} ${newsreader.variable}`}>
+        <QueryProvider>
           <Navigation />
           <main>{children}</main>
-        </Providers>
+        </QueryProvider>
       </body>
     </html>
   );
