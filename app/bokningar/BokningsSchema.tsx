@@ -121,20 +121,22 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
   };
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5">
-        <CardTitle className="text-2xl">Bokningsschema</CardTitle>
-        <CardDescription>Välj ett datum för att se dagens bokningar</CardDescription>
+    <Card className="overflow-hidden border-stone-200">
+      <CardHeader className="bg-gradient-to-r from-white via-amber-50/20 to-white">
+        <CardTitle className="text-2xl text-stone-800">Bokningsschema</CardTitle>
+        <CardDescription className="text-stone-600">
+          Välj ett datum för att se dagens bokningar
+        </CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
         <div className="space-y-6">
           {/* Custom Kalender */}
-          <div className="w-full bg-gradient-to-br from-background to-muted/20 rounded-xl p-6 border shadow-sm">
+          <div className="w-full bg-white rounded-xl p-6 border border-stone-200 shadow-sm">
             {/* Månad navigation */}
             <div className="flex items-center justify-between mb-6">
               <button
                 onClick={goToPreviousMonth}
-                className="p-2.5 hover:bg-primary/10 rounded-lg transition-all hover:scale-110 active:scale-95"
+                className="p-2.5 hover:bg-amber-100 text-stone-700 rounded-lg transition-all hover:scale-110 active:scale-95"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -145,12 +147,12 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
                   />
                 </svg>
               </button>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+              <h2 className="text-2xl font-bold text-stone-800">
                 {format(currentMonth, "MMMM yyyy", { locale: sv })}
               </h2>
               <button
                 onClick={goToNextMonth}
-                className="p-2.5 hover:bg-primary/10 rounded-lg transition-all hover:scale-110 active:scale-95"
+                className="p-2.5 hover:bg-amber-100 text-stone-700 rounded-lg transition-all hover:scale-110 active:scale-95"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -169,7 +171,7 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
                 <div
                   key={day}
                   className={`text-center text-xs font-bold uppercase tracking-wider py-2 ${
-                    idx >= 5 ? "text-primary/70" : "text-muted-foreground"
+                    idx >= 5 ? "text-amber-700/70" : "text-stone-600"
                   }`}
                 >
                   {day}
@@ -196,13 +198,11 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
                     onClick={() => setSelectedDate(date)}
                     className={`
                       relative h-12 p-2 rounded-xl text-sm font-semibold
-                      transition-all duration-200 border-2
+                      transition-all duration-200
                       ${
                         selected
-                          ? "bg-muted/50 text-foreground shadow-lg scale-110 border-primary"
-                          : today
-                          ? "bg-transparent border-primary hover:bg-accent hover:scale-105"
-                          : "bg-transparent border-transparent hover:bg-accent hover:scale-105"
+                          ? "bg-amber-50 text-stone-800 scale-110 border border-amber-300 border-dashed"
+                          : "bg-white text-stone-700 border border-transparent hover:bg-amber-50/50 hover:scale-105"
                       }
                       active:scale-95
                     `}
@@ -211,7 +211,7 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
                       {date.getDate()}
                     </span>
                     {booked && (
-                      <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary" />
+                      <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-amber-600" />
                     )}
                   </button>
                 );
@@ -220,23 +220,23 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
           </div>
 
           {/* Dagens bokningar */}
-          <div className="space-y-4 border-t pt-6">
+          <div className="space-y-4 border-t border-stone-200 pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
+                <h3 className="font-bold text-xl text-stone-800">
                   {selectedDate
                     ? format(selectedDate, "EEEE d MMMM yyyy", { locale: sv })
                     : "Välj ett datum"}
                 </h3>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm text-stone-600 mt-1">
                   {sorteradeBokningar.length}{" "}
                   {sorteradeBokningar.length === 1 ? "bokning" : "bokningar"}
                 </p>
               </div>
               {sorteradeBokningar.length > 0 && (
-                <div className="text-sm font-medium text-muted-foreground">
+                <div className="text-sm font-medium text-stone-600">
                   Totalt:{" "}
-                  <span className="text-foreground font-bold">
+                  <span className="text-stone-800 font-bold">
                     {sorteradeBokningar.reduce((sum, b) => sum + (b.tjanst?.pris || 0), 0) / 100} kr
                   </span>
                 </div>
@@ -244,7 +244,7 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
             </div>
 
             {sorteradeBokningar.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground bg-muted/20 rounded-xl border-2 border-dashed">
+              <div className="text-center py-12 text-stone-500 bg-stone-50 rounded-xl border-2 border-dashed border-stone-200">
                 <svg
                   className="w-12 h-12 mx-auto mb-3 opacity-50"
                   fill="none"
@@ -265,15 +265,15 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
                 {sorteradeBokningar.map((bokning, idx) => (
                   <div
                     key={bokning.id}
-                    className="group relative border-2 rounded-xl p-5 hover:bg-accent/30 transition-all hover:shadow-md hover:border-primary/20"
+                    className="group relative border-2 border-stone-200 rounded-xl p-5 hover:bg-amber-50/30 transition-all hover:shadow-md hover:border-amber-200"
                   >
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-primary/30 rounded-l-xl" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-500 to-amber-400 rounded-l-xl" />
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1 pl-3">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-lg">
+                          <div className="flex items-center gap-2 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100">
                             <svg
-                              className="w-4 h-4 text-primary"
+                              className="w-4 h-4 text-amber-700"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -285,11 +285,11 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
                                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                               />
                             </svg>
-                            <span className="font-bold text-base">
+                            <span className="font-bold text-base text-stone-800">
                               {format(new Date(bokning.startTid), "HH:mm", { locale: sv })}
                             </span>
-                            <span className="text-muted-foreground">→</span>
-                            <span className="font-semibold text-muted-foreground">
+                            <span className="text-stone-400">→</span>
+                            <span className="font-semibold text-stone-600">
                               {format(new Date(bokning.slutTid), "HH:mm", { locale: sv })}
                             </span>
                           </div>
@@ -297,15 +297,17 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
                             {statusText(bokning.status)}
                           </Badge>
                         </div>
-                        <p className="font-semibold text-lg mb-1">{bokning.kund?.namn}</p>
-                        <p className="text-sm text-muted-foreground mb-3">{bokning.kund?.email}</p>
+                        <p className="font-semibold text-lg mb-1 text-stone-800">
+                          {bokning.kund?.namn}
+                        </p>
+                        <p className="text-sm text-stone-600 mb-3">{bokning.kund?.email}</p>
                         <div className="flex items-center gap-4 flex-wrap">
-                          <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg">
-                            <span className="text-sm font-bold text-primary">
+                          <div className="flex items-center gap-2 bg-stone-100 px-3 py-1.5 rounded-lg">
+                            <span className="text-sm font-bold text-stone-700">
                               {bokning.tjanst?.namn}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2 text-sm text-stone-600">
                             <svg
                               className="w-4 h-4"
                               fill="none"
@@ -321,7 +323,7 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
                             </svg>
                             <span>{bokning.tjanst?.varaktighet} min</span>
                           </div>
-                          <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                          <div className="flex items-center gap-2 text-sm font-semibold text-amber-700">
                             <svg
                               className="w-4 h-4"
                               fill="none"
