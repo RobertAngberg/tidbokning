@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/_components/Card";
-import { Button } from "@/_components/Button";
-import { Input } from "@/_components/Input";
-import { Label } from "@/_components/Label";
+import { Card, CardContent, CardHeader, CardTitle } from "../_components/Card";
+import { Button } from "../_components/Button";
+import { Input } from "../_components/Input";
+import { Label } from "../_components/Label";
 import {
   Dialog,
   DialogContent,
@@ -13,9 +13,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/_components/Dialog";
-import { toggleTjänstAktiv, uppdateraTjänst, raderaTjänst } from "@/_server/actions/tjanster";
-import type { Tjanst } from "@/_server/db/schema";
+} from "../_components/Dialog";
+import { toggleTjänstAktiv, uppdateraTjänst, raderaTjänst } from "../_server/actions/tjanster";
+import type { Tjanst } from "../_server/db/schema";
 import { Pencil, Trash2 } from "lucide-react";
 
 interface TjansterListaProps {

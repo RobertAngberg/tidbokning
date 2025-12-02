@@ -1,5 +1,5 @@
-import { hämtaBokningar } from "@/_server/actions/bokningar";
-import { BokningsLista } from "@/bokningar/BokningsLista";
+import { hämtaBokningar } from "../_server/actions/bokningar";
+import { BokningsLista } from "./BokningsLista";
 
 export default async function BokningarPage() {
   const bokningar = await hämtaBokningar();

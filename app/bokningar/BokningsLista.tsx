@@ -1,17 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/_components/Card";
-import { Input } from "@/_components/Input";
-import { Badge } from "@/_components/Badge";
-import { Button } from "@/_components/Button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../_components/Card";
+import { Input } from "../_components/Input";
+import { Badge } from "../_components/Badge";
+import { Button } from "../_components/Button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/_components/Select";
+} from "../_components/Select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,13 +22,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/_components/AlertDialog";
-import { useBokningar } from "@/_lib/hooks/useBokningar";
-import { uppdateraBokningsstatus, raderaBokning } from "@/_server/actions/bokningar";
+} from "../_components/AlertDialog";
+import { useBokningar } from "../_lib/hooks/useBokningar";
+import { uppdateraBokningsstatus, raderaBokning } from "../_server/actions/bokningar";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { Pencil, Trash2 } from "lucide-react";
-import type { Bokning, Anvandare, Tjanst } from "@/_server/db/schema";
+import type { Bokning, Anvandare, Tjanst } from "../_server/db/schema";
 
 interface BokningsListaProps {
   bokningar?: Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>;

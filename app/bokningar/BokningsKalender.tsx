@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/_components/Card";
-import { Button } from "@/_components/Button";
-import { Calendar } from "@/_components/Calendar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../_components/Card";
+import { Button } from "../_components/Button";
+import { Calendar } from "../_components/Calendar";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
-import { hämtaTillgängligaTider } from "@/_server/actions/bokningar";
-import type { Tjanst } from "@/_server/db/schema";
+import { hämtaTillgängligaTider } from "../_server/actions/bokningar";
+import type { Tjanst } from "../_server/db/schema";
 
 interface BokningsKalenderProps {
   tjänster: Tjanst[];

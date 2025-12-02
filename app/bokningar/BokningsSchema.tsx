@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/_components/Card";
-import { Badge } from "@/_components/Badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../_components/Card";
+import { Badge } from "../_components/Badge";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
-import type { Bokning, Anvandare, Tjanst } from "@/_server/db/schema";
+import type { Bokning, Anvandare, Tjanst } from "../_server/db/schema";
 
 interface BokningsSchemaProps {
   bokningar: Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>;

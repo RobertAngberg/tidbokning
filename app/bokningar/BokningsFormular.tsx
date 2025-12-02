@@ -1,21 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/_components/Card";
-import { Input } from "@/_components/Input";
-import { Label } from "@/_components/Label";
-import { Button } from "@/_components/Button";
-import { DatePicker } from "@/_components/DatePicker";
-import { TimePicker } from "@/_components/TimePicker";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../_components/Card";
+import { Input } from "../_components/Input";
+import { Label } from "../_components/Label";
+import { Button } from "../_components/Button";
+import { DatePicker } from "../_components/DatePicker";
+import { TimePicker } from "../_components/TimePicker";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/_components/Select";
-import { useSkapaBokning } from "@/_lib/hooks/useSkapaBokning";
-import type { Tjanst } from "@/_server/db/schema";
+} from "../_components/Select";
+import { useSkapaBokning } from "../_lib/hooks/useSkapaBokning";
+import type { Tjanst } from "../_server/db/schema";
 
 export function BokningsFormular({ tjänster }: { tjänster: Tjanst[] }) {
   const [message, setMessage] = useState("");

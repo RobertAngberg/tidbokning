@@ -1,5 +1,5 @@
-import { hämtaBokningar } from "@/_server/actions/bokningar";
-import { BokningsSchema } from "@/bokningar/BokningsSchema";
+import { hämtaBokningar } from "../_server/actions/bokningar";
+import { BokningsSchema } from "../bokningar/BokningsSchema";
 
 export default async function SchemaPage() {
   const bokningar = await hämtaBokningar();

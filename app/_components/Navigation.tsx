@@ -13,6 +13,7 @@ export function Navigation() {
     { href: "/", label: "Boka en tid" },
     { href: "/bokningar", label: "Bokningar" },
     { href: "/schema", label: "Bokningsschema" },
+    { href: "/tjanster", label: "Tjänster" },
   ];
 
   useEffect(() => {

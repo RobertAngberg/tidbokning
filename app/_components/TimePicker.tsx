@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Input } from "@/_components/Input";
+import { Input } from "./Input";
 
 interface TimePickerProps {
   value: string;
