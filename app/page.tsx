@@ -17,13 +17,9 @@ export default async function HomePage() {
           </p>
         </div>
 
-        <div className="flex gap-8">
-          <div className="w-1/2">
-            <BokningsFormular tjänster={tjänster} />
-          </div>
-          <div className="w-1/2">
-            <BokningsLista bokningar={bokningar} />
-          </div>
+        <div className="grid grid-cols-2 gap-8">
+          <BokningsFormular tjänster={tjänster} />
+          <BokningsLista bokningar={bokningar} />
         </div>
 
         <BokningsSchema bokningar={bokningar} />

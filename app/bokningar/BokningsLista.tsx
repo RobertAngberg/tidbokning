@@ -102,7 +102,7 @@ export function BokningsLista({ bokningar: initialBokningar }: BokningsListaProp
   };
 
   return (
-    <Card>
+    <Card className="h-full flex flex-col">
       <CardHeader>
         <CardTitle>Bokningar</CardTitle>
         <CardDescription>
@@ -110,7 +110,7 @@ export function BokningsLista({ bokningar: initialBokningar }: BokningsListaProp
           {bokningar.length === 1 ? "bokning" : "bokningar"}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 flex-1 overflow-auto">
         <div className="flex gap-4">
           <Input
             placeholder="Sök på namn, email eller tjänst..."

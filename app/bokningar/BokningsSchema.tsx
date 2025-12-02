@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/_components/Card";
-import { Calendar } from "@/_components/Calendar";
 import { Badge } from "@/_components/Badge";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
@@ -67,83 +66,277 @@ export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
     }
   };
 
+  // Räkna ut aktuell månad
+  const currentMonth = selectedDate || new Date();
+  const year = currentMonth.getFullYear();
+  const month = currentMonth.getMonth();
+
+  // Första och sista dagen i månaden
+  const firstDayOfMonth = new Date(year, month, 1);
+  const lastDayOfMonth = new Date(year, month + 1, 0);
+
+  // Vilken veckodag börjar månaden på (0 = söndag, 1 = måndag, etc)
+  const startingDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7; // Konvertera till måndag = 0
+
+  // Antal dagar i månaden
+  const daysInMonth = lastDayOfMonth.getDate();
+
+  // Skapa array med alla datum i månaden
+  const days = Array.from({ length: daysInMonth }, (_, i) => new Date(year, month, i + 1));
+
+  // Navigering
+  const goToPreviousMonth = () => {
+    setSelectedDate(new Date(year, month - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+    setSelectedDate(new Date(year, month + 1, 1));
+  };
+
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return (
+      date.getDate() === today.getDate() &&
+      date.getMonth() === today.getMonth() &&
+      date.getFullYear() === today.getFullYear()
+    );
+  };
+
+  const hasBooking = (date: Date) => {
+    return daysWithBookings.some(
+      (bookingDate) =>
+        bookingDate.getDate() === date.getDate() &&
+        bookingDate.getMonth() === date.getMonth() &&
+        bookingDate.getFullYear() === date.getFullYear()
+    );
+  };
+
+  const isSelected = (date: Date) => {
+    if (!selectedDate) return false;
+    return (
+      date.getDate() === selectedDate.getDate() &&
+      date.getMonth() === selectedDate.getMonth() &&
+      date.getFullYear() === selectedDate.getFullYear()
+    );
+  };
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Bokningsschema</CardTitle>
+    <Card className="overflow-hidden">
+      <CardHeader className="bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5">
+        <CardTitle className="text-2xl">Bokningsschema</CardTitle>
         <CardDescription>Välj ett datum för att se dagens bokningar</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Kalender */}
-          <div className="flex-shrink-0">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={setSelectedDate}
-              locale={sv}
-              weekStartsOn={1}
-              modifiers={{
-                booked: daysWithBookings,
-              }}
-              modifiersClassNames={{
-                booked: "bg-primary/10 font-bold",
-              }}
-              className="rounded-md border"
-            />
+      <CardContent className="pt-6">
+        <div className="space-y-6">
+          {/* Custom Kalender */}
+          <div className="w-full bg-gradient-to-br from-background to-muted/20 rounded-xl p-6 border shadow-sm">
+            {/* Månad navigation */}
+            <div className="flex items-center justify-between mb-6">
+              <button
+                onClick={goToPreviousMonth}
+                className="p-2.5 hover:bg-primary/10 rounded-lg transition-all hover:scale-110 active:scale-95"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                {format(currentMonth, "MMMM yyyy", { locale: sv })}
+              </h2>
+              <button
+                onClick={goToNextMonth}
+                className="p-2.5 hover:bg-primary/10 rounded-lg transition-all hover:scale-110 active:scale-95"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Veckodagar */}
+            <div className="grid grid-cols-7 gap-3 mb-3">
+              {["Mån", "Tis", "Ons", "Tor", "Fre", "Lör", "Sön"].map((day, idx) => (
+                <div
+                  key={day}
+                  className={`text-center text-xs font-bold uppercase tracking-wider py-2 ${
+                    idx >= 5 ? "text-primary/70" : "text-muted-foreground"
+                  }`}
+                >
+                  {day}
+                </div>
+              ))}
+            </div>
+
+            {/* Dagar grid */}
+            <div className="grid grid-cols-7 gap-3">
+              {/* Tomma celler före första dagen */}
+              {Array.from({ length: startingDayOfWeek }).map((_, i) => (
+                <div key={`empty-${i}`} />
+              ))}
+
+              {/* Alla dagar */}
+              {days.map((date) => {
+                const selected = isSelected(date);
+                const today = isToday(date);
+                const booked = hasBooking(date);
+
+                return (
+                  <button
+                    key={date.toISOString()}
+                    onClick={() => setSelectedDate(date)}
+                    className={`
+                      relative h-12 p-2 rounded-xl text-sm font-semibold
+                      transition-all duration-200 border-2
+                      ${
+                        selected
+                          ? "bg-muted/50 text-foreground shadow-lg scale-110 border-primary"
+                          : today
+                          ? "bg-transparent border-primary hover:bg-accent hover:scale-105"
+                          : "bg-transparent border-transparent hover:bg-accent hover:scale-105"
+                      }
+                      active:scale-95
+                    `}
+                  >
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      {date.getDate()}
+                    </span>
+                    {booked && (
+                      <span className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Dagens bokningar */}
-          <div className="flex-1 space-y-4">
-            <div>
-              <h3 className="font-semibold text-lg">
-                {selectedDate
-                  ? format(selectedDate, "EEEE d MMMM yyyy", { locale: sv })
-                  : "Välj ett datum"}
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                {sorteradeBokningar.length}{" "}
-                {sorteradeBokningar.length === 1 ? "bokning" : "bokningar"}
-              </p>
+          <div className="space-y-4 border-t pt-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
+                  {selectedDate
+                    ? format(selectedDate, "EEEE d MMMM yyyy", { locale: sv })
+                    : "Välj ett datum"}
+                </h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {sorteradeBokningar.length}{" "}
+                  {sorteradeBokningar.length === 1 ? "bokning" : "bokningar"}
+                </p>
+              </div>
+              {sorteradeBokningar.length > 0 && (
+                <div className="text-sm font-medium text-muted-foreground">
+                  Totalt:{" "}
+                  <span className="text-foreground font-bold">
+                    {sorteradeBokningar.reduce((sum, b) => sum + (b.tjanst?.pris || 0), 0) / 100} kr
+                  </span>
+                </div>
+              )}
             </div>
 
             {sorteradeBokningar.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <p>Inga bokningar detta datum</p>
+              <div className="text-center py-12 text-muted-foreground bg-muted/20 rounded-xl border-2 border-dashed">
+                <svg
+                  className="w-12 h-12 mx-auto mb-3 opacity-50"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <p className="font-medium">Inga bokningar detta datum</p>
               </div>
             ) : (
               <div className="space-y-3">
-                {sorteradeBokningar.map((bokning) => (
+                {sorteradeBokningar.map((bokning, idx) => (
                   <div
                     key={bokning.id}
-                    className="border rounded-lg p-4 hover:bg-accent/50 transition-colors"
+                    className="group relative border-2 rounded-xl p-5 hover:bg-accent/30 transition-all hover:shadow-md hover:border-primary/20"
                   >
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-primary/30 rounded-l-xl" />
                     <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-lg">
-                            {format(new Date(bokning.startTid), "HH:mm", { locale: sv })}
-                          </span>
-                          <span className="text-muted-foreground">-</span>
-                          <span className="text-muted-foreground">
-                            {format(new Date(bokning.slutTid), "HH:mm", { locale: sv })}
-                          </span>
-                          <Badge variant={statusVariant(bokning.status)}>
+                      <div className="flex-1 pl-3">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-lg">
+                            <svg
+                              className="w-4 h-4 text-primary"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            <span className="font-bold text-base">
+                              {format(new Date(bokning.startTid), "HH:mm", { locale: sv })}
+                            </span>
+                            <span className="text-muted-foreground">→</span>
+                            <span className="font-semibold text-muted-foreground">
+                              {format(new Date(bokning.slutTid), "HH:mm", { locale: sv })}
+                            </span>
+                          </div>
+                          <Badge variant={statusVariant(bokning.status)} className="shadow-sm">
                             {statusText(bokning.status)}
                           </Badge>
                         </div>
-                        <p className="font-medium">{bokning.kund?.namn}</p>
-                        <p className="text-sm text-muted-foreground">{bokning.kund?.email}</p>
-                        <div className="flex items-center gap-2 mt-2">
-                          <span className="text-sm font-medium text-primary">
-                            {bokning.tjanst?.namn}
-                          </span>
-                          <span className="text-sm text-muted-foreground">
-                            {bokning.tjanst?.varaktighet} min
-                          </span>
-                          <span className="text-sm text-muted-foreground">
-                            {bokning.tjanst && bokning.tjanst.pris / 100} kr
-                          </span>
+                        <p className="font-semibold text-lg mb-1">{bokning.kund?.namn}</p>
+                        <p className="text-sm text-muted-foreground mb-3">{bokning.kund?.email}</p>
+                        <div className="flex items-center gap-4 flex-wrap">
+                          <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg">
+                            <span className="text-sm font-bold text-primary">
+                              {bokning.tjanst?.namn}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            <span>{bokning.tjanst?.varaktighet} min</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm font-semibold text-primary">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                              />
+                            </svg>
+                            <span>{bokning.tjanst && bokning.tjanst.pris / 100} kr</span>
+                          </div>
                         </div>
                       </div>
                     </div>

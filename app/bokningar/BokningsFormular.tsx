@@ -71,12 +71,12 @@ export function BokningsFormular({ tjänster }: { tjänster: Tjanst[] }) {
   }
 
   return (
-    <Card>
+    <Card className="h-full flex flex-col">
       <CardHeader>
         <CardTitle>Boka en tid</CardTitle>
-        <CardDescription>Fyll i formuläret för att boka</CardDescription>
+        <CardDescription>Fyll i formuläret för att skapa en ny bokning</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-1">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="tjanst">Välj tjänst</Label>
