@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp, uuid, integer, boolean } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { anvandare } from "./anvandare";
-import { tjanster } from "./tjanster";
+import { anvandare } from "../../anvandare/schema/anvandare";
+import { tjanster } from "../../tjanster/schema/tjanster";
 
 export const bokningar = pgTable("bokningar", {
   id: uuid("id").defaultRandom().primaryKey(),

@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../_components/Card";
-import { Input } from "../_components/Input";
-import { Button } from "../_components/Button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../_components/Card";
+import { Input } from "../../_components/Input";
+import { Button } from "../../_components/Button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../_components/Select";
+} from "../../_components/Select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,42 +21,36 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "../_components/AlertDialog";
-import { useBokningar } from "../_lib/hooks/useBokningar";
-import { uppdateraBokningsstatus, raderaBokning } from "../_server/actions/bokningar";
+} from "../../_components/AlertDialog";
+import { useBokningar, useUppdateraBokningsstatus, useRaderaBokning } from "../hooks/useBokningar";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { Trash2 } from "lucide-react";
-import type { Bokning, Anvandare, Tjanst } from "../_server/db/schema";
+import type { Bokning } from "../types";
+import type { Anvandare } from "../../anvandare/types";
+import type { Tjanst } from "../../tjanster/types";
 
 interface BokningsListaProps {
   bokningar?: Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>;
 }
 
 export function BokningsLista({ bokningar: initialBokningar }: BokningsListaProps = {}) {
-  const { data: fetchedBokningar = [], isLoading, refetch } = useBokningar();
+  const { data: fetchedBokningar = [], isLoading } = useBokningar();
+  const uppdateraStatus = useUppdateraBokningsstatus();
+  const raderaBokning = useRaderaBokning();
   const bokningar = initialBokningar || fetchedBokningar;
   const [filter, setFilter] = useState<string>("alla");
   const [searchTerm, setSearchTerm] = useState("");
-  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
-  const handleStatusChange = async (bokningId: string, newStatus: string) => {
-    setUpdatingStatus(bokningId);
-    const result = await uppdateraBokningsstatus(
+  const handleStatusChange = (bokningId: string, newStatus: string) => {
+    uppdateraStatus.mutate({
       bokningId,
-      newStatus as "bekraftad" | "vaentande" | "installld" | "slutford"
-    );
-    setUpdatingStatus(null);
-    if (result.success) {
-      refetch();
-    }
+      status: newStatus as "bekraftad" | "vaentande" | "installld" | "slutford",
+    });
   };
 
-  const handleDelete = async (bokningId: string) => {
-    const result = await raderaBokning(bokningId);
-    if (result.success) {
-      refetch();
-    }
+  const handleDelete = (bokningId: string) => {
+    raderaBokning.mutate(bokningId);
   };
 
   const filteredBokningar = bokningar.filter((bokning: (typeof bokningar)[0]) => {
@@ -121,7 +115,7 @@ export function BokningsLista({ bokningar: initialBokningar }: BokningsListaProp
                     <Select
                       value={bokning.status}
                       onValueChange={(value) => handleStatusChange(bokning.id, value)}
-                      disabled={updatingStatus === bokning.id}
+                      disabled={uppdateraStatus.isPending}
                     >
                       <SelectTrigger className="w-[140px]">
                         <SelectValue />

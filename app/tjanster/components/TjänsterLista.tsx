@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../_components/Card";
-import { Button } from "../_components/Button";
-import { Input } from "../_components/Input";
-import { Label } from "../_components/Label";
+import { Card, CardContent, CardHeader, CardTitle } from "../../_components/Card";
+import { Button } from "../../_components/Button";
+import { Input } from "../../_components/Input";
+import { Label } from "../../_components/Label";
 import {
   Dialog,
   DialogContent,
@@ -13,9 +13,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../_components/Dialog";
-import { toggleTjänstAktiv, uppdateraTjänst, raderaTjänst } from "../_server/actions/tjanster";
-import type { Tjanst } from "../_server/db/schema";
+} from "../../_components/Dialog";
+import { useToggleTjanstAktiv, useUppdateraTjanst, useRaderaTjanst } from "../hooks/useTjanster";
+import type { Tjanst } from "../types";
 import { Pencil, Trash2 } from "lucide-react";
 
 interface TjansterListaProps {
@@ -25,30 +25,41 @@ interface TjansterListaProps {
 export function TjansterLista({ tjänster }: TjansterListaProps) {
   const [editingTjänst, setEditingTjänst] = useState<Tjanst | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const toggleAktiv = useToggleTjanstAktiv();
+  const uppdateraTjanst = useUppdateraTjanst();
+  const raderaTjanst = useRaderaTjanst();
 
-  async function handleToggle(id: string) {
-    await toggleTjänstAktiv(id);
-  }
+  const handleToggle = (id: string) => {
+    toggleAktiv.mutate(id);
+  };
 
-  async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
+  const handleUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!editingTjänst) return;
 
     const formData = new FormData(e.currentTarget);
-    await uppdateraTjänst(editingTjänst.id, {
-      namn: formData.get("namn") as string,
-      beskrivning: formData.get("beskrivning") as string,
-      varaktighet: Number(formData.get("varaktighet")),
-      pris: Number(formData.get("pris")),
-    });
+    uppdateraTjanst.mutate(
+      {
+        id: editingTjänst.id,
+        data: {
+          namn: formData.get("namn") as string,
+          beskrivning: formData.get("beskrivning") as string,
+          varaktighet: Number(formData.get("varaktighet")),
+          pris: Number(formData.get("pris")),
+        },
+      },
+      {
+        onSuccess: () => {
+          setIsDialogOpen(false);
+          setEditingTjänst(null);
+        },
+      }
+    );
+  };
 
-    setIsDialogOpen(false);
-    setEditingTjänst(null);
-  }
-
-  async function handleDelete(id: string) {
-    await raderaTjänst(id);
-  }
+  const handleDelete = (id: string) => {
+    raderaTjanst.mutate(id);
+  };
 
   return (
     <Card>

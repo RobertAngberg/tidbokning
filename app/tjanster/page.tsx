@@ -1,11 +1,10 @@
-import { hämtaTjänster } from "../_server/actions/bokningar";
-import type { Tjanst } from "../_server/db/schema";
+import { hämtaTjänster } from "../bokningar/actions/bokningar";
+import type { Tjanst } from "./types";
 import Image from "next/image";
 
 export default async function TjänsterPage() {
   const tjänster = await hämtaTjänster();
 
-  // Exempel bilder mappning
   const serviceImages: Record<string, string> = {
     massage: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=600&h=400&fit=crop",
     konsultation:
@@ -66,7 +65,6 @@ export default async function TjänsterPage() {
                 key={tjänst.id}
                 className="group bg-white rounded-xl overflow-hidden border-2 border-stone-200 hover:border-amber-200 transition-all hover:shadow-lg"
               >
-                {/* Image */}
                 <div className="relative h-48 w-full overflow-hidden bg-stone-100">
                   <Image
                     src={getImageForService(tjänst.namn)}
@@ -83,7 +81,6 @@ export default async function TjänsterPage() {
                   )}
                 </div>
 
-                {/* Content */}
                 <div className="p-6 space-y-4">
                   <div>
                     <h3 className="text-xl font-bold text-stone-800 mb-2">{tjänst.namn}</h3>
@@ -128,7 +125,6 @@ export default async function TjänsterPage() {
           </div>
         )}
 
-        {/* Info section */}
         <div className="bg-amber-50 rounded-xl p-8 border border-amber-200 mt-12">
           <div className="flex items-start gap-4">
             <div className="bg-amber-500 p-3 rounded-lg">

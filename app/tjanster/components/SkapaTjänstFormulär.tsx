@@ -1,39 +1,42 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../_components/Card";
-import { Button } from "../_components/Button";
-import { Input } from "../_components/Input";
-import { Label } from "../_components/Label";
-import { skapaTjänst } from "../_server/actions/tjanster";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../_components/Card";
+import { Button } from "../../_components/Button";
+import { Input } from "../../_components/Input";
+import { Label } from "../../_components/Label";
+import { useSkapaTjanst } from "../hooks/useTjanster";
 
 export function SkapaTjänstFormulär() {
   const [message, setMessage] = useState("");
-  const [isPending, setIsPending] = useState(false);
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setMessage("");
-    setIsPending(true);
-
-    const formData = new FormData(e.currentTarget);
-
-    const result = await skapaTjänst({
-      namn: formData.get("namn") as string,
-      beskrivning: formData.get("beskrivning") as string,
-      varaktighet: Number(formData.get("varaktighet")),
-      pris: Number(formData.get("pris")),
-      foretagsslug: "demo",
-    });
-
-    setIsPending(false);
-
+  const skapaTjanst = useSkapaTjanst((result) => {
     if (result.success) {
       setMessage("✅ Tjänst skapad!");
-      (e.target as HTMLFormElement).reset();
     } else {
       setMessage(`❌ ${result.error}`);
     }
+  });
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setMessage("");
+
+    const formData = new FormData(e.currentTarget);
+
+    skapaTjanst.mutate(
+      {
+        namn: formData.get("namn") as string,
+        beskrivning: formData.get("beskrivning") as string,
+        varaktighet: Number(formData.get("varaktighet")),
+        pris: Number(formData.get("pris")),
+        foretagsslug: "demo",
+      },
+      {
+        onSuccess: () => {
+          (e.target as HTMLFormElement).reset();
+        },
+      }
+    );
   }
 
   return (
@@ -64,8 +67,8 @@ export function SkapaTjänstFormulär() {
             <Input id="pris" name="pris" type="number" min="0" step="0.01" required />
           </div>
 
-          <Button type="submit" disabled={isPending} className="w-full">
-            {isPending ? "Skapar..." : "Skapa tjänst"}
+          <Button type="submit" disabled={skapaTjanst.isPending} className="w-full">
+            {skapaTjanst.isPending ? "Skapar..." : "Skapa tjänst"}
           </Button>
 
           {message && (

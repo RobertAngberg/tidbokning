@@ -1,49 +1,26 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../_components/Card";
-import { Button } from "../_components/Button";
-import { Calendar } from "../_components/Calendar";
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../_components/Card";
+import { Button } from "../../_components/Button";
+import { Calendar } from "../../_components/Calendar";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
-import { hämtaTillgängligaTider } from "../_server/actions/bokningar";
-import type { Tjanst } from "../_server/db/schema";
+import { useTillgangligaTider } from "../hooks/useBokningar";
+import type { Tjanst } from "../../tjanster/types";
 
 interface BokningsKalenderProps {
   tjänster: Tjanst[];
   onSelectTime: (date: Date, tjanstId: string) => void;
 }
 
-interface TillgängligTid {
-  tid: string;
-  tillgänglig: boolean;
-}
-
 export function BokningsKalender({ tjänster, onSelectTime }: BokningsKalenderProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedTjanst, setSelectedTjanst] = useState<string>("");
-  const [availableTimes, setAvailableTimes] = useState<TillgängligTid[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    async function loadTimes() {
-      if (selectedDate && selectedTjanst) {
-        setIsLoading(true);
-        try {
-          const times = await hämtaTillgängligaTider(selectedDate, selectedTjanst);
-          setAvailableTimes(times);
-        } catch (error) {
-          console.error("Fel vid hämtning av tider:", error);
-          setAvailableTimes([]);
-        } finally {
-          setIsLoading(false);
-        }
-      } else {
-        setAvailableTimes([]);
-      }
-    }
-    loadTimes();
-  }, [selectedDate, selectedTjanst]);
+  const { data: availableTimes = [], isLoading } = useTillgangligaTider(
+    selectedDate,
+    selectedTjanst
+  );
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);

@@ -1,8 +1,8 @@
 "use server";
 
-import { db } from "../db";
-import { tjanster } from "../db/schema";
-import type { Tjanst } from "../db/schema";
+import { db } from "../../_server/db";
+import { tjanster } from "../schema/tjanster";
+import type { Tjanst } from "../schema/tjanster";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { z } from "zod";

@@ -1,5 +1,5 @@
-import { hämtaTjänster } from "./_server/actions/bokningar";
-import { BokningsFormular } from "./bokningar/BokningsFormular";
+import { hämtaTjänster } from "./bokningar/actions/bokningar";
+import { BokningsFormular } from "./bokningar/components/BokningsFormular";
 
 export default async function HomePage() {
   const tjänster = await hämtaTjänster();
