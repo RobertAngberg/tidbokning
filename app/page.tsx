@@ -6,7 +6,7 @@ export default async function HomePage() {
   const tjänster = await hämtaTjänster();
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative h-screen">
       {/* Bakgrundsbild */}
       <div className="fixed inset-0 -z-10">
         <Image

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 export function Navigation() {
   const pathname = usePathname();
   const navRef = useRef<HTMLDivElement>(null);
+  const [clickedPath, setClickedPath] = useState<string | null>(null);
 
   const links = [
     { href: "/", label: "Boka en tid" },
@@ -14,6 +15,8 @@ export function Navigation() {
     { href: "/schema", label: "Bokningsschema" },
     { href: "/tjanster", label: "Tjänster" },
   ];
+
+  const activePath = clickedPath || pathname;
 
   return (
     <nav className="border-b bg-background">
@@ -52,10 +55,11 @@ export function Navigation() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-lg transition-colors hover:text-cyan-500 active:scale-95 font-[family-name:var(--font-newsreader)] leading-none flex items-center ${
-                    pathname === link.href
-                      ? "text-white font-bold bg-cyan-500 px-4 py-2 rounded-full"
-                      : "text-muted-foreground font-medium"
+                  onClick={() => setClickedPath(link.href)}
+                  className={`text-lg transition-all duration-300 font-[family-name:var(--font-newsreader)] leading-none flex items-center ${
+                    activePath === link.href
+                      ? "text-white font-bold bg-cyan-500 px-4 py-2 rounded-full hover:text-white"
+                      : "text-muted-foreground font-medium hover:text-cyan-500"
                   }`}
                 >
                   <span className="translate-y-0.5">{link.label}</span>

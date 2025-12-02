@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Lato, Newsreader } from "next/font/google";
+import { Nunito, Newsreader } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "./_lib/providers";
 import { Navigation } from "./_components/Navigation";
 
-const lato = Lato({ subsets: ["latin"], weight: ["400", "700"] });
+const nunito = Nunito({ subsets: ["latin"], weight: ["400", "700"] });
 const newsreader = Newsreader({
   subsets: ["latin"],
   variable: "--font-newsreader",
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sv" suppressHydrationWarning>
-      <body className={`${lato.className} ${newsreader.variable}`}>
+      <body className={`${nunito.className} ${newsreader.variable}`}>
         <QueryProvider>
           <Navigation />
           <main>{children}</main>
