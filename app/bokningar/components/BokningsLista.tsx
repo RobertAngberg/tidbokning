@@ -26,9 +26,9 @@ import { useBokningar, useUppdateraBokningsstatus, useRaderaBokning } from "../h
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { Trash2 } from "lucide-react";
-import type { Bokning } from "../types";
-import type { Anvandare } from "../../anvandare/types";
-import type { Tjanst } from "../../tjanster/types";
+import type { Bokning } from "../../_server/db/schema/bokningar";
+import type { Anvandare } from "../../_server/db/schema/anvandare";
+import type { Tjanst } from "../../_server/db/schema/tjanster";
 
 interface BokningsListaProps {
   bokningar?: Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>;

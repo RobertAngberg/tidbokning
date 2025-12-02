@@ -8,7 +8,7 @@ import {
   toggleTjänstAktiv,
   raderaTjänst,
 } from "../actions/tjanster";
-import type { Tjanst } from "../schema/tjanster";
+import type { Tjanst } from "../../_server/db/schema/tjanster";
 
 interface SkapaTjänstInput {
   namn: string;

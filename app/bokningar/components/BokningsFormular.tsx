@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "../../_components/Select";
 import { useSkapaBokning } from "../hooks/useBokningar";
-import type { Tjanst } from "../../tjanster/types";
+import type { Tjanst } from "../../_server/db/schema/tjanster";
 
 export function BokningsFormular({ tjänster }: { tjänster: Tjanst[] }) {
   const [message, setMessage] = useState("");

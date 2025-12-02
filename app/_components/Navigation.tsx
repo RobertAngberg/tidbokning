@@ -12,7 +12,7 @@ export function Navigation() {
   const links = [
     { href: "/", label: "Boka en tid" },
     { href: "/bokningar", label: "Bokningar" },
-    { href: "/schema", label: "Bokningsschema" },
+    { href: "/kalender", label: "Kalender" },
     { href: "/tjanster", label: "Tjänster" },
   ];
 

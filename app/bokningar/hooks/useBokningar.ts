@@ -9,7 +9,7 @@ import {
   hämtaTillgängligaTider,
 } from "../actions/bokningar";
 import type { BokningInput } from "../validators/bokning";
-import type { Bokning } from "../schema/bokningar";
+import type { Bokning } from "../../_server/db/schema/bokningar";
 
 type BokningResult = { success: true; bokning: Bokning } | { success: false; error: string };
 

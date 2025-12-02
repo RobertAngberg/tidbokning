@@ -1,12 +1,12 @@
 "use server";
 
 import { db } from "../../_server/db";
-import { bokningar } from "../schema/bokningar";
-import { tjanster } from "../../tjanster/schema/tjanster";
-import { anvandare } from "../../anvandare/schema/anvandare";
-import type { Bokning } from "../schema/bokningar";
-import type { Tjanst } from "../../tjanster/schema/tjanster";
-import type { Anvandare } from "../../anvandare/schema/anvandare";
+import { bokningar } from "../../_server/db/schema/bokningar";
+import { tjanster } from "../../_server/db/schema/tjanster";
+import { anvandare } from "../../_server/db/schema/anvandare";
+import type { Bokning } from "../../_server/db/schema/bokningar";
+import type { Tjanst } from "../../_server/db/schema/tjanster";
+import type { Anvandare } from "../../_server/db/schema/anvandare";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { bokningSchema, type BokningInput } from "../validators/bokning";

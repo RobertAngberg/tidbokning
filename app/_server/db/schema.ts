@@ -1,4 +1,4 @@
-// Central export av alla schemas från features
-export * from "../../bokningar/schema/bokningar";
-export * from "../../tjanster/schema/tjanster";
-export * from "../../anvandare/schema/anvandare";
+// Central export av alla schemas
+export * from "./schema/anvandare";
+export * from "./schema/bokningar";
+export * from "./schema/tjanster";

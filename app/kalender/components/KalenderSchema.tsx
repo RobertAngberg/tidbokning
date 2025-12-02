@@ -9,11 +9,11 @@ import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 
-interface BokningsSchemaProps {
+interface KalenderSchemaProps {
   bokningar: Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>;
 }
 
-export function BokningsSchema({ bokningar }: BokningsSchemaProps) {
+export function KalenderSchema({ bokningar }: KalenderSchemaProps) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   // Hitta bokningar för valt datum

@@ -7,7 +7,7 @@ import { Calendar } from "../../_components/Calendar";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { useTillgangligaTider } from "../hooks/useBokningar";
-import type { Tjanst } from "../../tjanster/types";
+import type { Tjanst } from "../../_server/db/schema/tjanster";
 
 interface BokningsKalenderProps {
   tjänster: Tjanst[];

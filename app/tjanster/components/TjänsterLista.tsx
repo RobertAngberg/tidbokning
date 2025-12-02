@@ -15,7 +15,7 @@ import {
   DialogTrigger,
 } from "../../_components/Dialog";
 import { useToggleTjanstAktiv, useUppdateraTjanst, useRaderaTjanst } from "../hooks/useTjanster";
-import type { Tjanst } from "../types";
+import type { Tjanst } from "../../_server/db/schema/tjanster";
 import { Pencil, Trash2 } from "lucide-react";
 
 interface TjansterListaProps {

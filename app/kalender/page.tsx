@@ -1,7 +1,7 @@
 import { hämtaBokningar } from "../bokningar/actions/bokningar";
-import { BokningsSchema } from "../bokningar/components/BokningsSchema";
+import { KalenderSchema } from "./components/KalenderSchema";
 
-export default async function SchemaPage() {
+export default async function KalenderPage() {
   const bokningar = await hämtaBokningar();
 
   return (
@@ -9,14 +9,14 @@ export default async function SchemaPage() {
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="text-center space-y-3">
           <h1 className="text-6xl text-white font-[family-name:var(--font-newsreader)]">
-            Bokningsschema
+            Kalender
           </h1>
           <p className="text-xl text-white font-[family-name:var(--font-newsreader)]">
             Översikt över alla bokningar i kalendern
           </p>
         </div>
 
-        <BokningsSchema bokningar={bokningar} />
+        <KalenderSchema bokningar={bokningar} />
       </div>
     </div>
   );
