@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/_components/ui/Card";
-import { Button } from "@/_components/ui/Button";
-import { Input } from "@/_components/ui/Input";
-import { Label } from "@/_components/ui/Label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/_components/Card";
+import { Button } from "@/_components/Button";
+import { Input } from "@/_components/Input";
+import { Label } from "@/_components/Label";
 import { skapaTjänst } from "@/_server/actions/tjanster";
 
 export function SkapaTjänstFormulär() {

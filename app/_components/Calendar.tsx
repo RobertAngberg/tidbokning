@@ -5,7 +5,7 @@ import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react
 import { DayButton, DayPicker, getDefaultClassNames } from "react-day-picker";
 
 import { cn } from "@/_lib/utils";
-import { Button, buttonVariants } from "@/_components/ui/Button";
+import { Button, buttonVariants } from "@/_components/Button";
 
 function Calendar({
   className,

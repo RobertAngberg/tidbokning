@@ -1,6 +1,6 @@
 import { hämtaAllaTjänster } from "@/_server/actions/tjanster";
-import { TjänsterLista } from "@/_components/tjanster/TjänsterLista";
-import { SkapaTjänstFormulär } from "@/_components/tjanster/SkapaTjänstFormulär";
+import { TjänsterLista } from "@/tjanster/TjänsterLista";
+import { SkapaTjänstFormulär } from "@/tjanster/SkapaTjänstFormulär";
 
 export default async function TjänsterPage() {
   const tjänster = await hämtaAllaTjänster();

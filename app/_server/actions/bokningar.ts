@@ -169,3 +169,85 @@ export async function hämtaTillgängligaTider(
     return [];
   }
 }
+
+export async function uppdateraBokning(
+  bokningId: string,
+  data: Partial<BokningInput>
+): Promise<BokningResult> {
+  try {
+    // Hämta befintlig bokning
+    const befintligBokning = await db.query.bokningar.findFirst({
+      where: eq(bokningar.id, bokningId),
+    });
+
+    if (!befintligBokning) {
+      return { success: false, error: "Bokningen finns inte" };
+    }
+
+    // Om startTid ändras, beräkna om slutTid
+    let slutTid = befintligBokning.slutTid;
+    if (data.startTid) {
+      const tjänst = await db.query.tjanster.findFirst({
+        where: eq(tjanster.id, data.tjänstId || befintligBokning.tjanstId),
+      });
+
+      if (tjänst) {
+        slutTid = new Date(data.startTid);
+        slutTid.setMinutes(slutTid.getMinutes() + tjänst.varaktighet);
+      }
+    }
+
+    // Uppdatera bokning
+    const [uppdateradBokning] = await db
+      .update(bokningar)
+      .set({
+        ...(data.tjänstId && { tjanstId: data.tjänstId }),
+        ...(data.startTid && { startTid: data.startTid, slutTid }),
+      })
+      .where(eq(bokningar.id, bokningId))
+      .returning();
+
+    revalidatePath("/");
+    return { success: true, bokning: uppdateradBokning };
+  } catch (error) {
+    console.error("Fel vid uppdatering av bokning:", error);
+    return { success: false, error: "Något gick fel vid uppdateringen" };
+  }
+}
+
+export async function uppdateraBokningsstatus(
+  bokningId: string,
+  status: "bekraftad" | "vaentande" | "installld" | "slutford"
+): Promise<BokningResult> {
+  try {
+    const [uppdateradBokning] = await db
+      .update(bokningar)
+      .set({ status })
+      .where(eq(bokningar.id, bokningId))
+      .returning();
+
+    if (!uppdateradBokning) {
+      return { success: false, error: "Bokningen finns inte" };
+    }
+
+    revalidatePath("/");
+    return { success: true, bokning: uppdateradBokning };
+  } catch (error) {
+    console.error("Fel vid uppdatering av bokningsstatus:", error);
+    return { success: false, error: "Något gick fel vid uppdateringen" };
+  }
+}
+
+export async function raderaBokning(
+  bokningId: string
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await db.delete(bokningar).where(eq(bokningar.id, bokningId));
+
+    revalidatePath("/");
+    return { success: true };
+  } catch (error) {
+    console.error("Fel vid radering av bokning:", error);
+    return { success: false, error: "Något gick fel vid raderingen" };
+  }
+}

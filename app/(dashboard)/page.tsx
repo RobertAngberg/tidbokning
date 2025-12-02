@@ -1,5 +1,5 @@
 import { hämtaStatistik } from "@/_server/actions/statistik";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/_components/ui/Card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/_components/Card";
 
 export default async function DashboardPage() {
   const stats = await hämtaStatistik();

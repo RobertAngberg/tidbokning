@@ -1,9 +1,11 @@
-import { hämtaTjänster } from "@/_server/actions/bokningar";
-import { BokningsFormular } from "@/_components/bokningar/BokningsFormular";
-import { BokningsLista } from "@/_components/bokningar/BokningsLista";
+import { hämtaBokningar, hämtaTjänster } from "@/_server/actions/bokningar";
+import { BokningsFormular } from "@/bokningar/BokningsFormular";
+import { BokningsLista } from "@/bokningar/BokningsLista";
+import { BokningsSchema } from "@/bokningar/BokningsSchema";
 
 export default async function HomePage() {
   const tjänster = await hämtaTjänster();
+  const bokningar = await hämtaBokningar();
 
   return (
     <div className="min-h-screen p-8">
@@ -20,9 +22,11 @@ export default async function HomePage() {
             <BokningsFormular tjänster={tjänster} />
           </div>
           <div className="w-1/2">
-            <BokningsLista />
+            <BokningsLista bokningar={bokningar} />
           </div>
         </div>
+
+        <BokningsSchema bokningar={bokningar} />
       </div>
     </div>
   );

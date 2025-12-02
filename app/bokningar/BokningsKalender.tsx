@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/_components/ui/Card";
-import { Button } from "@/_components/ui/Button";
-import { Calendar } from "@/_components/ui/Calendar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/_components/Card";
+import { Button } from "@/_components/Button";
+import { Calendar } from "@/_components/Calendar";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { hämtaTillgängligaTider } from "@/_server/actions/bokningar";

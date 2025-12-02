@@ -5,9 +5,9 @@ import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/_lib/utils";
-import { Button } from "@/_components/ui/Button";
-import { Calendar } from "@/_components/ui/Calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/_components/ui/Popover";
+import { Button } from "@/_components/Button";
+import { Calendar } from "@/_components/Calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/_components/Popover";
 
 interface DatePickerProps {
   date?: Date;
