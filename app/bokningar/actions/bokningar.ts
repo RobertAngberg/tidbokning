@@ -13,6 +13,11 @@ import { bokningSchema, type BokningInput } from "../validators/bokning";
 
 type BokningResult = { success: true; bokning: Bokning } | { success: false; error: string };
 
+interface TillgängligTid {
+  tid: string;
+  tillgänglig: boolean;
+}
+
 export async function skapaBokning(data: BokningInput): Promise<BokningResult> {
   try {
     // Validera input
@@ -103,11 +108,6 @@ export async function hämtaTjänster(): Promise<Tjanst[]> {
     console.error("Fel vid hämtning av tjänster:", error);
     return [];
   }
-}
-
-interface TillgängligTid {
-  tid: string;
-  tillgänglig: boolean;
 }
 
 export async function hämtaTillgängligaTider(
