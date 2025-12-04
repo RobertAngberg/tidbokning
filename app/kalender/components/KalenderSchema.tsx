@@ -10,7 +10,7 @@ import type { Anvandare } from "../../_server/db/schema/anvandare";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 import type { Utforare } from "../../_server/db/schema/utforare";
 import { BookingModal, type BookingFormData } from "./BookingModal";
-import { skapaBokning } from "../../bokningar/actions/bokningar";
+import { skapaBokning } from "../../dashboard/actions/bokningar";
 import { useRouter } from "next/navigation";
 
 interface KalenderSchemaProps {

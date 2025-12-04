@@ -1,4 +1,4 @@
-import { hämtaTjänster } from "../bokningar/actions/bokningar";
+import { hämtaTjänster } from "../dashboard/actions/bokningar";
 import type { Tjanst } from "./types";
 import Image from "next/image";
 

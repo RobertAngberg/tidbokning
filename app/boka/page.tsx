@@ -1,4 +1,4 @@
-import { hämtaTjänster } from "../bokningar/actions/bokningar";
+import { hämtaTjänster } from "../dashboard/actions/bokningar";
 import { BokaClient } from "./components/BokaClient";
 
 export default async function BokaPage() {

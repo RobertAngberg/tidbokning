@@ -1,4 +1,4 @@
-import { hämtaBokningar } from "../bokningar/actions/bokningar";
+import { hämtaBokningar } from "../dashboard/actions/bokningar";
 import { KalenderSchema } from "./components/KalenderSchema";
 
 export default async function KalenderPage() {

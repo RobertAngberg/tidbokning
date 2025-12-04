@@ -1,8 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { hämtaBokningar, hämtaTjänster } from "../../bokningar/actions/bokningar";
-import { hämtaUtförareForTjänst } from "../../bokningar/actions/utforare";
+import { hämtaBokningar, hämtaTjänster } from "../../dashboard/actions/bokningar";
+import { hämtaUtförareForTjänst } from "../../dashboard/actions/utforare";
 import { KalenderSchema } from "../../kalender/components/KalenderSchema";
 
 export default async function BokaTjanstPage({

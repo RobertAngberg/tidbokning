@@ -11,7 +11,7 @@ export function Navigation() {
 
   const links = [
     { href: "/", label: "Boka" },
-    { href: "/bokningar", label: "Bokningar" },
+    { href: "/dashboard", label: "Dashboard" },
   ];
 
   const activePath = clickedPath || pathname;
