@@ -30,11 +30,11 @@ import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 
-interface BokningsListaProps {
+interface BokningarClientProps {
   bokningar?: Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>;
 }
 
-export function BokningsLista({ bokningar: initialBokningar }: BokningsListaProps = {}) {
+export function BokningarClient({ bokningar: initialBokningar }: BokningarClientProps = {}) {
   const { data: fetchedBokningar = [], isLoading } = useBokningar();
   const uppdateraStatus = useUppdateraBokningsstatus();
   const raderaBokning = useRaderaBokning();

@@ -1,5 +1,5 @@
 import { hämtaBokningar } from "./actions/bokningar";
-import { BokningsLista } from "./components/BokningsLista";
+import { BokningarClient } from "./components/BokningarClient";
 
 export default async function BokningarPage() {
   const bokningar = await hämtaBokningar();
@@ -16,7 +16,7 @@ export default async function BokningarPage() {
           </p>
         </div>
 
-        <BokningsLista bokningar={bokningar} />
+        <BokningarClient bokningar={bokningar} />
       </div>
     </div>
   );
