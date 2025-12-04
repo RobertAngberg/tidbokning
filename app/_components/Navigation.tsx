@@ -10,10 +10,8 @@ export function Navigation() {
   const [clickedPath, setClickedPath] = useState<string | null>(null);
 
   const links = [
-    { href: "/", label: "Boka en tid" },
+    { href: "/", label: "Boka" },
     { href: "/bokningar", label: "Bokningar" },
-    { href: "/kalender", label: "Kalender" },
-    { href: "/tjanster", label: "Tjänster" },
   ];
 
   const activePath = clickedPath || pathname;
