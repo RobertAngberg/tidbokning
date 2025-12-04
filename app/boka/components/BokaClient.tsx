@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 import { useBoka } from "../hooks/useBoka";
 
@@ -94,16 +95,16 @@ export function BokaClient({ tjänster }: BokaClientProps) {
                     <div className="text-lg font-bold text-amber-700">{tjänst.pris / 100} kr</div>
                   </div>
 
-                  <button
-                    disabled={!tjänst.aktiv}
-                    className={`w-full py-2 rounded-md text-sm font-semibold transition-all ${
+                  <Link
+                    href={tjänst.aktiv ? `/boka/${tjänst.id}` : "#"}
+                    className={`block w-full py-2 rounded-md text-sm font-semibold text-center transition-all ${
                       tjänst.aktiv
                         ? "bg-amber-500 text-white hover:bg-amber-600 active:scale-95"
-                        : "bg-stone-200 text-stone-400 cursor-not-allowed"
+                        : "bg-stone-200 text-stone-400 cursor-not-allowed pointer-events-none"
                     }`}
                   >
                     {tjänst.aktiv ? "Boka" : "Ej tillgänglig"}
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}

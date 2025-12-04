@@ -2,11 +2,14 @@ import { db } from "../_server/db";
 import { tjanster } from "../_server/db/schema/tjanster";
 import { bokningar } from "../_server/db/schema/bokningar";
 import { anvandare } from "../_server/db/schema/anvandare";
+import { utforare, utforareTjanster } from "../_server/db/schema/utforare";
 
 export default async function DebugPage() {
   const allTjanster = await db.select().from(tjanster);
   const allBokningar = await db.select().from(bokningar);
   const allAnvandare = await db.select().from(anvandare);
+  const allUtforare = await db.select().from(utforare);
+  const allUtforareTjanster = await db.select().from(utforareTjanster);
 
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-slate-50 to-slate-100">
@@ -237,6 +240,170 @@ export default async function DebugPage() {
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
                           {a.roll}
                         </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-slate-800">Utförare</h2>
+            <span className="bg-amber-100 text-amber-800 px-4 py-1.5 rounded-full text-sm font-semibold">
+              {allUtforare.length} st
+            </span>
+          </div>
+          {allUtforare.length === 0 ? (
+            <div className="text-center py-12 text-slate-500">
+              <svg
+                className="w-16 h-16 mx-auto mb-4 text-slate-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              <p className="text-lg font-medium">Inga utförare ännu</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-lg border border-slate-200">
+              <table className="min-w-full divide-y divide-slate-200">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="px-3 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider w-24">
+                      ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Namn
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Telefon
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Beskrivning
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Status
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-slate-200">
+                  {allUtforare.map((u) => (
+                    <tr key={u.id} className="hover:bg-slate-50 transition-colors">
+                      <td
+                        className="px-3 py-4 whitespace-nowrap text-sm text-slate-500 font-mono max-w-[6rem] truncate"
+                        title={u.id}
+                      >
+                        {u.id}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
+                        {u.namn}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                        {u.email || "-"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                        {u.telefon || "-"}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-slate-600 max-w-xs truncate">
+                        {u.beskrivning || "-"}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {u.aktiv ? (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            ✓ Aktiv
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            ✗ Inaktiv
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-slate-800">Utförare ↔ Tjänster Kopplingar</h2>
+            <span className="bg-teal-100 text-teal-800 px-4 py-1.5 rounded-full text-sm font-semibold">
+              {allUtforareTjanster.length} st
+            </span>
+          </div>
+          {allUtforareTjanster.length === 0 ? (
+            <div className="text-center py-12 text-slate-500">
+              <svg
+                className="w-16 h-16 mx-auto mb-4 text-slate-300"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                />
+              </svg>
+              <p className="text-lg font-medium">Inga kopplingar ännu</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto rounded-lg border border-slate-200">
+              <table className="min-w-full divide-y divide-slate-200">
+                <thead className="bg-slate-50">
+                  <tr>
+                    <th className="px-3 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider w-24">
+                      ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Utförare ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Tjänst ID
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Skapad
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-slate-200">
+                  {allUtforareTjanster.map((ut) => (
+                    <tr key={ut.id} className="hover:bg-slate-50 transition-colors">
+                      <td
+                        className="px-3 py-4 whitespace-nowrap text-sm text-slate-500 font-mono max-w-[6rem] truncate"
+                        title={ut.id}
+                      >
+                        {ut.id}
+                      </td>
+                      <td
+                        className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-mono max-w-xs truncate"
+                        title={ut.utforareId}
+                      >
+                        {ut.utforareId}
+                      </td>
+                      <td
+                        className="px-6 py-4 whitespace-nowrap text-sm text-slate-600 font-mono max-w-xs truncate"
+                        title={ut.tjanstId}
+                      >
+                        {ut.tjanstId}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-600">
+                        {new Date(ut.skapadDatum).toLocaleString("sv-SE")}
                       </td>
                     </tr>
                   ))}

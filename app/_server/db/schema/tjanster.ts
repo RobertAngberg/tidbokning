@@ -1,4 +1,6 @@
 import { pgTable, text, timestamp, uuid, integer } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { utforareTjanster } from "./utforare";
 
 export const tjanster = pgTable("tjanster", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -12,6 +14,10 @@ export const tjanster = pgTable("tjanster", {
   skapadDatum: timestamp("skapad_datum").notNull().defaultNow(),
   uppdateradDatum: timestamp("uppdaterad_datum").notNull().defaultNow(),
 });
+
+export const tjansterRelations = relations(tjanster, ({ many }) => ({
+  utforareTjanster: many(utforareTjanster),
+}));
 
 export type Tjanst = typeof tjanster.$inferSelect;
 export type NyTjanst = typeof tjanster.$inferInsert;

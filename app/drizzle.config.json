@@ -1,0 +1,10 @@
+{
+  "dialect": "postgresql",
+  "schema": "./_server/db/schema/*",
+  "out": "./_server/db/migrations",
+  "dbCredentials": {
+    "url": {
+      "env": "TIDBOKNING_DATABASE_URL"
+    }
+  }
+}

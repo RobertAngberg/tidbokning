@@ -3,12 +3,14 @@ import { neon } from "@neondatabase/serverless";
 import * as anvandareSchema from "./schema/anvandare";
 import * as bokningarSchema from "./schema/bokningar";
 import * as tjansterSchema from "./schema/tjanster";
+import * as utforareSchema from "./schema/utforare";
 import { config } from "dotenv";
 
 const schema = {
   ...anvandareSchema,
   ...bokningarSchema,
   ...tjansterSchema,
+  ...utforareSchema,
 };
 
 // Ladda .env.local om vi inte är i Next.js runtime
