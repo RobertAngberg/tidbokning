@@ -17,10 +17,10 @@ export const bokningar = pgTable("bokningar", {
   startTid: timestamp("start_tid").notNull(),
   slutTid: timestamp("slut_tid").notNull(),
   status: text("status", {
-    enum: ["bekraftad", "vaentande", "installld", "slutford"],
+    enum: ["Bekräftad", "Väntande", "Inställd", "Slutförd"],
   })
     .notNull()
-    .default("vaentande"),
+    .default("Väntande"),
   anteckningar: text("anteckningar"),
   foretagsslug: text("foretagsslug").notNull(),
   skapadDatum: timestamp("skapad_datum").notNull().defaultNow(),

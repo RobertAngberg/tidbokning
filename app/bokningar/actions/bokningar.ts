@@ -48,12 +48,16 @@ export async function skapaBokning(data: BokningInput): Promise<BokningResult> {
       .values({
         email: data.kundEmail,
         namn: data.kundNamn,
+        telefon: data.kundTelefon,
         roll: "kund",
         foretagsslug: "demo", // Hårdkodat för nu
       })
       .onConflictDoUpdate({
         target: anvandare.email,
-        set: { namn: data.kundNamn },
+        set: {
+          namn: data.kundNamn,
+          telefon: data.kundTelefon,
+        },
       })
       .returning();
 
@@ -63,9 +67,11 @@ export async function skapaBokning(data: BokningInput): Promise<BokningResult> {
       .values({
         kundId: kund.id,
         tjanstId: data.tjänstId,
+        utforareId: data.utforareId,
         startTid: data.startTid,
         slutTid: slutTid,
-        status: "bekraftad",
+        status: "Bekräftad",
+        anteckningar: data.anteckningar,
         foretagsslug: "demo",
       })
       .returning();
@@ -221,7 +227,7 @@ export async function uppdateraBokning(
 
 export async function uppdateraBokningsstatus(
   bokningId: string,
-  status: "bekraftad" | "vaentande" | "installld" | "slutford"
+  status: "Bekräftad" | "Väntande" | "Inställd" | "Slutförd"
 ): Promise<BokningResult> {
   try {
     const [uppdateradBokning] = await db

@@ -59,7 +59,7 @@ export function useUppdateraBokningsstatus() {
       status,
     }: {
       bokningId: string;
-      status: "bekraftad" | "vaentande" | "installld" | "slutford";
+      status: "Bekräftad" | "Väntande" | "Inställd" | "Slutförd";
     }) => uppdateraBokningsstatus(bokningId, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["bokningar"] });

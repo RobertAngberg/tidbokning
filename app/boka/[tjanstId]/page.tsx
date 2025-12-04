@@ -123,7 +123,7 @@ export default async function BokaTjanstPage({
 
           {/* Höger kolumn - Kalender (2/3) */}
           <div className="lg:col-span-2">
-            <KalenderSchema bokningar={bokningar} />
+            <KalenderSchema bokningar={bokningar} tjanst={tjanst} utforare={utforare} />
           </div>
         </div>
       </div>

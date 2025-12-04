@@ -85,10 +85,10 @@ export function BokningarClient({ bokningar: initialBokningar }: BokningarClient
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="alla">Alla status</SelectItem>
-              <SelectItem value="bekraftad">Bekräftad</SelectItem>
-              <SelectItem value="vaentande">Väntande</SelectItem>
-              <SelectItem value="installld">Inställd</SelectItem>
-              <SelectItem value="slutford">Slutförd</SelectItem>
+              <SelectItem value="Bekräftad">Bekräftad</SelectItem>
+              <SelectItem value="Väntande">Väntande</SelectItem>
+              <SelectItem value="Inställd">Inställd</SelectItem>
+              <SelectItem value="Slutförd">Slutförd</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -100,8 +100,8 @@ export function BokningarClient({ bokningar: initialBokningar }: BokningarClient
         ) : (
           <div className="space-y-4">
             {filteredBokningar.map((bokning: (typeof bokningar)[0]) => (
-              <div key={bokning.id} className="border rounded-lg p-4">
-                <div className="flex justify-between items-start gap-4">
+              <div key={bokning.id} className="border rounded-lg p-4 relative">
+                <div className="flex justify-between items-start gap-4 pr-10">
                   <div className="flex-1">
                     <p className="font-medium">{bokning.kund?.namn}</p>
                     <p className="text-sm text-muted-foreground">{bokning.kund?.email}</p>
@@ -111,7 +111,7 @@ export function BokningarClient({ bokningar: initialBokningar }: BokningarClient
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-start gap-2">
                     <Select
                       value={bokning.status}
                       onValueChange={(value) => handleStatusChange(bokning.id, value)}
@@ -121,36 +121,36 @@ export function BokningarClient({ bokningar: initialBokningar }: BokningarClient
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="bekraftad">Bekräftad</SelectItem>
-                        <SelectItem value="vaentande">Väntande</SelectItem>
-                        <SelectItem value="installld">Inställd</SelectItem>
-                        <SelectItem value="slutford">Slutförd</SelectItem>
+                        <SelectItem value="Bekräftad">Bekräftad</SelectItem>
+                        <SelectItem value="Väntande">Väntande</SelectItem>
+                        <SelectItem value="Inställd">Inställd</SelectItem>
+                        <SelectItem value="Slutförd">Slutförd</SelectItem>
                       </SelectContent>
                     </Select>
-
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Radera bokning?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Detta går inte att ångra. Bokningen kommer att raderas permanent.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Avbryt</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(bokning.id)}>
-                            Radera
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
                   </div>
                 </div>
+
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="absolute bottom-2 right-2">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Radera bokning?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Detta går inte att ångra. Bokningen kommer att raderas permanent.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(bokning.id)}>
+                        Radera
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             ))}
           </div>

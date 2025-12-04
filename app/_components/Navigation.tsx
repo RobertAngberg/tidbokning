@@ -19,7 +19,7 @@ export function Navigation() {
   return (
     <nav className="sticky top-0 z-50 border-b bg-background">
       <div className="max-w-6xl mx-auto px-8">
-        <div className="flex items-center gap-8 h-16">
+        <div className="flex items-center gap-8 h-20">
           <Link href="/" className="font-bold text-xl flex items-center gap-2 mr-12">
             <svg
               width="28"
