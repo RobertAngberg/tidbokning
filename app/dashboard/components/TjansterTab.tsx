@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Card } from "../../_components/Card";
-import { Input } from "../../_components/Input";
 import {
   Select,
   SelectContent,
@@ -112,6 +111,13 @@ export function TjansterTab({ tjanster }: TjansterTabProps) {
         >
           + Lägg till tjänst
         </button>
+        <input
+          type="text"
+          placeholder="Sök tjänster..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="px-3 py-2 rounded-md border bg-background text-foreground flex-1 min-w-[200px]"
+        />
         <Select value={kategoriFilter} onValueChange={setKategoriFilter}>
           <SelectTrigger className="w-[200px] bg-background">
             <SelectValue placeholder="Alla kategorier" />
@@ -132,7 +138,7 @@ export function TjansterTab({ tjanster }: TjansterTabProps) {
             onChange={(e) => setVisaInaktiva(e.target.checked)}
             className="w-4 h-4"
           />
-          <span className="text-sm text-foreground">Visa inaktiva</span>
+          <span className="text-sm text-white">Visa inaktiva</span>
         </label>
       </div>
 
