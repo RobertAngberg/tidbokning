@@ -10,14 +10,16 @@ import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 import type { Personal } from "../../_server/db/schema/personal";
+import type { Foretag } from "../../_server/db/schema/foretag";
 
 interface DashboardClientProps {
   bokningar: Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>;
   tjanster: Tjanst[];
   personal: Personal[];
+  foretag: Foretag | null;
 }
 
-export function DashboardClient({ bokningar, tjanster, personal }: DashboardClientProps) {
+export function DashboardClient({ bokningar, tjanster, personal, foretag }: DashboardClientProps) {
   return (
     // Tabs-container håller koll på vilken tab som är aktiv
     <Tabs defaultValue="oversikt">
@@ -64,7 +66,7 @@ export function DashboardClient({ bokningar, tjanster, personal }: DashboardClie
       </TabsContent>
 
       <TabsContent value="installningar">
-        <InstallningarTab />
+        <InstallningarTab foretag={foretag} />
       </TabsContent>
     </Tabs>
   );
