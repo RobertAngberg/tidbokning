@@ -116,7 +116,7 @@ export function TjansterTab({ tjanster }: TjansterTabProps) {
           placeholder="Sök tjänster..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-3 py-2 rounded-md border bg-background text-foreground flex-1 min-w-[200px]"
+          className="px-3 py-2 rounded-md border bg-background text-foreground w-[300px]"
         />
         <Select value={kategoriFilter} onValueChange={setKategoriFilter}>
           <SelectTrigger className="w-[200px] bg-background">

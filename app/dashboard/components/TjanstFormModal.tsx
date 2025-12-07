@@ -104,25 +104,20 @@ export function TjanstFormModal({
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="varaktighet">Varaktighet *</Label>
-                <Select
-                  value={formData.varaktighet.toString()}
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, varaktighet: parseInt(value) })
+                <Label htmlFor="varaktighet">Varaktighet (minuter) *</Label>
+                <Input
+                  id="varaktighet"
+                  type="number"
+                  min="1"
+                  max="180"
+                  step="5"
+                  value={formData.varaktighet}
+                  onChange={(e) =>
+                    setFormData({ ...formData, varaktighet: parseInt(e.target.value) || 0 })
                   }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="15">15 minuter</SelectItem>
-                    <SelectItem value="30">30 minuter</SelectItem>
-                    <SelectItem value="45">45 minuter</SelectItem>
-                    <SelectItem value="60">60 minuter</SelectItem>
-                    <SelectItem value="90">90 minuter</SelectItem>
-                    <SelectItem value="120">120 minuter</SelectItem>
-                  </SelectContent>
-                </Select>
+                  required
+                  placeholder="60"
+                />
               </div>
 
               <div>

@@ -55,6 +55,24 @@ export function KalenderSchema({
     });
   };
 
+  // Kolla om detta är första sloten för en bokning (där vi ska rendera den)
+  const isFirstSlotForBooking = (booking: Bokning | undefined, day: Date, timeSlot: string) => {
+    if (!booking) return false;
+    const [hour, minute] = timeSlot.split(":").map(Number);
+    const slotTime = new Date(day);
+    slotTime.setHours(hour, minute, 0, 0);
+    const bokningStart = new Date(booking.startTid);
+    return slotTime.getTime() === bokningStart.getTime();
+  };
+
+  // Beräkna hur många slots en bokning tar
+  const getBookingSlotSpan = (booking: Bokning) => {
+    const start = new Date(booking.startTid);
+    const end = new Date(booking.slutTid);
+    const durationMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
+    return Math.ceil(durationMinutes / 30); // 30 min per slot
+  };
+
   // Navigation
   const goToPreviousWeek = () => setCurrentDate(subWeeks(currentDate, 1));
   const goToNextWeek = () => setCurrentDate(addWeeks(currentDate, 1));
@@ -215,6 +233,8 @@ export function KalenderSchema({
                   {weekDays.map((day, dayIdx) => {
                     const booking = getBookingForSlot(day, timeSlot);
                     const isToday = isSameDay(day, new Date());
+                    const isFirstSlot = isFirstSlotForBooking(booking, day, timeSlot);
+                    const slotSpan = booking && isFirstSlot ? getBookingSlotSpan(booking) : 1;
 
                     return (
                       <div
@@ -226,15 +246,25 @@ export function KalenderSchema({
                           !booking && tjanst
                             ? "hover:bg-amber-50 cursor-pointer"
                             : "hover:bg-stone-50"
-                        } transition-colors`}
+                        } transition-colors relative`}
                       >
-                        {booking ? (
-                          <div className="bg-amber-100 border border-amber-300 rounded p-2 text-xs h-full">
+                        {booking && isFirstSlot ? (
+                          <div
+                            className="bg-amber-100 border border-amber-300 rounded p-2 text-xs absolute inset-2 overflow-hidden"
+                            style={{
+                              height: `calc(${slotSpan * 60}px - 16px)`,
+                              zIndex: 10,
+                            }}
+                          >
                             <div className="font-bold text-stone-800 truncate mb-1">
                               {booking.kund?.namn}
                             </div>
                             <div className="text-stone-600 truncate text-[10px]">
                               {booking.tjanst?.namn}
+                            </div>
+                            <div className="text-stone-500 text-[10px]">
+                              {format(new Date(booking.startTid), "HH:mm")} -{" "}
+                              {format(new Date(booking.slutTid), "HH:mm")}
                             </div>
                             <Badge
                               variant={statusVariant(booking.status)}
@@ -243,7 +273,9 @@ export function KalenderSchema({
                               {booking.status}
                             </Badge>
                           </div>
-                        ) : tjanst ? (
+                        ) : booking &&
+                          !isFirstSlot ? // Tom div för slots som är täckta av en bokning ovan
+                        null : tjanst ? (
                           <div className="text-center text-stone-300 text-xs opacity-0 group-hover:opacity-100">
                             +
                           </div>
