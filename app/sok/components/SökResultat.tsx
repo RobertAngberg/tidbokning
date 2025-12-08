@@ -24,7 +24,7 @@ export function SökResultat({ företag }: SökResultatProps) {
       {företag.map((f) => (
         <Link
           key={f.id}
-          href={`/boka/${f.slug}`}
+          href={`/foretag/${f.slug}`}
           className="bg-white/95 backdrop-blur-md rounded-xl p-6 border border-stone-200 hover:border-amber-500 hover:shadow-xl transition-all group"
         >
           <div className="space-y-4">

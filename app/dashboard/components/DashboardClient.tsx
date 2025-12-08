@@ -4,22 +4,22 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../_components/Tabs
 import { OversiktTab } from "./OversiktTab";
 import { BokningarTab } from "./BokningarTab";
 import { TjansterTab } from "./TjansterTab";
-import { PersonalTab } from "./PersonalTab";
+import { UtforareTab } from "./UtforareTab";
 import { InstallningarTab } from "./InstallningarTab";
 import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
-import type { Personal } from "../../_server/db/schema/personal";
+import type { Utforare } from "../../_server/db/schema/utforare";
 import type { Foretag } from "../../_server/db/schema/foretag";
 
 interface DashboardClientProps {
   bokningar: Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>;
   tjanster: Tjanst[];
-  personal: Personal[];
+  utforare: Utforare[];
   foretag: Foretag | null;
 }
 
-export function DashboardClient({ bokningar, tjanster, personal, foretag }: DashboardClientProps) {
+export function DashboardClient({ bokningar, tjanster, utforare, foretag }: DashboardClientProps) {
   return (
     // Tabs-container håller koll på vilken tab som är aktiv
     <Tabs defaultValue="oversikt">
@@ -37,8 +37,8 @@ export function DashboardClient({ bokningar, tjanster, personal, foretag }: Dash
           <TabsTrigger value="tjanster" className="px-6">
             Tjänster
           </TabsTrigger>
-          <TabsTrigger value="personal" className="px-6">
-            Personal
+          <TabsTrigger value="utforare" className="px-6">
+            Utförare
           </TabsTrigger>
           <TabsTrigger value="installningar" className="px-6">
             Inställningar
@@ -61,8 +61,8 @@ export function DashboardClient({ bokningar, tjanster, personal, foretag }: Dash
         <TjansterTab tjanster={tjanster} />
       </TabsContent>
 
-      <TabsContent value="personal">
-        <PersonalTab personal={personal} />
+      <TabsContent value="utforare">
+        <UtforareTab utforare={utforare} />
       </TabsContent>
 
       <TabsContent value="installningar">

@@ -38,11 +38,6 @@ export function DebugClient({
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="max-w-7xl mx-auto space-y-8">
-        <div className="bg-white rounded-xl shadow-lg p-8 border border-slate-200">
-          <h1 className="text-4xl font-bold text-slate-800 mb-2">Database Debug</h1>
-          <p className="text-slate-600">Översikt över allt innehåll i databasen</p>
-        </div>
-
         <DebugTable
           title="Tjänster"
           data={tjanster}
@@ -217,6 +212,15 @@ export function DebugClient({
             },
             { key: "email", label: "Email", render: (u) => u.email || "-" },
             { key: "telefon", label: "Telefon", render: (u) => u.telefon || "-" },
+            {
+              key: "foretagsslug",
+              label: "Företag",
+              render: (u) => (
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                  {u.foretagsslug}
+                </span>
+              ),
+            },
             {
               key: "aktiv",
               label: "Status",

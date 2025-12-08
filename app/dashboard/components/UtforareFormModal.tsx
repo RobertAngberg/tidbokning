@@ -3,49 +3,49 @@
 import { useState } from "react";
 import { Input } from "../../_components/Input";
 import { Label } from "../../_components/Label";
-import type { Personal } from "../../_server/db/schema/personal";
+import type { Utforare } from "../../_server/db/schema/utforare";
 
-interface PersonalFormData {
+interface UtforareFormData {
   namn: string;
   email: string;
   telefon: string;
-  bio: string;
-  profilbildUrl: string;
+  beskrivning: string;
+  bildUrl: string;
   aktiv: boolean;
 }
 
-interface PersonalFormModalProps {
+interface UtforareFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: PersonalFormData) => void;
-  personal?: Personal;
+  onSubmit: (data: UtforareFormData) => void;
+  utforare?: Utforare;
   isLoading: boolean;
 }
 
-export function PersonalFormModal({
+export function UtforareFormModal({
   isOpen,
   onClose,
   onSubmit,
-  personal,
+  utforare,
   isLoading,
-}: PersonalFormModalProps) {
-  const [formData, setFormData] = useState<PersonalFormData>(() => {
-    if (personal) {
+}: UtforareFormModalProps) {
+  const [formData, setFormData] = useState<UtforareFormData>(() => {
+    if (utforare) {
       return {
-        namn: personal.namn,
-        email: personal.email,
-        telefon: personal.telefon || "",
-        bio: personal.bio || "",
-        profilbildUrl: personal.profilbildUrl || "",
-        aktiv: personal.aktiv === 1,
+        namn: utforare.namn,
+        email: utforare.email || "",
+        telefon: utforare.telefon || "",
+        beskrivning: utforare.beskrivning || "",
+        bildUrl: utforare.bildUrl || "",
+        aktiv: utforare.aktiv,
       };
     }
     return {
       namn: "",
       email: "",
       telefon: "",
-      bio: "",
-      profilbildUrl: "",
+      beskrivning: "",
+      bildUrl: "",
       aktiv: true,
     };
   });
@@ -54,13 +54,13 @@ export function PersonalFormModal({
     e.preventDefault();
     onSubmit(formData);
     // Reset form after submit
-    if (!personal) {
+    if (!utforare) {
       setFormData({
         namn: "",
         email: "",
         telefon: "",
-        bio: "",
-        profilbildUrl: "",
+        beskrivning: "",
+        bildUrl: "",
         aktiv: true,
       });
     }
@@ -72,7 +72,7 @@ export function PersonalFormModal({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-card p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
         <h2 className="text-xl font-bold mb-4 text-black">
-          {personal ? "Redigera medarbetare" : "Lägg till medarbetare"}
+          {utforare ? "Redigera utförare" : "Lägg till utförare"}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -110,23 +110,23 @@ export function PersonalFormModal({
           </div>
 
           <div>
-            <Label htmlFor="bio">Bio</Label>
+            <Label htmlFor="beskrivning">Beskrivning</Label>
             <textarea
-              id="bio"
-              value={formData.bio}
-              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+              id="beskrivning"
+              value={formData.beskrivning}
+              onChange={(e) => setFormData({ ...formData, beskrivning: e.target.value })}
               rows={3}
               className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             />
           </div>
 
           <div>
-            <Label htmlFor="profilbildUrl">Profilbild URL</Label>
+            <Label htmlFor="bildUrl">Bild URL</Label>
             <Input
-              id="profilbildUrl"
+              id="bildUrl"
               type="url"
-              value={formData.profilbildUrl}
-              onChange={(e) => setFormData({ ...formData, profilbildUrl: e.target.value })}
+              value={formData.bildUrl}
+              onChange={(e) => setFormData({ ...formData, bildUrl: e.target.value })}
               placeholder="https://..."
               className="bg-background"
             />
@@ -159,7 +159,7 @@ export function PersonalFormModal({
               className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
               disabled={isLoading}
             >
-              {isLoading ? "Sparar..." : personal ? "Uppdatera" : "Skapa"}
+              {isLoading ? "Sparar..." : utforare ? "Uppdatera" : "Skapa"}
             </button>
           </div>
         </form>

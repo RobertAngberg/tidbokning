@@ -29,9 +29,6 @@ export const foretagSchema = z.object({
   // Öppettider
   oppettider: z.record(oppettiderSchema).optional().nullable(),
 
-  // Bokningsinställningar
-  timeslotLangd: z.enum(["15", "30", "45", "60"]).default("30"),
-
   // Tema
   primaryColor: z
     .string()

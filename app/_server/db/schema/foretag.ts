@@ -28,9 +28,6 @@ export const foretag = pgTable("foretag", {
     };
   }>(),
 
-  // Bokningsinställningar
-  timeslotLangd: varchar("timeslot_langd", { length: 10 }).default("30"), // "15", "30", "45", "60"
-
   // Tema
   primaryColor: varchar("primary_color", { length: 7 }).default("#000000"),
   secondaryColor: varchar("secondary_color", { length: 7 }).default("#ffffff"),

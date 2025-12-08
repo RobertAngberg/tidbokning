@@ -4,6 +4,7 @@ import * as anvandareSchema from "./schema/anvandare";
 import * as bokningarSchema from "./schema/bokningar";
 import * as tjansterSchema from "./schema/tjanster";
 import * as utforareSchema from "./schema/utforare";
+import * as authSchema from "./schema/auth";
 import { config } from "dotenv";
 
 const schema = {
@@ -11,6 +12,7 @@ const schema = {
   ...bokningarSchema,
   ...tjansterSchema,
   ...utforareSchema,
+  ...authSchema,
 };
 
 // Ladda .env.local om vi inte är i Next.js runtime

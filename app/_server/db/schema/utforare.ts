@@ -1,6 +1,7 @@
 import { pgTable, text, timestamp, uuid, boolean } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { tjanster } from "./tjanster";
+import { foretag } from "./foretag";
 
 export const utforare = pgTable("utforare", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -10,6 +11,9 @@ export const utforare = pgTable("utforare", {
   beskrivning: text("beskrivning"),
   bildUrl: text("bild_url"),
   aktiv: boolean("aktiv").notNull().default(true),
+  foretagsslug: text("foretagsslug")
+    .references(() => foretag.slug, { onDelete: "cascade" })
+    .notNull(),
   skapadDatum: timestamp("skapad_datum").notNull().defaultNow(),
   uppdateradDatum: timestamp("uppdaterad_datum").notNull().defaultNow(),
 });

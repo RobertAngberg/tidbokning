@@ -8,6 +8,7 @@ import { Input } from "../../_components/Input";
 import { Button } from "../../_components/Button";
 import { uppdateraForetag, skapaForetag } from "../actions/foretag";
 import type { Foretag } from "../../_server/db/schema/foretag";
+import { authClient } from "../../_lib/auth-client";
 
 interface InstallningarTabProps {
   foretag: Foretag | null;
@@ -18,6 +19,7 @@ const DAGAR = ["måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag", "s
 export function InstallningarTab({ foretag }: InstallningarTabProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const [formData, setFormData] = useState({
     namn: foretag?.namn || "",
@@ -30,7 +32,6 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
     email: foretag?.email || "",
     webbplats: foretag?.webbplats || "",
     logoUrl: foretag?.logoUrl || "",
-    timeslotLangd: foretag?.timeslotLangd || "30",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -51,9 +52,31 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
     });
   };
 
+  const handleLoggaUt = async () => {
+    setIsLoggingOut(true);
+    try {
+      await authClient.signOut();
+      router.push("/dashboard");
+      router.refresh();
+    } catch (error) {
+      console.error("Fel vid utloggning:", error);
+      setIsLoggingOut(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-white">Inställningar</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-white">Inställningar</h2>
+        <Button
+          onClick={handleLoggaUt}
+          disabled={isLoggingOut}
+          variant="outline"
+          className="bg-red-600 hover:bg-red-700 text-white border-red-600"
+        >
+          {isLoggingOut ? "Loggar ut..." : "Logga ut"}
+        </Button>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <Card className="p-6">
@@ -147,26 +170,6 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
                 onChange={(e) => setFormData({ ...formData, beskrivning: e.target.value })}
                 className="w-full px-3 py-2 rounded-md border bg-background text-foreground min-h-[100px]"
               />
-            </div>
-          </div>
-        </Card>
-
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4 text-foreground">Bokningsinställningar</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="timeslotLangd">Tidslot-längd (minuter)</Label>
-              <select
-                id="timeslotLangd"
-                value={formData.timeslotLangd}
-                onChange={(e) => setFormData({ ...formData, timeslotLangd: e.target.value })}
-                className="w-full px-3 py-2 rounded-md border bg-background text-foreground"
-              >
-                <option value="15">15 minuter</option>
-                <option value="30">30 minuter</option>
-                <option value="45">45 minuter</option>
-                <option value="60">60 minuter</option>
-              </select>
             </div>
           </div>
         </Card>

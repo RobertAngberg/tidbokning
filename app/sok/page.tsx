@@ -1,13 +1,14 @@
-import { sökForetag } from "../actions/search";
+import { sökForetag } from "./actions/search";
 import { SökResultat } from "./components/SökResultat";
 import Link from "next/link";
 
 interface SökPageProps {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }
 
 export default async function SökPage({ searchParams }: SökPageProps) {
-  const sökterm = searchParams.q || "";
+  const params = await searchParams;
+  const sökterm = params.q || "";
   const resultat = sökterm ? await sökForetag(sökterm) : { success: true, data: [] };
 
   return (

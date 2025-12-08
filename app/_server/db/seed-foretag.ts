@@ -96,6 +96,7 @@ async function seedForetag() {
         telefon: "070-111 11 11",
         beskrivning: "Certifierad massageterapeut med 15 års erfarenhet från Kina",
         aktiv: true,
+        foretagsslug: "zen-garden-spa",
       },
       {
         namn: "Emma Lundström",
@@ -103,6 +104,7 @@ async function seedForetag() {
         telefon: "070-222 22 22",
         beskrivning: "Hudterapeut och yogainstruktör",
         aktiv: true,
+        foretagsslug: "zen-garden-spa",
       },
     ])
     .returning();
@@ -194,6 +196,7 @@ async function seedForetag() {
         telefon: "070-333 33 33",
         beskrivning: "Nagelteknolog med specialisering på nail art",
         aktiv: true,
+        foretagsslug: "nordic-nails",
       },
       {
         namn: "Maya Pettersson",
@@ -201,6 +204,7 @@ async function seedForetag() {
         telefon: "070-444 44 44",
         beskrivning: "Certifierad nagelteknolog och pedikurist",
         aktiv: true,
+        foretagsslug: "nordic-nails",
       },
     ])
     .returning();
@@ -292,6 +296,7 @@ async function seedForetag() {
         telefon: "070-555 55 55",
         beskrivning: "Mästarbarberar med 20 års erfarenhet",
         aktiv: true,
+        foretagsslug: "barber-co",
       },
       {
         namn: "Oliver Lindgren",
@@ -299,6 +304,7 @@ async function seedForetag() {
         telefon: "070-666 66 66",
         beskrivning: "Stilmedveten frisör specialiserad på moderna klippningar",
         aktiv: true,
+        foretagsslug: "barber-co",
       },
     ])
     .returning();
@@ -401,6 +407,7 @@ async function seedForetag() {
         telefon: "070-777 77 77",
         beskrivning: "Certifierad personlig tränare och nutritionist",
         aktiv: true,
+        foretagsslug: "fitlife-pt",
       },
       {
         namn: "Sarah Johansson",
@@ -408,6 +415,7 @@ async function seedForetag() {
         telefon: "070-888 88 88",
         beskrivning: "Konditionscoach och gruppträningsinstruktör",
         aktiv: true,
+        foretagsslug: "fitlife-pt",
       },
     ])
     .returning();
@@ -510,6 +518,7 @@ async function seedForetag() {
         telefon: "070-999 99 99",
         beskrivning: "Legitimerad psykolog och psykoterapeut, specialist i KBT",
         aktiv: true,
+        foretagsslug: "harmony-therapy",
       },
       {
         namn: "Johan Eriksson",
@@ -517,6 +526,7 @@ async function seedForetag() {
         telefon: "070-101 01 01",
         beskrivning: "Certifierad livscoach och mindfulness-instruktör",
         aktiv: true,
+        foretagsslug: "harmony-therapy",
       },
     ])
     .returning();
