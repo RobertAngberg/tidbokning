@@ -103,3 +103,50 @@ export async function skapaForetag(data: ForetagInput) {
     };
   }
 }
+
+// Adapter-funktioner för useActionState
+// useActionState kräver signatur: (prevState, formData: FormData) => Promise<Result>
+// Dessa wrappers konverterar FormData → objekt och anropar de riktiga Server Actions
+
+export async function uppdateraForetagAction(
+  _prevState: unknown,
+  formData: FormData
+): Promise<{ success: boolean; error?: string }> {
+  const id = formData.get("id") as string;
+  const data = {
+    namn: formData.get("namn") as string,
+    slug: formData.get("slug") as string,
+    beskrivning: formData.get("beskrivning") as string,
+    adress: formData.get("adress") as string,
+    postnummer: formData.get("postnummer") as string,
+    stad: formData.get("stad") as string,
+    telefon: formData.get("telefon") as string,
+    email: formData.get("email") as string,
+    webbplats: formData.get("webbplats") as string,
+    logoUrl: formData.get("logoUrl") as string,
+  };
+
+  const result = await uppdateraForetag(id, data);
+  return result.success ? { success: true } : { success: false, error: result.error };
+}
+
+export async function skapaForetagAction(
+  _prevState: unknown,
+  formData: FormData
+): Promise<{ success: boolean; error?: string }> {
+  const data = {
+    namn: formData.get("namn") as string,
+    slug: formData.get("slug") as string,
+    beskrivning: formData.get("beskrivning") as string,
+    adress: formData.get("adress") as string,
+    postnummer: formData.get("postnummer") as string,
+    stad: formData.get("stad") as string,
+    telefon: formData.get("telefon") as string,
+    email: formData.get("email") as string,
+    webbplats: formData.get("webbplats") as string,
+    logoUrl: formData.get("logoUrl") as string,
+  };
+
+  const result = await skapaForetag(data);
+  return result.success ? { success: true } : { success: false, error: result.error };
+}

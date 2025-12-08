@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card } from "../../_components/Card";
 import { Label } from "../../_components/Label";
 import { Input } from "../../_components/Input";
 import { Button } from "../../_components/Button";
-import { uppdateraForetag, skapaForetag } from "../actions/foretag";
+import { uppdateraForetagAction, skapaForetagAction } from "../actions/foretag";
 import type { Foretag } from "../../_server/db/schema/foretag";
 import { authClient } from "../../_lib/auth-client";
 
@@ -18,39 +18,16 @@ const DAGAR = ["måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag", "s
 
 export function InstallningarTab({ foretag }: InstallningarTabProps) {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const [formData, setFormData] = useState({
-    namn: foretag?.namn || "",
-    slug: foretag?.slug || "",
-    beskrivning: foretag?.beskrivning || "",
-    adress: foretag?.adress || "",
-    postnummer: foretag?.postnummer || "",
-    stad: foretag?.stad || "",
-    telefon: foretag?.telefon || "",
-    email: foretag?.email || "",
-    webbplats: foretag?.webbplats || "",
-    logoUrl: foretag?.logoUrl || "",
-  });
+  const action = foretag ? uppdateraForetagAction : skapaForetagAction;
+  const [state, formAction, isPending] = useActionState(action, null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    startTransition(async () => {
-      if (foretag) {
-        const result = await uppdateraForetag(foretag.id, formData);
-        if (result.success) {
-          router.refresh();
-        }
-      } else {
-        const result = await skapaForetag(formData);
-        if (result.success) {
-          router.refresh();
-        }
-      }
-    });
-  };
+  useEffect(() => {
+    if (state?.success) {
+      router.refresh();
+    }
+  }, [state?.success, router]);
 
   const handleLoggaUt = async () => {
     setIsLoggingOut(true);
@@ -78,25 +55,22 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
         </Button>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form action={formAction} className="space-y-6">
+        {foretag && <input type="hidden" name="id" value={foretag.id} />}
+
         <Card className="p-6">
           <h3 className="text-lg font-semibold mb-4 text-foreground">Företagsinformation</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <Label htmlFor="namn">Företagsnamn *</Label>
-              <Input
-                id="namn"
-                value={formData.namn}
-                onChange={(e) => setFormData({ ...formData, namn: e.target.value })}
-                required
-              />
+              <Input id="namn" name="namn" defaultValue={foretag?.namn} required />
             </div>
             <div>
               <Label htmlFor="slug">Slug (URL) *</Label>
               <Input
                 id="slug"
-                value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                name="slug"
+                defaultValue={foretag?.slug}
                 required
                 placeholder="ex: roberts-massage"
               />
@@ -105,60 +79,39 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
               <Label htmlFor="logoUrl">Logo URL</Label>
               <Input
                 id="logoUrl"
+                name="logoUrl"
                 type="url"
-                value={formData.logoUrl}
-                onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
+                defaultValue={foretag?.logoUrl || ""}
                 placeholder="https://example.com/logo.png"
               />
             </div>
             <div>
               <Label htmlFor="adress">Adress</Label>
-              <Input
-                id="adress"
-                value={formData.adress}
-                onChange={(e) => setFormData({ ...formData, adress: e.target.value })}
-              />
+              <Input id="adress" name="adress" defaultValue={foretag?.adress || ""} />
             </div>
             <div>
               <Label htmlFor="postnummer">Postnummer</Label>
-              <Input
-                id="postnummer"
-                value={formData.postnummer}
-                onChange={(e) => setFormData({ ...formData, postnummer: e.target.value })}
-              />
+              <Input id="postnummer" name="postnummer" defaultValue={foretag?.postnummer || ""} />
             </div>
             <div>
               <Label htmlFor="stad">Stad</Label>
-              <Input
-                id="stad"
-                value={formData.stad}
-                onChange={(e) => setFormData({ ...formData, stad: e.target.value })}
-              />
+              <Input id="stad" name="stad" defaultValue={foretag?.stad || ""} />
             </div>
             <div>
               <Label htmlFor="telefon">Telefon</Label>
-              <Input
-                id="telefon"
-                value={formData.telefon}
-                onChange={(e) => setFormData({ ...formData, telefon: e.target.value })}
-              />
+              <Input id="telefon" name="telefon" defaultValue={foretag?.telefon || ""} />
             </div>
             <div>
               <Label htmlFor="email">E-post</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              />
+              <Input id="email" name="email" type="email" defaultValue={foretag?.email || ""} />
             </div>
             <div>
               <Label htmlFor="webbplats">Webbplats</Label>
               <Input
                 id="webbplats"
+                name="webbplats"
                 type="url"
-                value={formData.webbplats}
-                onChange={(e) => setFormData({ ...formData, webbplats: e.target.value })}
+                defaultValue={foretag?.webbplats || ""}
                 placeholder="https://example.com"
               />
             </div>
@@ -166,13 +119,15 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
               <Label htmlFor="beskrivning">Beskrivning</Label>
               <textarea
                 id="beskrivning"
-                value={formData.beskrivning}
-                onChange={(e) => setFormData({ ...formData, beskrivning: e.target.value })}
+                name="beskrivning"
+                defaultValue={foretag?.beskrivning || ""}
                 className="w-full px-3 py-2 rounded-md border bg-background text-foreground min-h-[100px]"
               />
             </div>
           </div>
         </Card>
+
+        {state?.error && <div className="text-red-500 text-sm">{state.error}</div>}
 
         <div className="flex justify-end">
           <Button type="submit" disabled={isPending}>

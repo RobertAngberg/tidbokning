@@ -1,64 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect } from "react";
 import { Input } from "../../_components/Input";
 import { Label } from "../../_components/Label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../_components/Select";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 
 interface TjanstFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: {
-    namn: string;
-    beskrivning: string;
-    varaktighet: number;
-    pris: number;
-    kategori: string;
-    aktiv: boolean;
-  }) => void;
   tjanst?: Tjanst;
-  isLoading?: boolean;
+  action: (prevState: unknown, formData: FormData) => Promise<{ success: boolean; error?: string }>;
 }
 
-export function TjanstFormModal({
-  isOpen,
-  onClose,
-  onSubmit,
-  tjanst,
-  isLoading,
-}: TjanstFormModalProps) {
-  const [formData, setFormData] = useState({
-    namn: "",
-    beskrivning: "",
-    varaktighet: 60,
-    pris: 0,
-    kategori: "",
-    aktiv: true,
-  });
+export function TjanstFormModal({ isOpen, onClose, tjanst, action }: TjanstFormModalProps) {
+  const [state, formAction, isPending] = useActionState(action, null);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({
-      ...formData,
-      pris: formData.pris * 100, // Konvertera till ören
-    });
-    // Reset form efter submit
-    setFormData({
-      namn: "",
-      beskrivning: "",
-      varaktighet: 60,
-      pris: 0,
-      kategori: "",
-      aktiv: true,
-    });
-  };
+  // Stäng modal vid success
+  useEffect(() => {
+    if (state?.success) {
+      onClose();
+    }
+  }, [state?.success, onClose]);
 
   if (!isOpen) return null;
 
@@ -79,13 +41,15 @@ export function TjanstFormModal({
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form action={formAction} className="space-y-4">
+            {tjanst && <input type="hidden" name="id" value={tjanst.id} />}
+
             <div>
               <Label htmlFor="namn">Namn *</Label>
               <Input
                 id="namn"
-                value={formData.namn}
-                onChange={(e) => setFormData({ ...formData, namn: e.target.value })}
+                name="namn"
+                defaultValue={tjanst?.namn}
                 required
                 placeholder="T.ex. Svensk massage"
               />
@@ -95,8 +59,8 @@ export function TjanstFormModal({
               <Label htmlFor="beskrivning">Beskrivning</Label>
               <textarea
                 id="beskrivning"
-                value={formData.beskrivning}
-                onChange={(e) => setFormData({ ...formData, beskrivning: e.target.value })}
+                name="beskrivning"
+                defaultValue={tjanst?.beskrivning || ""}
                 className="w-full min-h-[100px] px-3 py-2 border border-input rounded-md bg-background text-foreground"
                 placeholder="Beskriv tjänsten..."
               />
@@ -107,14 +71,12 @@ export function TjanstFormModal({
                 <Label htmlFor="varaktighet">Varaktighet (minuter) *</Label>
                 <Input
                   id="varaktighet"
+                  name="varaktighet"
                   type="number"
                   min="1"
                   max="180"
                   step="5"
-                  value={formData.varaktighet}
-                  onChange={(e) =>
-                    setFormData({ ...formData, varaktighet: parseInt(e.target.value) || 0 })
-                  }
+                  defaultValue={tjanst?.varaktighet || 60}
                   required
                   placeholder="60"
                 />
@@ -124,13 +86,11 @@ export function TjanstFormModal({
                 <Label htmlFor="pris">Pris (SEK) *</Label>
                 <Input
                   id="pris"
+                  name="pris"
                   type="number"
                   min="0"
                   step="1"
-                  value={formData.pris}
-                  onChange={(e) =>
-                    setFormData({ ...formData, pris: parseFloat(e.target.value) || 0 })
-                  }
+                  defaultValue={tjanst ? tjanst.pris / 100 : 0}
                   required
                   placeholder="0"
                 />
@@ -141,8 +101,8 @@ export function TjanstFormModal({
               <Label htmlFor="kategori">Kategori</Label>
               <Input
                 id="kategori"
-                value={formData.kategori}
-                onChange={(e) => setFormData({ ...formData, kategori: e.target.value })}
+                name="kategori"
+                defaultValue={tjanst?.kategori || ""}
                 placeholder="T.ex. Massage, Ansiktsbehandling"
               />
             </div>
@@ -150,9 +110,9 @@ export function TjanstFormModal({
             <div className="flex items-center gap-2">
               <input
                 id="aktiv"
+                name="aktiv"
                 type="checkbox"
-                checked={formData.aktiv}
-                onChange={(e) => setFormData({ ...formData, aktiv: e.target.checked })}
+                defaultChecked={tjanst ? tjanst.aktiv === 1 : true}
                 className="w-4 h-4"
               />
               <Label htmlFor="aktiv" className="cursor-pointer">
@@ -160,21 +120,23 @@ export function TjanstFormModal({
               </Label>
             </div>
 
+            {state?.error && <div className="text-red-500 text-sm">{state.error}</div>}
+
             <div className="flex gap-3 pt-4">
               <button
                 type="button"
                 onClick={onClose}
                 className="flex-1 px-4 py-2 border border-input rounded-md hover:bg-accent"
-                disabled={isLoading}
+                disabled={isPending}
               >
                 Avbryt
               </button>
               <button
                 type="submit"
-                className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
-                disabled={isLoading}
+                className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
+                disabled={isPending}
               >
-                {isLoading ? "Sparar..." : tjanst ? "Uppdatera" : "Lägg till"}
+                {isPending ? "Sparar..." : tjanst ? "Uppdatera" : "Lägg till"}
               </button>
             </div>
           </form>

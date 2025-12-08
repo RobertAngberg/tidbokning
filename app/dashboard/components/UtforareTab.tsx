@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "../../_components/Card";
 import { Input } from "../../_components/Input";
 import {
@@ -15,27 +16,17 @@ import {
   AlertDialogTrigger,
 } from "../../_components/AlertDialog";
 import { UtforareFormModal } from "./UtforareFormModal";
-import { useSkapaUtförare, useUppdateraUtförare, useRaderaUtförare } from "../hooks/useUtforare";
+import { skapaUtförareAction, uppdateraUtförareAction, raderaUtförare } from "../actions/utforare";
 import type { Utforare } from "../../_server/db/schema/utforare";
 import { Pencil, Trash2, Mail, Phone } from "lucide-react";
-
-interface UtforareFormData {
-  namn: string;
-  email: string;
-  telefon: string;
-  beskrivning: string;
-  bildUrl: string;
-  aktiv: boolean;
-}
 
 interface UtforareTabProps {
   utforare: Utforare[];
 }
 
 export function UtforareTab({ utforare }: UtforareTabProps) {
-  const skapaUtforare = useSkapaUtförare();
-  const uppdateraUtforare = useUppdateraUtförare();
-  const raderaUtforare = useRaderaUtförare();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUtforare, setEditingUtforare] = useState<Utforare | undefined>();
@@ -50,23 +41,11 @@ export function UtforareTab({ utforare }: UtforareTabProps) {
     return matchesSearch && matchesAktiv;
   });
 
-  const handleCreate = async (data: UtforareFormData) => {
-    skapaUtforare.mutate(data, {
-      onSuccess: () => setIsModalOpen(false),
+  const handleDelete = async (id: string) => {
+    startTransition(async () => {
+      await raderaUtförare(id);
+      router.refresh();
     });
-  };
-
-  const handleUpdate = async (data: UtforareFormData) => {
-    if (!editingUtforare) return;
-    uppdateraUtforare.mutate(
-      { id: editingUtforare.id, data },
-      {
-        onSuccess: () => {
-          setIsModalOpen(false);
-          setEditingUtforare(undefined);
-        },
-      }
-    );
   };
 
   const openCreateModal = () => {
@@ -78,8 +57,6 @@ export function UtforareTab({ utforare }: UtforareTabProps) {
     setEditingUtforare(person);
     setIsModalOpen(true);
   };
-
-  const isLoading = skapaUtforare.isPending || uppdateraUtforare.isPending;
 
   return (
     <div className="space-y-6">
@@ -145,7 +122,7 @@ export function UtforareTab({ utforare }: UtforareTabProps) {
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Avbryt</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => raderaUtforare.mutate(person.id)}>
+                        <AlertDialogAction onClick={() => handleDelete(person.id)}>
                           Radera
                         </AlertDialogAction>
                       </AlertDialogFooter>
@@ -192,9 +169,8 @@ export function UtforareTab({ utforare }: UtforareTabProps) {
           setIsModalOpen(false);
           setEditingUtforare(undefined);
         }}
-        onSubmit={editingUtforare ? handleUpdate : handleCreate}
+        action={editingUtforare ? uppdateraUtförareAction : skapaUtförareAction}
         utforare={editingUtforare}
-        isLoading={isLoading}
       />
     </div>
   );

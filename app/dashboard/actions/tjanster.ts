@@ -132,3 +132,31 @@ export async function aktiveraTjänst(id: string, aktiv: boolean) {
     return { success: false, error: "Kunde inte uppdatera tjänst" };
   }
 }
+
+// Adapter-funktioner för useActionState
+// useActionState kräver signatur: (prevState, formData: FormData) => Promise<Result>
+// Dessa wrappers konverterar FormData → objekt och anropar de riktiga Server Actions
+export async function skapaTjänstAction(_prevState: unknown, formData: FormData) {
+  const data = {
+    namn: formData.get("namn") as string,
+    beskrivning: formData.get("beskrivning") as string,
+    varaktighet: parseInt(formData.get("varaktighet") as string),
+    pris: parseFloat(formData.get("pris") as string) * 100, // Konvertera till ören
+    kategori: formData.get("kategori") as string,
+    aktiv: formData.get("aktiv") === "on",
+  };
+  return await skapaTjänst(data);
+}
+
+export async function uppdateraTjänstAction(_prevState: unknown, formData: FormData) {
+  const id = formData.get("id") as string;
+  const data = {
+    namn: formData.get("namn") as string,
+    beskrivning: formData.get("beskrivning") as string,
+    varaktighet: parseInt(formData.get("varaktighet") as string),
+    pris: parseFloat(formData.get("pris") as string) * 100, // Konvertera till ören
+    kategori: formData.get("kategori") as string,
+    aktiv: formData.get("aktiv") === "on",
+  };
+  return await uppdateraTjänst(id, data);
+}

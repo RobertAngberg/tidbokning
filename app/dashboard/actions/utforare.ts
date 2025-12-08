@@ -82,7 +82,7 @@ export async function uppdateraUtförare(id: string, data: unknown) {
   try {
     const validated = utforareInput.parse(data);
 
-    const [uppdateradÜtförare] = await db
+    const [uppdateradUtförare] = await db
       .update(utforare)
       .set({
         namn: validated.namn,
@@ -118,4 +118,32 @@ export async function raderaUtförare(id: string) {
     console.error("Fel vid radering av utförare:", error);
     return { success: false, error: "Kunde inte radera utförare" };
   }
+}
+
+// Adapter-funktioner för useActionState
+// useActionState kräver signatur: (prevState, formData: FormData) => Promise<Result>
+// Dessa wrappers konverterar FormData → objekt och anropar de riktiga Server Actions
+export async function skapaUtförareAction(_prevState: unknown, formData: FormData) {
+  const data = {
+    namn: formData.get("namn") as string,
+    email: formData.get("email") as string,
+    telefon: formData.get("telefon") as string,
+    beskrivning: formData.get("beskrivning") as string,
+    bildUrl: formData.get("bildUrl") as string,
+    aktiv: formData.get("aktiv") === "on",
+  };
+  return await skapaUtförare(data);
+}
+
+export async function uppdateraUtförareAction(_prevState: unknown, formData: FormData) {
+  const id = formData.get("id") as string;
+  const data = {
+    namn: formData.get("namn") as string,
+    email: formData.get("email") as string,
+    telefon: formData.get("telefon") as string,
+    beskrivning: formData.get("beskrivning") as string,
+    bildUrl: formData.get("bildUrl") as string,
+    aktiv: formData.get("aktiv") === "on",
+  };
+  return await uppdateraUtförare(id, data);
 }

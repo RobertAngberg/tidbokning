@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Nunito, Newsreader } from "next/font/google";
 import "./globals.css";
-import { QueryProvider } from "./_lib/providers";
 import { Navigation } from "./_components/Navigation";
 import Image from "next/image";
 
@@ -38,10 +37,8 @@ export default function RootLayout({
           <div className="absolute inset-0 backdrop-blur-xl" />
         </div>
 
-        <QueryProvider>
-          <Navigation />
-          <main>{children}</main>
-        </QueryProvider>
+        <Navigation />
+        <main>{children}</main>
       </body>
     </html>
   );

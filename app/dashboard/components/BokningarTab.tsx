@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
@@ -26,7 +27,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../../_components/AlertDialog";
-import { useUppdateraBokningsstatus, useRaderaBokning } from "../hooks/useBokningar";
+import { uppdateraBokningsstatus, raderaBokning } from "../actions/bokningar";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { Trash2 } from "lucide-react";
@@ -36,20 +37,26 @@ interface BokningarTabProps {
 }
 
 export function BokningarTab({ bokningar }: BokningarTabProps) {
-  const uppdateraStatus = useUppdateraBokningsstatus();
-  const raderaBokning = useRaderaBokning();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [filter, setFilter] = useState<string>("alla");
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleStatusChange = (bokningId: string, newStatus: string) => {
-    uppdateraStatus.mutate({
-      bokningId,
-      status: newStatus as "Bekräftad" | "Väntande" | "Inställd" | "Slutförd",
+    startTransition(async () => {
+      await uppdateraBokningsstatus(
+        bokningId,
+        newStatus as "Bekräftad" | "Väntande" | "Inställd" | "Slutförd"
+      );
+      router.refresh();
     });
   };
 
   const handleDelete = (bokningId: string) => {
-    raderaBokning.mutate(bokningId);
+    startTransition(async () => {
+      await raderaBokning(bokningId);
+      router.refresh();
+    });
   };
 
   const filteredBokningar = bokningar.filter((bokning) => {
@@ -117,7 +124,7 @@ export function BokningarTab({ bokningar }: BokningarTabProps) {
                         <Select
                           value={bokning.status}
                           onValueChange={(value) => handleStatusChange(bokning.id, value)}
-                          disabled={uppdateraStatus.isPending}
+                          disabled={isPending}
                         >
                           <SelectTrigger className="w-[140px]">
                             <SelectValue />

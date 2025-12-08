@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "../../_components/Card";
 import {
   Select,
@@ -21,7 +22,7 @@ import {
   AlertDialogTrigger,
 } from "../../_components/AlertDialog";
 import { TjanstFormModal } from "./TjanstFormModal";
-import { useSkapaTjänst, useUppdateraTjänst, useRaderaTjänst } from "../hooks/useTjanster";
+import { skapaTjänstAction, uppdateraTjänstAction, raderaTjänst } from "../actions/tjanster";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -29,19 +30,9 @@ interface TjansterTabProps {
   tjanster: Tjanst[];
 }
 
-interface TjanstFormData {
-  namn: string;
-  beskrivning: string;
-  varaktighet: number;
-  pris: number;
-  kategori: string;
-  aktiv: boolean;
-}
-
 export function TjansterTab({ tjanster }: TjansterTabProps) {
-  const skapaTjanst = useSkapaTjänst();
-  const uppdateraTjanst = useUppdateraTjänst();
-  const raderaTjanst = useRaderaTjänst();
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTjanst, setEditingTjanst] = useState<Tjanst | undefined>();
@@ -67,27 +58,11 @@ export function TjansterTab({ tjanster }: TjansterTabProps) {
     return acc;
   }, {} as Record<string, Tjanst[]>);
 
-  const handleCreate = async (data: TjanstFormData) => {
-    skapaTjanst.mutate(data, {
-      onSuccess: () => setIsModalOpen(false),
-    });
-  };
-
-  const handleUpdate = async (data: TjanstFormData) => {
-    if (!editingTjanst) return;
-    uppdateraTjanst.mutate(
-      { id: editingTjanst.id, data },
-      {
-        onSuccess: () => {
-          setIsModalOpen(false);
-          setEditingTjanst(undefined);
-        },
-      }
-    );
-  };
-
   const handleDelete = async (id: string) => {
-    raderaTjanst.mutate(id);
+    startTransition(async () => {
+      await raderaTjänst(id);
+      router.refresh();
+    });
   };
 
   const openCreateModal = () => {
@@ -99,8 +74,6 @@ export function TjansterTab({ tjanster }: TjansterTabProps) {
     setEditingTjanst(tjanst);
     setIsModalOpen(true);
   };
-
-  const isLoading = skapaTjanst.isPending || uppdateraTjanst.isPending;
 
   return (
     <div className="space-y-6">
@@ -215,9 +188,8 @@ export function TjansterTab({ tjanster }: TjansterTabProps) {
           setIsModalOpen(false);
           setEditingTjanst(undefined);
         }}
-        onSubmit={editingTjanst ? handleUpdate : handleCreate}
+        action={editingTjanst ? uppdateraTjänstAction : skapaTjänstAction}
         tjanst={editingTjanst}
-        isLoading={isLoading}
       />
     </div>
   );

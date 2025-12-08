@@ -1,42 +1,18 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { authClient } from "../../_lib/auth-client";
+import { loggaInAction } from "../actions/auth";
 
 export function DashboardLogin() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [state, formAction, isPending] = useActionState(loggaInAction, null);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      const { data, error } = await authClient.signIn.email({
-        email,
-        password,
-      });
-
-      if (error) {
-        setError(error.message || "Fel email eller lösenord");
-        setLoading(false);
-        return;
-      }
-
-      if (data) {
-        // Ladda om sidan för att visa dashboard
-        router.refresh();
-      }
-    } catch (err) {
-      setError("Ett oväntat fel uppstod. Försök igen.");
-      setLoading(false);
+  useEffect(() => {
+    if (state?.success) {
+      router.refresh();
     }
-  };
+  }, [state?.success, router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-stone-100 p-8">
@@ -46,16 +22,15 @@ export function DashboardLogin() {
           <p className="text-stone-600">Logga in för att fortsätta</p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form action={formAction} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-stone-700 mb-2">
               Email
             </label>
             <input
               id="email"
+              name="email"
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               required
               className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               placeholder="admin@foretag.se"
@@ -68,27 +43,26 @@ export function DashboardLogin() {
             </label>
             <input
               id="password"
+              name="password"
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               required
               className="w-full px-4 py-3 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               placeholder="••••••••"
             />
           </div>
 
-          {error && (
+          {state?.error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-              {error}
+              {state.error}
             </div>
           )}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={isPending}
             className="w-full bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? "Loggar in..." : "Logga in"}
+            {isPending ? "Loggar in..." : "Logga in"}
           </button>
         </form>
 
