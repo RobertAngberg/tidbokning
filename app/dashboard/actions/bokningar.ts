@@ -10,6 +10,7 @@ import type { Anvandare } from "../../_server/db/schema/anvandare";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { bokningSchema, type BokningInput } from "../validators/bokning";
+import { z } from "zod";
 
 type BokningResult = { success: true; bokning: Bokning } | { success: false; error: string };
 
@@ -116,14 +117,25 @@ export async function hämtaTjänster(): Promise<Tjanst[]> {
   }
 }
 
+const tillgangligaTiderSchema = z.object({
+  datum: z.date(),
+  tjanstId: z.string().uuid("Ogiltigt tjänst-ID"),
+});
+
 export async function hämtaTillgängligaTider(
   datum: Date,
   tjanstId: string
 ): Promise<TillgängligTid[]> {
   try {
+    const validated = tillgangligaTiderSchema.safeParse({ datum, tjanstId });
+    if (!validated.success) {
+      console.error("Valideringsfel:", validated.error.issues[0].message);
+      return [];
+    }
+
     // Hämta tjänsten för att få varaktighet
     const tjänst = await db.query.tjanster.findFirst({
-      where: eq(tjanster.id, tjanstId),
+      where: eq(tjanster.id, validated.data.tjanstId),
     });
 
     if (!tjänst) {
@@ -142,9 +154,9 @@ export async function hämtaTillgängligaTider(
     }
 
     // Hämta alla bokningar för det datumet
-    const startOfDay = new Date(datum);
+    const startOfDay = new Date(validated.data.datum);
     startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(datum);
+    const endOfDay = new Date(validated.data.datum);
     endOfDay.setHours(23, 59, 59, 999);
 
     const bokningarPåDatum = await db.query.bokningar.findMany({
@@ -155,7 +167,7 @@ export async function hämtaTillgängligaTider(
     // Markera upptagna tider
     for (const slot of tidslots) {
       const [hour, minute] = slot.tid.split(":").map(Number);
-      const slotStart = new Date(datum);
+      const slotStart = new Date(validated.data.datum);
       slotStart.setHours(hour, minute, 0, 0);
       const slotEnd = new Date(slotStart);
       slotEnd.setMinutes(slotEnd.getMinutes() + tjänst.varaktighet);
@@ -225,15 +237,27 @@ export async function uppdateraBokning(
   }
 }
 
+const bokningsstatusSchema = z.object({
+  bokningId: z.string().uuid("Ogiltigt boknings-ID"),
+  status: z.enum(["Bekräftad", "Väntande", "Inställd", "Slutförd"], {
+    errorMap: () => ({ message: "Ogiltig status" }),
+  }),
+});
+
 export async function uppdateraBokningsstatus(
   bokningId: string,
   status: "Bekräftad" | "Väntande" | "Inställd" | "Slutförd"
 ): Promise<BokningResult> {
   try {
+    const validated = bokningsstatusSchema.safeParse({ bokningId, status });
+    if (!validated.success) {
+      return { success: false, error: validated.error.issues[0].message };
+    }
+
     const [uppdateradBokning] = await db
       .update(bokningar)
-      .set({ status })
-      .where(eq(bokningar.id, bokningId))
+      .set({ status: validated.data.status })
+      .where(eq(bokningar.id, validated.data.bokningId))
       .returning();
 
     if (!uppdateradBokning) {
@@ -248,11 +272,18 @@ export async function uppdateraBokningsstatus(
   }
 }
 
+const bokningIdSchema = z.string().uuid("Ogiltigt boknings-ID");
+
 export async function raderaBokning(
   bokningId: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    await db.delete(bokningar).where(eq(bokningar.id, bokningId));
+    const validated = bokningIdSchema.safeParse(bokningId);
+    if (!validated.success) {
+      return { success: false, error: validated.error.issues[0].message };
+    }
+
+    await db.delete(bokningar).where(eq(bokningar.id, validated.data));
 
     revalidatePath("/");
     return { success: true };

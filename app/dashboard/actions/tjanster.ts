@@ -5,6 +5,7 @@ import { tjanster } from "../../_server/db/schema/tjanster";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { tjanstSchema } from "../validators/tjanst";
+import { z } from "zod";
 
 export async function hämtaTjänster() {
   try {
@@ -136,27 +137,76 @@ export async function aktiveraTjänst(id: string, aktiv: boolean) {
 // Adapter-funktioner för useActionState
 // useActionState kräver signatur: (prevState, formData: FormData) => Promise<Result>
 // Dessa wrappers konverterar FormData → objekt och anropar de riktiga Server Actions
+
+const tjanstFormDataSchema = z.object({
+  namn: z.string().min(1, "Namn krävs"),
+  beskrivning: z.string().optional(),
+  varaktighet: z.string().transform((val, ctx) => {
+    const num = parseInt(val);
+    if (isNaN(num) || num < 15) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Varaktighet måste vara minst 15 minuter",
+      });
+      return z.NEVER;
+    }
+    return num;
+  }),
+  pris: z.string().transform((val, ctx) => {
+    const num = parseFloat(val);
+    if (isNaN(num) || num < 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Pris måste vara ett giltigt nummer",
+      });
+      return z.NEVER;
+    }
+    return num * 100; // Konvertera till ören
+  }),
+  kategori: z.string().optional(),
+  aktiv: z
+    .string()
+    .optional()
+    .transform((val) => val === "on"),
+});
+
 export async function skapaTjänstAction(_prevState: unknown, formData: FormData) {
-  const data = {
-    namn: formData.get("namn") as string,
-    beskrivning: formData.get("beskrivning") as string,
-    varaktighet: parseInt(formData.get("varaktighet") as string),
-    pris: parseFloat(formData.get("pris") as string) * 100, // Konvertera till ören
-    kategori: formData.get("kategori") as string,
-    aktiv: formData.get("aktiv") === "on",
+  const rawData = {
+    namn: formData.get("namn"),
+    beskrivning: formData.get("beskrivning") || "",
+    varaktighet: formData.get("varaktighet"),
+    pris: formData.get("pris"),
+    kategori: formData.get("kategori") || "",
+    aktiv: formData.get("aktiv"),
   };
-  return await skapaTjänst(data);
+
+  const result = tjanstFormDataSchema.safeParse(rawData);
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message };
+  }
+
+  return await skapaTjänst(result.data);
 }
 
 export async function uppdateraTjänstAction(_prevState: unknown, formData: FormData) {
-  const id = formData.get("id") as string;
-  const data = {
-    namn: formData.get("namn") as string,
-    beskrivning: formData.get("beskrivning") as string,
-    varaktighet: parseInt(formData.get("varaktighet") as string),
-    pris: parseFloat(formData.get("pris") as string) * 100, // Konvertera till ören
-    kategori: formData.get("kategori") as string,
-    aktiv: formData.get("aktiv") === "on",
+  const id = formData.get("id");
+  if (!id || typeof id !== "string") {
+    return { success: false, error: "ID krävs" };
+  }
+
+  const rawData = {
+    namn: formData.get("namn"),
+    beskrivning: formData.get("beskrivning") || "",
+    varaktighet: formData.get("varaktighet"),
+    pris: formData.get("pris"),
+    kategori: formData.get("kategori") || "",
+    aktiv: formData.get("aktiv"),
   };
-  return await uppdateraTjänst(id, data);
+
+  const result = tjanstFormDataSchema.safeParse(rawData);
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message };
+  }
+
+  return await uppdateraTjänst(id, result.data);
 }

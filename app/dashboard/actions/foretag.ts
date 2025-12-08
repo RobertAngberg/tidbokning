@@ -5,6 +5,7 @@ import { foretag } from "../../_server/db/schema/foretag";
 import { foretagSchema, type ForetagInput } from "../validators/foretag";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
+import { z } from "zod";
 
 export async function hamtaForetag() {
   try {
@@ -108,45 +109,76 @@ export async function skapaForetag(data: ForetagInput) {
 // useActionState kräver signatur: (prevState, formData: FormData) => Promise<Result>
 // Dessa wrappers konverterar FormData → objekt och anropar de riktiga Server Actions
 
+const foretagFormDataSchema = z.object({
+  namn: z.string().min(1, "Namn krävs").max(255),
+  slug: z
+    .string()
+    .min(1, "Slug krävs")
+    .max(255)
+    .regex(/^[a-z0-9-]+$/, "Endast små bokstäver, siffror och bindestreck"),
+  beskrivning: z.string().optional().or(z.literal("")),
+  adress: z.string().max(255).optional().or(z.literal("")),
+  postnummer: z.string().max(10).optional().or(z.literal("")),
+  stad: z.string().max(100).optional().or(z.literal("")),
+  telefon: z.string().max(20).optional().or(z.literal("")),
+  email: z.string().email("Ogiltig e-postadress").max(255).optional().or(z.literal("")),
+  webbplats: z.string().url("Ogiltig URL").max(255).optional().or(z.literal("")),
+  logoUrl: z.string().url("Ogiltig URL").max(500).optional().or(z.literal("")),
+});
+
 export async function uppdateraForetagAction(
   _prevState: unknown,
   formData: FormData
 ): Promise<{ success: boolean; error?: string }> {
-  const id = formData.get("id") as string;
-  const data = {
-    namn: formData.get("namn") as string,
-    slug: formData.get("slug") as string,
-    beskrivning: formData.get("beskrivning") as string,
-    adress: formData.get("adress") as string,
-    postnummer: formData.get("postnummer") as string,
-    stad: formData.get("stad") as string,
-    telefon: formData.get("telefon") as string,
-    email: formData.get("email") as string,
-    webbplats: formData.get("webbplats") as string,
-    logoUrl: formData.get("logoUrl") as string,
+  const id = formData.get("id");
+  if (!id || typeof id !== "string") {
+    return { success: false, error: "ID krävs" };
+  }
+
+  const rawData = {
+    namn: formData.get("namn"),
+    slug: formData.get("slug"),
+    beskrivning: formData.get("beskrivning") || "",
+    adress: formData.get("adress") || "",
+    postnummer: formData.get("postnummer") || "",
+    stad: formData.get("stad") || "",
+    telefon: formData.get("telefon") || "",
+    email: formData.get("email") || "",
+    webbplats: formData.get("webbplats") || "",
+    logoUrl: formData.get("logoUrl") || "",
   };
 
-  const result = await uppdateraForetag(id, data);
-  return result.success ? { success: true } : { success: false, error: result.error };
+  const result = foretagFormDataSchema.safeParse(rawData);
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message };
+  }
+
+  const updateResult = await uppdateraForetag(id, result.data);
+  return updateResult.success ? { success: true } : { success: false, error: updateResult.error };
 }
 
 export async function skapaForetagAction(
   _prevState: unknown,
   formData: FormData
 ): Promise<{ success: boolean; error?: string }> {
-  const data = {
-    namn: formData.get("namn") as string,
-    slug: formData.get("slug") as string,
-    beskrivning: formData.get("beskrivning") as string,
-    adress: formData.get("adress") as string,
-    postnummer: formData.get("postnummer") as string,
-    stad: formData.get("stad") as string,
-    telefon: formData.get("telefon") as string,
-    email: formData.get("email") as string,
-    webbplats: formData.get("webbplats") as string,
-    logoUrl: formData.get("logoUrl") as string,
+  const rawData = {
+    namn: formData.get("namn"),
+    slug: formData.get("slug"),
+    beskrivning: formData.get("beskrivning") || "",
+    adress: formData.get("adress") || "",
+    postnummer: formData.get("postnummer") || "",
+    stad: formData.get("stad") || "",
+    telefon: formData.get("telefon") || "",
+    email: formData.get("email") || "",
+    webbplats: formData.get("webbplats") || "",
+    logoUrl: formData.get("logoUrl") || "",
   };
 
-  const result = await skapaForetag(data);
-  return result.success ? { success: true } : { success: false, error: result.error };
+  const result = foretagFormDataSchema.safeParse(rawData);
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message };
+  }
+
+  const createResult = await skapaForetag(result.data);
+  return createResult.success ? { success: true } : { success: false, error: createResult.error };
 }

@@ -6,6 +6,7 @@ import type { Utforare } from "../../_server/db/schema/utforare";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { utforareInput } from "../validators/utforare";
+import { z } from "zod";
 
 export async function hämtaUtförareForTjänst(tjanstId: string): Promise<Utforare[]> {
   try {
@@ -123,27 +124,56 @@ export async function raderaUtförare(id: string) {
 // Adapter-funktioner för useActionState
 // useActionState kräver signatur: (prevState, formData: FormData) => Promise<Result>
 // Dessa wrappers konverterar FormData → objekt och anropar de riktiga Server Actions
+
+const utforareFormDataSchema = z.object({
+  namn: z.string().min(2, "Namnet måste vara minst 2 tecken").max(255),
+  email: z.string().email("Ogiltig e-postadress").optional().or(z.literal("")),
+  telefon: z.string().max(50).optional().or(z.literal("")),
+  beskrivning: z.string().optional().or(z.literal("")),
+  bildUrl: z.string().url("Ogiltig URL").optional().or(z.literal("")),
+  aktiv: z
+    .string()
+    .optional()
+    .transform((val) => val === "on"),
+});
+
 export async function skapaUtförareAction(_prevState: unknown, formData: FormData) {
-  const data = {
-    namn: formData.get("namn") as string,
-    email: formData.get("email") as string,
-    telefon: formData.get("telefon") as string,
-    beskrivning: formData.get("beskrivning") as string,
-    bildUrl: formData.get("bildUrl") as string,
-    aktiv: formData.get("aktiv") === "on",
+  const rawData = {
+    namn: formData.get("namn"),
+    email: formData.get("email") || "",
+    telefon: formData.get("telefon") || "",
+    beskrivning: formData.get("beskrivning") || "",
+    bildUrl: formData.get("bildUrl") || "",
+    aktiv: formData.get("aktiv"),
   };
-  return await skapaUtförare(data);
+
+  const result = utforareFormDataSchema.safeParse(rawData);
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message };
+  }
+
+  return await skapaUtförare(result.data);
 }
 
 export async function uppdateraUtförareAction(_prevState: unknown, formData: FormData) {
-  const id = formData.get("id") as string;
-  const data = {
-    namn: formData.get("namn") as string,
-    email: formData.get("email") as string,
-    telefon: formData.get("telefon") as string,
-    beskrivning: formData.get("beskrivning") as string,
-    bildUrl: formData.get("bildUrl") as string,
-    aktiv: formData.get("aktiv") === "on",
+  const id = formData.get("id");
+  if (!id || typeof id !== "string") {
+    return { success: false, error: "ID krävs" };
+  }
+
+  const rawData = {
+    namn: formData.get("namn"),
+    email: formData.get("email") || "",
+    telefon: formData.get("telefon") || "",
+    beskrivning: formData.get("beskrivning") || "",
+    bildUrl: formData.get("bildUrl") || "",
+    aktiv: formData.get("aktiv"),
   };
-  return await uppdateraUtförare(id, data);
+
+  const result = utforareFormDataSchema.safeParse(rawData);
+  if (!result.success) {
+    return { success: false, error: result.error.issues[0].message };
+  }
+
+  return await uppdateraUtförare(id, result.data);
 }
