@@ -4,10 +4,21 @@ import { db } from "../../_server/db";
 import { tjanster } from "../../_server/db/schema/tjanster";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-import { tjanstSchema } from "../validators/tjanst";
 import { z } from "zod";
 import { auth } from "../../_server/auth";
 import { headers } from "next/headers";
+
+// Zod schema
+const tjanstSchema = z.object({
+  namn: z.string().min(1, "Namn krävs"),
+  beskrivning: z.string().optional(),
+  varaktighet: z.number().min(15, "Varaktighet måste vara minst 15 minuter"),
+  pris: z.number().min(0, "Pris kan inte vara negativt"),
+  kategori: z.string().optional(),
+  aktiv: z.boolean().default(true),
+});
+
+type TjanstInput = z.infer<typeof tjanstSchema>;
 
 export async function hämtaTjänster() {
   try {

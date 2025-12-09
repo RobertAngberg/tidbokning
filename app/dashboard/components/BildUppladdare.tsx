@@ -75,24 +75,24 @@ export function BildUppladdare({
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       <label className="text-sm font-medium text-stone-700">{label}</label>
 
-      <div className="flex items-start gap-4">
+      <div className="space-y-3">
         {/* Förhandsgranskning */}
         {förhandsgranskning ? (
-          <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-stone-200">
+          <div className="relative w-full max-w-md h-32 rounded-lg overflow-hidden border-2 border-stone-200">
             <Image
               src={förhandsgranskning}
               alt="Förhandsgranskning"
               fill
-              className="object-cover"
+              className="object-contain bg-stone-50"
             />
             {!uppladdning && (
               <button
                 onClick={hanteraBorttagning}
                 type="button"
-                className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition"
+                className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition shadow-lg"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -104,13 +104,13 @@ export function BildUppladdare({
             )}
           </div>
         ) : (
-          <div className="w-32 h-32 rounded-lg border-2 border-dashed border-stone-300 flex items-center justify-center bg-stone-50">
+          <div className="w-full max-w-md h-32 rounded-lg border-2 border-dashed border-stone-300 flex items-center justify-center bg-stone-50">
             <Upload className="w-8 h-8 text-stone-400" />
           </div>
         )}
 
         {/* Uppladdningsknapp */}
-        <div className="flex-1 space-y-2">
+        <div className="space-y-2">
           <input
             ref={filInputRef}
             type="file"
@@ -125,7 +125,7 @@ export function BildUppladdare({
             variant="outline"
             onClick={() => filInputRef.current?.click()}
             disabled={uppladdning}
-            className="w-full"
+            className="w-auto"
           >
             {uppladdning ? (
               <>

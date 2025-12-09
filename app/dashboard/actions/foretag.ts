@@ -2,14 +2,36 @@
 
 import { db } from "../../_server/db";
 import { foretag } from "../../_server/db/schema/foretag";
-import { foretagSchema, type ForetagInput } from "../validators/foretag";
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-export async function hämtaFöretag() {
+// Zod schemas
+const oppettiderSchema = z.object({
+  open: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Ogiltig tid (HH:MM)"),
+  close: z.string().regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, "Ogiltig tid (HH:MM)"),
+  stangt: z.boolean(),
+});
+
+const foretagSchema = z.object({
+  namn: z.string().min(1, "Namn krävs").max(255),
+  beskrivning: z.string().optional(),
+  adress: z.string().max(255).optional(),
+  postnummer: z.string().max(10).optional(),
+  stad: z.string().max(100).optional(),
+  telefon: z.string().max(20).optional(),
+  email: z.string().email("Ogiltig e-postadress").max(255).optional(),
+  webbplats: z.string().url("Ogiltig URL").max(255).optional(),
+  logoUrl: z.string().url("Ogiltig URL").max(500).optional(),
+  oppettider: z.record(z.string(), oppettiderSchema).optional().nullable(),
+  aktiv: z.boolean().default(true),
+});
+
+type ForetagInput = z.infer<typeof foretagSchema>;
+
+export async function hämtaFöretag(foretagsslug: string) {
   try {
-    const result = await db.select().from(foretag).limit(1);
+    const result = await db.select().from(foretag).where(eq(foretag.slug, foretagsslug)).limit(1);
     return { success: true, data: result[0] || null };
   } catch (error) {
     console.error("Fel vid hämtning av företag:", error);
@@ -21,14 +43,8 @@ export async function uppdateraFöretag(id: string, data: ForetagInput) {
   try {
     const validated = foretagSchema.parse(data);
 
-    // Autogenerera slug från namn
-    const slug = validated.namn
-      .toLowerCase()
-      .replace(/å/g, "a")
-      .replace(/ä/g, "a")
-      .replace(/ö/g, "o")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
+    // VIKTIGT: Slug får INTE ändras efter skapande pga foreign key constraints
+    // Slug genereras endast vid skapande av företaget
 
     type OppettiderType = {
       [key: string]: {
@@ -42,7 +58,7 @@ export async function uppdateraFöretag(id: string, data: ForetagInput) {
       .update(foretag)
       .set({
         namn: validated.namn,
-        slug: slug,
+        // slug UPPDATERAS INTE - behåller original slug
         beskrivning: validated.beskrivning,
         adress: validated.adress,
         postnummer: validated.postnummer,
@@ -165,6 +181,7 @@ export async function uppdateraFöretagAction(
     ...result.data,
     aktiv: true,
   });
+
   return updateResult.success ? { success: true } : { success: false, error: updateResult.error };
 }
 

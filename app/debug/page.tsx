@@ -3,6 +3,7 @@ import { tjanster } from "../_server/db/schema/tjanster";
 import { bokningar } from "../_server/db/schema/bokningar";
 import { anvandare } from "../_server/db/schema/anvandare";
 import { utforare, utforareTjanster } from "../_server/db/schema/utforare";
+import { user } from "../_server/db/schema/auth";
 import { DebugClient } from "./components/DebugClient";
 
 export default async function DebugPage() {
@@ -11,6 +12,7 @@ export default async function DebugPage() {
   const allAnvandare = await db.select().from(anvandare);
   const allUtforare = await db.select().from(utforare);
   const allUtforareTjanster = await db.select().from(utforareTjanster);
+  const allUsers = await db.select().from(user);
 
   return (
     <DebugClient
@@ -19,6 +21,7 @@ export default async function DebugPage() {
       anvandare={allAnvandare}
       utforare={allUtforare}
       utforareTjanster={allUtforareTjanster}
+      users={allUsers}
     />
   );
 }

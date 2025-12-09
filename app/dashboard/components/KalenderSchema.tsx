@@ -31,6 +31,10 @@ export function KalenderSchema({
 }: KalenderSchemaProps) {
   const { weekStart, weekDays, goToPreviousWeek, goToNextWeek } = useKalenderNavigation();
 
+  // Debug: Visa antal bokningar
+  console.log("KalenderSchema - Antal bokningar:", bokningar.length);
+  console.log("KalenderSchema - Första bokningen:", bokningar[0]);
+
   const { timeSlots, getBookingForSlot, isFirstSlotForBooking, getBookingSlotSpan } =
     useBookingSlots(bokningar);
 
@@ -146,7 +150,7 @@ export function KalenderSchema({
                       <div
                         key={`${day.toISOString()}-${timeSlot}`}
                         onClick={() => !booking && tjanst && handleSlotClick(day, timeSlot)}
-                        className={`p-2 min-h-[60px] ${dayIdx < 6 ? "border-r" : ""} ${
+                        className={`p-2 min-h-[45px] ${dayIdx < 6 ? "border-r" : ""} ${
                           slotIdx < timeSlots.length - 1 ? "border-b" : ""
                         } border-stone-200 ${isToday ? "bg-amber-50/30" : "bg-white"} ${
                           !booking && tjanst
@@ -158,30 +162,37 @@ export function KalenderSchema({
                           <div
                             onClick={(e) => {
                               e.stopPropagation();
-                              openBookingDetails(booking);
+                              // Tillåt bara klick på dashboard (när tjanst är undefined)
+                              if (!tjanst) {
+                                openBookingDetails(booking);
+                              }
                             }}
-                            className="bg-amber-100 border border-amber-300 rounded p-2 text-xs absolute inset-2 overflow-hidden cursor-pointer hover:bg-amber-200 transition-colors"
+                            className={`bg-amber-100 border border-amber-300 rounded p-1.5 text-xs absolute inset-2 overflow-hidden transition-colors flex flex-col items-center justify-center gap-0.5 ${
+                              tjanst ? "" : "cursor-pointer hover:bg-amber-200"
+                            }`}
                             style={{
-                              height: `calc(${slotSpan * 60}px - 16px)`,
+                              height: `calc(${slotSpan * 45}px - 16px)`,
                               zIndex: 10,
                             }}
                           >
-                            <div className="font-bold text-stone-800 truncate mb-1">
-                              {booking.kund?.namn}
-                            </div>
-                            <div className="text-stone-600 truncate text-[10px]">
-                              {booking.tjanst?.namn}
-                            </div>
-                            <div className="text-stone-500 text-[10px]">
-                              {format(new Date(booking.startTid), "HH:mm")} -{" "}
-                              {format(new Date(booking.slutTid), "HH:mm")}
-                            </div>
-                            <Badge
-                              variant={statusVariant(booking.status)}
-                              className="text-[9px] mt-1 px-1 py-0"
-                            >
-                              {booking.status}
-                            </Badge>
+                            {tjanst ? (
+                              // Visa bara "Bokat" för kunder på företagssidan
+                              <div className="font-bold text-stone-800 text-[11px] leading-tight text-center">
+                                Bokat
+                              </div>
+                            ) : (
+                              // Visa kund + tjänst på dashboard
+                              <>
+                                <div className="font-bold text-stone-800 text-[11px] leading-tight text-center break-words w-full">
+                                  {booking.kund?.namn}
+                                </div>
+                                {booking.tjanst?.namn && (
+                                  <div className="text-stone-600 text-[9px] leading-tight text-center break-words w-full">
+                                    {booking.tjanst.namn}
+                                  </div>
+                                )}
+                              </>
+                            )}
                           </div>
                         ) : booking && !isFirstSlot ? null : tjanst ? ( // Tom div för slots som är täckta av en bokning ovan
                           <div className="text-center text-stone-300 text-xs opacity-0 group-hover:opacity-100">

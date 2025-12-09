@@ -7,6 +7,7 @@ import {
   raderaAnvändare,
   raderaUtförare,
   raderaUtförareTjänster,
+  raderaUsers,
 } from "../actions";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 import type { Bokning } from "../../_server/db/schema/bokningar";
@@ -20,12 +21,25 @@ interface UtforareTjanster {
   skapadDatum: Date;
 }
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  image: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  roll: "admin" | "personal" | "kund";
+  foretagsslug: string | null;
+}
+
 interface DebugClientProps {
   tjanster: Tjanst[];
   bokningar: Bokning[];
   anvandare: Anvandare[];
   utforare: Utforare[];
   utforareTjanster: UtforareTjanster[];
+  users: User[];
 }
 
 export function DebugClient({
@@ -34,10 +48,71 @@ export function DebugClient({
   anvandare,
   utforare,
   utforareTjanster,
+  users,
 }: DebugClientProps) {
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-slate-50 to-slate-100">
       <div className="max-w-7xl mx-auto space-y-8">
+        <DebugTable
+          title="Better Auth Users"
+          data={users}
+          color="purple"
+          onDelete={raderaUsers}
+          columns={[
+            { key: "select", label: "" },
+            {
+              key: "id",
+              label: "ID",
+              width: "w-24",
+              render: (u) => (
+                <span
+                  className="text-sm text-slate-500 font-mono max-w-[6rem] truncate block"
+                  title={u.id}
+                >
+                  {u.id}
+                </span>
+              ),
+            },
+            {
+              key: "name",
+              label: "Namn",
+              render: (u) => <span className="font-medium">{u.name}</span>,
+            },
+            {
+              key: "email",
+              label: "Email",
+              render: (u) => <span className="text-sm">{u.email}</span>,
+            },
+            {
+              key: "roll",
+              label: "Roll",
+              render: (u) => (
+                <span
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                    u.roll === "admin"
+                      ? "bg-red-100 text-red-800"
+                      : u.roll === "personal"
+                      ? "bg-blue-100 text-blue-800"
+                      : "bg-green-100 text-green-800"
+                  }`}
+                >
+                  {u.roll}
+                </span>
+              ),
+            },
+            {
+              key: "foretagsslug",
+              label: "Företag",
+              render: (u) =>
+                u.foretagsslug ? (
+                  <span className="text-sm font-mono">{u.foretagsslug}</span>
+                ) : (
+                  <span className="text-slate-400 italic text-sm">Ingen</span>
+                ),
+            },
+          ]}
+        />
+
         <DebugTable
           title="Tjänster"
           data={tjanster}

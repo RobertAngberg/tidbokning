@@ -22,6 +22,10 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
   const action = foretag ? uppdateraFöretagAction : skapaFöretagAction;
   const [state, formAction, isPending] = useActionState(action, null);
 
+  const handleLogoUpload = (url: string) => {
+    setLogoUrl(url);
+  };
+
   useEffect(() => {
     if (state?.success) {
       router.refresh();
@@ -58,7 +62,7 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
             <div className="md:col-span-3">
               <BildUppladdare
                 nuvarandeBildUrl={foretag?.logoUrl || undefined}
-                onUppladdningsKlar={(url) => setLogoUrl(url)}
+                onUppladdningsKlar={handleLogoUpload}
                 label="Företagslogotyp"
                 beskrivning="PNG, JPG eller GIF (max 5MB)"
               />

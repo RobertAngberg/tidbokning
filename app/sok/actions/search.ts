@@ -7,14 +7,11 @@ import { ilike, or, inArray } from "drizzle-orm";
 
 export async function sökForetag(sökterm: string) {
   try {
-    console.log("🔍 Söker efter:", sökterm);
-
     if (!sökterm || sökterm.trim().length < 2) {
       return { success: true, data: [] };
     }
 
     const searchPattern = `%${sökterm.trim()}%`;
-    console.log("🔍 Sökmönster:", searchPattern);
 
     // Sök först efter tjänster med matchande namn, beskrivning eller kategori
     const tjänstResultat = await db
@@ -30,12 +27,8 @@ export async function sökForetag(sökterm: string) {
         )
       );
 
-    console.log("🔍 Hittade tjänster:", tjänstResultat.length);
-    console.log("🔍 Tjänster:", tjänstResultat);
-
     // Samla alla unika företagsslug från tjänstresultaten
     const foretagsSlugsFromTjanster = [...new Set(tjänstResultat.map((t) => t.foretagsslug))];
-    console.log("🔍 Företagsslugs från tjänster:", foretagsSlugsFromTjanster);
 
     // Sök i företag efter namn, slug, beskrivning eller stad
     // OCH inkludera företag vars slug finns i tjänstresultaten
@@ -63,9 +56,6 @@ export async function sökForetag(sökterm: string) {
         )
       )
       .limit(20);
-
-    console.log("🔍 Hittade företag:", resultat.length);
-    console.log("🔍 Företag:", resultat);
 
     return { success: true, data: resultat };
   } catch (error) {

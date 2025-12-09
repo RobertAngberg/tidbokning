@@ -5,6 +5,7 @@ import { tjanster } from "../_server/db/schema/tjanster";
 import { bokningar } from "../_server/db/schema/bokningar";
 import { anvandare } from "../_server/db/schema/anvandare";
 import { utforare, utforareTjanster } from "../_server/db/schema/utforare";
+import { user, session, account } from "../_server/db/schema/auth";
 import { inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -32,7 +33,12 @@ export async function raderaBokningar(ids: string[]) {
 
 export async function raderaAnvändare(ids: string[]) {
   try {
+    // Radera först alla bokningar kopplade till dessa användare
+    await db.delete(bokningar).where(inArray(bokningar.kundId, ids));
+
+    // Radera sedan användarna
     await db.delete(anvandare).where(inArray(anvandare.id, ids));
+
     revalidatePath("/debug");
     return { success: true };
   } catch (error) {
@@ -60,5 +66,22 @@ export async function raderaUtförareTjänster(ids: string[]) {
   } catch (error) {
     console.error("Fel vid radering av kopplingar:", error);
     return { success: false, error: "Kunde inte radera kopplingar" };
+  }
+}
+
+export async function raderaUsers(ids: string[]) {
+  try {
+    // Radera först alla sessioner och accounts kopplade till användarna
+    await db.delete(session).where(inArray(session.userId, ids));
+    await db.delete(account).where(inArray(account.userId, ids));
+
+    // Radera sedan användarna
+    await db.delete(user).where(inArray(user.id, ids));
+
+    revalidatePath("/debug");
+    return { success: true };
+  } catch (error) {
+    console.error("Fel vid radering av användare:", error);
+    return { success: false, error: "Kunde inte radera användare" };
   }
 }

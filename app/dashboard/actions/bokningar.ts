@@ -9,8 +9,22 @@ import type { Tjanst } from "../../_server/db/schema/tjanster";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
 import { revalidatePath } from "next/cache";
 import { eq, and } from "drizzle-orm";
-import { bokningSchema, type BokningInput } from "../validators/bokning";
 import { z } from "zod";
+import { auth } from "../../_server/auth";
+import { headers } from "next/headers";
+
+// Zod schema
+const bokningSchema = z.object({
+  kundNamn: z.string().min(2, "Namnet måste vara minst 2 tecken"),
+  kundEmail: z.string().email("Ogiltig e-postadress"),
+  kundTelefon: z.string().min(10, "Telefonnummer måste vara minst 10 siffror"),
+  tjänstId: z.string().uuid("Ogiltig tjänst"),
+  utforareId: z.string().uuid("Ogiltig utförare").optional(),
+  startTid: z.date(),
+  anteckningar: z.string().optional(),
+});
+
+type BokningInput = z.infer<typeof bokningSchema>;
 
 type BokningResult = { success: true; bokning: Bokning } | { success: false; error: string };
 
@@ -73,7 +87,7 @@ export async function skapaBokning(data: BokningInput): Promise<BokningResult> {
         slutTid: slutTid,
         status: "Bekräftad",
         anteckningar: data.anteckningar,
-        foretagsslug: "demo",
+        foretagsslug: tjänst.foretagsslug, // Använd företagsslugen från tjänsten
       })
       .returning();
 
@@ -89,7 +103,17 @@ export async function hämtaBokningar(): Promise<
   Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>
 > {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.foretagsslug) {
+      console.error("Ingen företagsslug i session");
+      return [];
+    }
+
     const allaBokningar = await db.query.bokningar.findMany({
+      where: eq(bokningar.foretagsslug, session.user.foretagsslug),
       with: {
         kund: true,
         tjanst: true,
@@ -318,6 +342,9 @@ export async function hämtaBokningarMedRelationer(
       .where(eq(bokningar.foretagsslug, foretagsslug))
       .leftJoin(anvandare, eq(bokningar.kundId, anvandare.id))
       .leftJoin(tjanster, eq(bokningar.tjanstId, tjanster.id));
+
+    console.log("🔍 Antal bokningar hittade:", foretagBokningar.length);
+    console.log("🔍 Första bokningen:", foretagBokningar[0]);
 
     return foretagBokningar;
   } catch (error) {

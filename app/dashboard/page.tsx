@@ -6,6 +6,7 @@ import { DashboardClient } from "./components/DashboardClient";
 import { DashboardLogin } from "./components/DashboardLogin";
 import { auth } from "../_server/auth";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
   const session = await auth.api.getSession({
@@ -19,6 +20,11 @@ export default async function DashboardPage() {
 
   // Kolla att användaren har admin-roll
   if (session.user.roll !== "admin") {
+    // Om användaren är kund och inte har företag, dirigera till onboarding
+    if (!session.user.foretagsslug) {
+      redirect("/onboarding");
+    }
+
     return (
       <div className="min-h-screen flex items-center justify-center p-8">
         <div className="bg-white rounded-xl shadow-lg p-8 max-w-md text-center">
@@ -29,11 +35,19 @@ export default async function DashboardPage() {
     );
   }
 
+  // Hämta användarens företagsslug
+  const foretagsslug = session.user.foretagsslug;
+
+  if (!foretagsslug) {
+    // Admin utan företag, dirigera till onboarding
+    redirect("/onboarding");
+  }
+
   const [bokningar, tjanster, utforareResult, foretagResult] = await Promise.all([
     hämtaBokningar(),
     hämtaTjänster(),
     hämtaUtförare(),
-    hämtaFöretag(),
+    hämtaFöretag(foretagsslug),
   ]);
 
   const foretag = foretagResult.success ? foretagResult.data : null;
