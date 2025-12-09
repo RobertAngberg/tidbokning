@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { hämtaBokningar, hämtaTjänster } from "../../dashboard/actions/bokningar";
 import { hämtaUtförareForTjänst } from "../../dashboard/actions/utforare";
-import { KalenderSchema } from "../../kalender/components/KalenderSchema";
+import { KalenderSchema } from "../../dashboard/components/KalenderSchema";
 
 export default async function BokaTjanstPage({
   params,

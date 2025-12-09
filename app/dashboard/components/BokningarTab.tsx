@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
-import { KalenderSchema } from "../../kalender/components/KalenderSchema";
+import { KalenderSchema } from "./KalenderSchema";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../../_components/Card";
 import { Input } from "../../_components/Input";
 import { Button } from "../../_components/Button";
