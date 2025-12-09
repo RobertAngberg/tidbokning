@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { MapPin, Phone, Mail, Globe, Clock } from "lucide-react";
 import { hämtaFöretagBySlug } from "../../dashboard/actions/foretag";
 import { hämtaTjänsterForFöretag } from "../../dashboard/actions/tjanster";
+import { hämtaBilderForFöretag } from "../../dashboard/actions/bilder";
 
 interface ForetagPageProps {
   params: Promise<{ slug: string }>;
@@ -18,8 +20,11 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
     notFound();
   }
 
-  // Hämta företagets tjänster
-  const foretagTjanster = await hämtaTjänsterForFöretag(slug);
+  // Hämta företagets tjänster och bilder
+  const [foretagTjanster, foretagBilder] = await Promise.all([
+    hämtaTjänsterForFöretag(slug),
+    hämtaBilderForFöretag(slug),
+  ]);
 
   // Gruppera tjänster per kategori
   const tjänsterPerKategori = foretagTjanster.reduce((acc, tjanst) => {
@@ -58,6 +63,25 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
                 <p className="text-xl text-stone-700 max-w-3xl">{foretagData.beskrivning}</p>
               )}
             </div>
+
+            {/* Bildgalleri */}
+            {foretagBilder.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
+                {foretagBilder.map((bild) => (
+                  <div
+                    key={bild.id}
+                    className="relative aspect-video rounded-lg overflow-hidden shadow-md"
+                  >
+                    <Image
+                      src={bild.bildUrl}
+                      alt={bild.beskrivning || "Företagsbild"}
+                      fill
+                      className="object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Kontaktinfo */}
             <div className="flex flex-wrap gap-6 text-stone-600">

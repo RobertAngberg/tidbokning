@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Input } from "../../_components/Input";
 import { Label } from "../../_components/Label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../_components/Dialog";
@@ -12,10 +12,24 @@ interface TjanstFormModalProps {
   onClose: () => void;
   tjanst?: Tjanst;
   action: (prevState: unknown, formData: FormData) => Promise<{ success: boolean; error?: string }>;
+  existingKategorier: string[];
 }
 
-export function TjanstFormModal({ isOpen, onClose, tjanst, action }: TjanstFormModalProps) {
+export function TjanstFormModal({
+  isOpen,
+  onClose,
+  tjanst,
+  action,
+  existingKategorier,
+}: TjanstFormModalProps) {
   const [state, formAction, isPending] = useActionState(action, null);
+  const [kategoriInput, setKategoriInput] = useState(tjanst?.kategori || "");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+
+  // Filtrera kategorier baserat på input
+  const filteredKategorier = existingKategorier.filter((kat) =>
+    kat.toLowerCase().includes(kategoriInput.toLowerCase())
+  );
 
   // Stäng modal vid success
   useEffect(() => {
@@ -65,7 +79,6 @@ export function TjanstFormModal({ isOpen, onClose, tjanst, action }: TjanstFormM
                 type="number"
                 min="1"
                 max="180"
-                step="5"
                 defaultValue={tjanst?.varaktighet || 60}
                 required
                 placeholder="60"
@@ -89,12 +102,33 @@ export function TjanstFormModal({ isOpen, onClose, tjanst, action }: TjanstFormM
 
           <div>
             <Label htmlFor="kategori">Kategori</Label>
-            <Input
-              id="kategori"
-              name="kategori"
-              defaultValue={tjanst?.kategori || ""}
-              placeholder="T.ex. Massage, Ansiktsbehandling"
-            />
+            <div className="relative">
+              <Input
+                id="kategori"
+                name="kategori"
+                value={kategoriInput}
+                onChange={(e) => setKategoriInput(e.target.value)}
+                placeholder="Skapa ny kategori..."
+              />
+
+              {existingKategorier.length > 0 && (
+                <div className="mt-2">
+                  <span className="text-xs text-stone-500 mb-2 block">Välj befintlig:</span>
+                  <div className="flex flex-wrap gap-2">
+                    {existingKategorier.map((kat) => (
+                      <button
+                        key={kat}
+                        type="button"
+                        onClick={() => setKategoriInput(kat)}
+                        className="px-3 py-1.5 text-sm bg-stone-100 hover:bg-stone-200 rounded-md transition-colors"
+                      >
+                        {kat}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex items-center gap-2">

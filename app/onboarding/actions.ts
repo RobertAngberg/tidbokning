@@ -15,7 +15,7 @@ const foretagOnboardingSchema = z.object({
   postnummer: z.string().optional(),
   stad: z.string().optional(),
   telefon: z.string().optional(),
-  webbplats: z.string().url("Ogiltig URL").optional().or(z.literal("")),
+  webbplats: z.string().optional(),
 });
 
 export async function skapaFöretagOchAdminAction(
@@ -94,6 +94,7 @@ export async function skapaFöretagOchAdminAction(
         postnummer: postnummer || null,
         stad: stad || null,
         telefon: telefon || null,
+        email: session.user.email, // Använd användarens email som företagets email
         webbplats: webbplats || null,
         aktiv: true,
       })

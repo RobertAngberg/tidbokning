@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Input } from "../../_components/Input";
 import { Label } from "../../_components/Label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../_components/Dialog";
@@ -16,15 +17,17 @@ interface UtforareFormModalProps {
 }
 
 export function UtforareFormModal({ isOpen, onClose, utforare, action }: UtforareFormModalProps) {
+  const router = useRouter();
   const [state, formAction, isPending] = useActionState(action, null);
   const [bildUrl, setBildUrl] = useState(utforare?.bildUrl || "");
 
   // Stäng modal vid success
   useEffect(() => {
     if (state?.success) {
+      router.refresh();
       onClose();
     }
-  }, [state?.success, onClose]);
+  }, [state?.success, onClose, router]);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -60,7 +63,7 @@ export function UtforareFormModal({ isOpen, onClose, utforare, action }: Utforar
           </div>
 
           <div>
-            <Label htmlFor="telefon">Telefon</Label>
+            <Label htmlFor="telefon">Telefon (Valfritt)</Label>
             <Input
               id="telefon"
               name="telefon"
@@ -70,7 +73,7 @@ export function UtforareFormModal({ isOpen, onClose, utforare, action }: Utforar
           </div>
 
           <div>
-            <Label htmlFor="beskrivning">Beskrivning</Label>
+            <Label htmlFor="beskrivning">Beskrivning (Valfritt)</Label>
             <textarea
               id="beskrivning"
               name="beskrivning"
@@ -84,7 +87,7 @@ export function UtforareFormModal({ isOpen, onClose, utforare, action }: Utforar
             <BildUppladdare
               nuvarandeBildUrl={utforare?.bildUrl || undefined}
               onUppladdningsKlar={(url) => setBildUrl(url)}
-              label="Profilbild"
+              label="Profilbild (Valfritt)"
               beskrivning="PNG, JPG eller GIF (max 5MB)"
             />
             <input type="hidden" name="bildUrl" value={bildUrl} />

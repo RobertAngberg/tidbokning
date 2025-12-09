@@ -5,6 +5,7 @@ import { OversiktTab } from "./OversiktTab";
 import { BokningarTab } from "./BokningarTab";
 import { TjansterTab } from "./TjansterTab";
 import { UtforareTab } from "./UtforareTab";
+import { BilderTab } from "./BilderTab";
 import { InstallningarTab } from "./InstallningarTab";
 import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
@@ -49,6 +50,12 @@ export function DashboardClient({ bokningar, tjanster, utforare, foretag }: Dash
           Utförare
         </TabsTrigger>
         <TabsTrigger
+          value="bilder"
+          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
+        >
+          Bilder
+        </TabsTrigger>
+        <TabsTrigger
           value="installningar"
           className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
         >
@@ -72,6 +79,10 @@ export function DashboardClient({ bokningar, tjanster, utforare, foretag }: Dash
 
         <TabsContent value="utforare" className="mt-0">
           <UtforareTab utforare={utforare} />
+        </TabsContent>
+
+        <TabsContent value="bilder" className="mt-0">
+          <BilderTab />
         </TabsContent>
 
         <TabsContent value="installningar" className="mt-0">

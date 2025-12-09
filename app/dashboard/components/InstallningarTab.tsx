@@ -94,9 +94,8 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
               <Input
                 id="webbplats"
                 name="webbplats"
-                type="url"
                 defaultValue={foretag?.webbplats || ""}
-                placeholder="https://example.com"
+                placeholder="www.example.com"
               />
             </div>
             <div className="md:col-span-3">

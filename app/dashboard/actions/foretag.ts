@@ -20,9 +20,9 @@ const foretagSchema = z.object({
   postnummer: z.string().max(10).optional(),
   stad: z.string().max(100).optional(),
   telefon: z.string().max(20).optional(),
-  email: z.string().email("Ogiltig e-postadress").max(255).optional(),
-  webbplats: z.string().url("Ogiltig URL").max(255).optional(),
-  logoUrl: z.string().url("Ogiltig URL").max(500).optional(),
+  email: z.string().email("Ogiltig e-postadress").max(255).optional().or(z.literal("")),
+  webbplats: z.string().max(255).optional(),
+  logoUrl: z.string().max(500).optional(),
   oppettider: z.record(z.string(), oppettiderSchema).optional().nullable(),
   aktiv: z.boolean().default(true),
 });
@@ -147,7 +147,7 @@ const foretagFormDataSchema = z.object({
   stad: z.string().max(100).optional().or(z.literal("")),
   telefon: z.string().max(20).optional().or(z.literal("")),
   email: z.string().email("Ogiltig e-postadress").max(255).optional().or(z.literal("")),
-  webbplats: z.string().url("Ogiltig URL").max(255).optional().or(z.literal("")),
+  webbplats: z.string().max(255).optional().or(z.literal("")),
   logoUrl: z.string().url("Ogiltig URL").max(500).optional().or(z.literal("")),
 });
 

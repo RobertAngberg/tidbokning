@@ -219,6 +219,7 @@ export function TjansterTab({ tjanster }: TjansterTabProps) {
         }}
         action={editingTjanst ? uppdateraTjänstAction : skapaTjänstAction}
         tjanst={editingTjanst}
+        existingKategorier={kategorier}
       />
     </div>
   );
