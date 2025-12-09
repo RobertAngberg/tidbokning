@@ -8,7 +8,7 @@ import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
 import { revalidatePath } from "next/cache";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { bokningSchema, type BokningInput } from "../validators/bokning";
 import { z } from "zod";
 
@@ -240,7 +240,7 @@ export async function uppdateraBokning(
 const bokningsstatusSchema = z.object({
   bokningId: z.string().uuid("Ogiltigt boknings-ID"),
   status: z.enum(["Bekräftad", "Väntande", "Inställd", "Slutförd"], {
-    errorMap: () => ({ message: "Ogiltig status" }),
+    message: "Ogiltig status",
   }),
 });
 
@@ -290,5 +290,56 @@ export async function raderaBokning(
   } catch (error) {
     console.error("Fel vid radering av bokning:", error);
     return { success: false, error: "Något gick fel vid raderingen" };
+  }
+}
+
+export async function hämtaBokningarMedRelationer(
+  foretagsslug: string
+): Promise<Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>> {
+  try {
+    const foretagBokningar = await db
+      .select({
+        id: bokningar.id,
+        foretagsslug: bokningar.foretagsslug,
+        skapadDatum: bokningar.skapadDatum,
+        uppdateradDatum: bokningar.uppdateradDatum,
+        kundId: bokningar.kundId,
+        personalId: bokningar.personalId,
+        tjanstId: bokningar.tjanstId,
+        utforareId: bokningar.utforareId,
+        startTid: bokningar.startTid,
+        slutTid: bokningar.slutTid,
+        status: bokningar.status,
+        anteckningar: bokningar.anteckningar,
+        kund: anvandare,
+        tjanst: tjanster,
+      })
+      .from(bokningar)
+      .where(eq(bokningar.foretagsslug, foretagsslug))
+      .leftJoin(anvandare, eq(bokningar.kundId, anvandare.id))
+      .leftJoin(tjanster, eq(bokningar.tjanstId, tjanster.id));
+
+    return foretagBokningar;
+  } catch (error) {
+    console.error("Fel vid hämtning av bokningar:", error);
+    return [];
+  }
+}
+
+export async function hämtaTjänstForFöretag(
+  tjanstId: string,
+  foretagsslug: string
+): Promise<Tjanst | null> {
+  try {
+    const [tjanst] = await db
+      .select()
+      .from(tjanster)
+      .where(and(eq(tjanster.id, tjanstId), eq(tjanster.foretagsslug, foretagsslug)))
+      .limit(1);
+
+    return tjanst || null;
+  } catch (error) {
+    console.error("Fel vid hämtning av tjänst:", error);
+    return null;
   }
 }

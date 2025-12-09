@@ -22,17 +22,7 @@ export const foretagSchema = z.object({
   logoUrl: z.string().url("Ogiltig URL").max(500).optional(),
 
   // Öppettider
-  oppettider: z.record(oppettiderSchema).optional().nullable(),
-
-  // Tema
-  primaryColor: z
-    .string()
-    .regex(/^#[0-9A-Fa-f]{6}$/, "Ogiltig färgkod")
-    .default("#000000"),
-  secondaryColor: z
-    .string()
-    .regex(/^#[0-9A-Fa-f]{6}$/, "Ogiltig färgkod")
-    .default("#ffffff"),
+  oppettider: z.record(z.string(), oppettiderSchema).optional().nullable(),
 
   aktiv: z.boolean().default(true),
 });

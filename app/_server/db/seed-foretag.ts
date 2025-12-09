@@ -38,7 +38,6 @@ async function seedForetag() {
         lördag: { open: "10:00", close: "16:00", stangt: false },
         söndag: { open: "10:00", close: "16:00", stangt: false },
       },
-      timeslotLangd: "30",
       aktiv: true,
     })
     .returning();
@@ -138,10 +137,9 @@ async function seedForetag() {
       onsdag: { open: "10:00", close: "19:00", stangt: false },
       torsdag: { open: "10:00", close: "19:00", stangt: false },
       fredag: { open: "10:00", close: "19:00", stangt: false },
-      lördag: { open: "10:00", close: "17:00", stangt: false },
-      söndag: { open: "11:00", close: "16:00", stangt: false },
+      lördag: { open: "09:00", close: "15:00", stangt: false },
+      söndag: { open: "10:00", close: "14:00", stangt: false },
     },
-    timeslotLangd: "15",
     aktiv: true,
   });
 
@@ -241,7 +239,6 @@ async function seedForetag() {
       lördag: { open: "10:00", close: "16:00", stangt: false },
       söndag: { open: "00:00", close: "00:00", stangt: true },
     },
-    timeslotLangd: "30",
     aktiv: true,
   });
 
@@ -340,10 +337,9 @@ async function seedForetag() {
       onsdag: { open: "06:00", close: "21:00", stangt: false },
       torsdag: { open: "06:00", close: "21:00", stangt: false },
       fredag: { open: "06:00", close: "20:00", stangt: false },
-      lördag: { open: "08:00", close: "16:00", stangt: false },
-      söndag: { open: "09:00", close: "15:00", stangt: false },
+      lördag: { open: "08:00", close: "18:00", stangt: false },
+      söndag: { open: "09:00", close: "16:00", stangt: false },
     },
-    timeslotLangd: "30",
     aktiv: true,
   });
 
@@ -454,7 +450,6 @@ async function seedForetag() {
       lördag: { open: "10:00", close: "14:00", stangt: false },
       söndag: { open: "00:00", close: "00:00", stangt: true },
     },
-    timeslotLangd: "30",
     aktiv: true,
   });
 

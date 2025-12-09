@@ -1,27 +1,32 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { hämtaBokningar, hämtaTjänster } from "../../dashboard/actions/bokningar";
-import { hämtaUtförareForTjänst } from "../../dashboard/actions/utforare";
-import { KalenderSchema } from "../../dashboard/components/KalenderSchema";
+import { KalenderSchema } from "../../../../dashboard/components/KalenderSchema";
+import {
+  hämtaBokningarMedRelationer,
+  hämtaTjänstForFöretag,
+} from "../../../../dashboard/actions/bokningar";
+import { hämtaAktivaUtförareForFöretag } from "../../../../dashboard/actions/utforare";
 
-export default async function BokaTjanstPage({
-  params,
-}: {
-  params: Promise<{ tjanstId: string }>;
-}) {
-  const { tjanstId } = await params;
-  const [bokningar, tjänster, utforare] = await Promise.all([
-    hämtaBokningar(),
-    hämtaTjänster(),
-    hämtaUtförareForTjänst(tjanstId),
-  ]);
+interface BokaPageProps {
+  params: Promise<{ slug: string; tjanstId: string }>;
+}
 
-  const tjanst = tjänster.find((t) => t.id === tjanstId);
+export default async function BokaTjanstPage({ params }: BokaPageProps) {
+  const { slug, tjanstId } = await params;
+
+  // Hämta tjänst för detta företag
+  const tjanst = await hämtaTjänstForFöretag(tjanstId, slug);
 
   if (!tjanst) {
     notFound();
   }
+
+  // Hämta bokningar för detta företag
+  const foretagBokningar = await hämtaBokningarMedRelationer(slug);
+
+  // Hämta utförare för denna tjänst
+  const tjanstUtforare = await hämtaAktivaUtförareForFöretag(slug);
 
   return (
     <div className="min-h-screen p-8">
@@ -39,13 +44,13 @@ export default async function BokaTjanstPage({
               </p>
 
               {/* Utförare sektion */}
-              {utforare.length > 0 && (
+              {tjanstUtforare.length > 0 && (
                 <div className="mb-4 pb-4 border-b border-stone-200">
                   <h3 className="text-xs font-semibold text-stone-500 uppercase tracking-wider mb-3">
                     Välj Utförare
                   </h3>
                   <div className="space-y-2">
-                    {utforare.map((u) => (
+                    {tjanstUtforare.map((u) => (
                       <button
                         key={u.id}
                         className="w-full flex items-center gap-3 p-3 rounded-lg border border-stone-200 hover:border-amber-300 hover:bg-amber-50/50 transition-all text-left group"
@@ -105,7 +110,7 @@ export default async function BokaTjanstPage({
 
               {/* Tillbaka-knapp */}
               <Link
-                href="/boka"
+                href={`/foretag/${slug}`}
                 className="mt-6 pt-4 border-t border-stone-200 inline-flex items-center gap-2 text-stone-600 hover:text-amber-600 transition-colors text-sm"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,14 +121,18 @@ export default async function BokaTjanstPage({
                     d="M15 19l-7-7 7-7"
                   />
                 </svg>
-                Tillbaka till tjänster
+                Tillbaka till företaget
               </Link>
             </div>
           </div>
 
           {/* Höger kolumn - Kalender (2/3) */}
           <div className="lg:col-span-2">
-            <KalenderSchema bokningar={bokningar} tjanst={tjanst} utforare={utforare} />
+            <KalenderSchema
+              bokningar={foretagBokningar}
+              tjanst={tjanst}
+              utforare={tjanstUtforare}
+            />
           </div>
         </div>
       </div>

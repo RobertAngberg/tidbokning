@@ -192,3 +192,18 @@ export async function uppdateraUtförareAction(_prevState: unknown, formData: Fo
 
   return await uppdateraUtförare(id, result.data);
 }
+
+export async function hämtaAktivaUtförareForFöretag(foretagsslug: string): Promise<Utforare[]> {
+  try {
+    const aktiva = await db
+      .select()
+      .from(utforare)
+      .where(eq(utforare.foretagsslug, foretagsslug))
+      .then((results) => results.filter((u) => u.aktiv));
+
+    return aktiva;
+  } catch (error) {
+    console.error("Fel vid hämtning av utförare:", error);
+    return [];
+  }
+}

@@ -231,3 +231,16 @@ export async function uppdateraTjänstAction(_prevState: unknown, formData: Form
 
   return await uppdateraTjänst(id, result.data);
 }
+
+export async function hämtaTjänsterForFöretag(foretagsslug: string) {
+  try {
+    const foretagTjanster = await db
+      .select()
+      .from(tjanster)
+      .where(eq(tjanster.foretagsslug, foretagsslug));
+    return foretagTjanster;
+  } catch (error) {
+    console.error("Fel vid hämtning av tjänster:", error);
+    return [];
+  }
+}

@@ -1,10 +1,8 @@
-import { db } from "../../_server/db";
-import { foretag } from "../../_server/db/schema/foretag";
-import { tjanster } from "../../_server/db/schema/tjanster";
-import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MapPin, Phone, Mail, Globe, Clock } from "lucide-react";
+import { hämtaFöretagBySlug } from "../../dashboard/actions/foretag";
+import { hämtaTjänsterForFöretag } from "../../dashboard/actions/tjanster";
 
 interface ForetagPageProps {
   params: Promise<{ slug: string }>;
@@ -14,14 +12,14 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
   const { slug } = await params;
 
   // Hämta företag
-  const [foretagData] = await db.select().from(foretag).where(eq(foretag.slug, slug)).limit(1);
+  const foretagData = await hämtaFöretagBySlug(slug);
 
   if (!foretagData) {
     notFound();
   }
 
   // Hämta företagets tjänster
-  const foretagTjanster = await db.select().from(tjanster).where(eq(tjanster.foretagsslug, slug));
+  const foretagTjanster = await hämtaTjänsterForFöretag(slug);
 
   // Gruppera tjänster per kategori
   const tjänsterPerKategori = foretagTjanster.reduce((acc, tjanst) => {
@@ -119,7 +117,7 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
               {tjänsterLista.map((tjanst) => (
                 <Link
                   key={tjanst.id}
-                  href={`/boka/${tjanst.id}`}
+                  href={`/foretag/${slug}/boka/${tjanst.id}`}
                   className="bg-white rounded-xl p-6 border border-stone-200 hover:border-amber-500 hover:shadow-lg transition-all group"
                 >
                   <div className="space-y-3">

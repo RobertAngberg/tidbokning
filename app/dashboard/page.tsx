@@ -1,7 +1,7 @@
 import { hämtaBokningar } from "./actions/bokningar";
 import { hämtaTjänster } from "./actions/tjanster";
 import { hämtaUtförare } from "./actions/utforare";
-import { hamtaForetag } from "./actions/foretag";
+import { hämtaFöretag } from "./actions/foretag";
 import { DashboardClient } from "./components/DashboardClient";
 import { DashboardLogin } from "./components/DashboardLogin";
 import { auth } from "../_server/auth";
@@ -33,11 +33,11 @@ export default async function DashboardPage() {
     hämtaBokningar(),
     hämtaTjänster(),
     hämtaUtförare(),
-    hamtaForetag(),
+    hämtaFöretag(),
   ]);
 
   const foretag = foretagResult.success ? foretagResult.data : null;
-  const utforare = utforareResult.success ? utforareResult.data : [];
+  const utforare = utforareResult.success ? utforareResult.data || [] : [];
 
   return (
     <div className="min-h-screen p-8">

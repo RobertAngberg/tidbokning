@@ -6,9 +6,9 @@ import { Card } from "../../_components/Card";
 import { Label } from "../../_components/Label";
 import { Input } from "../../_components/Input";
 import { Button } from "../../_components/Button";
-import { uppdateraForetagAction, skapaForetagAction } from "../actions/foretag";
+import { uppdateraFöretagAction, skapaFöretagAction } from "../actions/foretag";
+import { BildUppladdare } from "./BildUppladdare";
 import type { Foretag } from "../../_server/db/schema/foretag";
-import { authClient } from "../../_lib/auth-client";
 
 interface InstallningarTabProps {
   foretag: Foretag | null;
@@ -17,8 +17,9 @@ interface InstallningarTabProps {
 export function InstallningarTab({ foretag }: InstallningarTabProps) {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoUrl, setLogoUrl] = useState(foretag?.logoUrl || "");
 
-  const action = foretag ? uppdateraForetagAction : skapaForetagAction;
+  const action = foretag ? uppdateraFöretagAction : skapaFöretagAction;
   const [state, formAction, isPending] = useActionState(action, null);
 
   useEffect(() => {
@@ -30,6 +31,7 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
   const handleLoggaUt = async () => {
     setIsLoggingOut(true);
     try {
+      const { authClient } = await import("../../_lib/auth-client");
       await authClient.signOut();
       router.push("/dashboard");
       router.refresh();
@@ -51,16 +53,18 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
               <Label htmlFor="namn">Företagsnamn *</Label>
               <Input id="namn" name="namn" defaultValue={foretag?.namn} required />
             </div>
-            <div>
-              <Label htmlFor="logoUrl">Logo URL</Label>
-              <Input
-                id="logoUrl"
-                name="logoUrl"
-                type="url"
-                defaultValue={foretag?.logoUrl || ""}
-                placeholder="https://example.com/logo.png"
+
+            {/* Bilduppladdare för logotyp */}
+            <div className="md:col-span-3">
+              <BildUppladdare
+                nuvarandeBildUrl={foretag?.logoUrl || undefined}
+                onUppladdningsKlar={(url) => setLogoUrl(url)}
+                label="Företagslogotyp"
+                beskrivning="PNG, JPG eller GIF (max 5MB)"
               />
+              <input type="hidden" name="logoUrl" value={logoUrl} />
             </div>
+
             <div>
               <Label htmlFor="adress">Adress</Label>
               <Input id="adress" name="adress" defaultValue={foretag?.adress || ""} />

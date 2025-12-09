@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useState, useActionState, useEffect } from "react";
 import { Input } from "../../_components/Input";
 import { Label } from "../../_components/Label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../_components/Dialog";
 import { Button } from "../../_components/Button";
+import { BildUppladdare } from "./BildUppladdare";
 import type { Utforare } from "../../_server/db/schema/utforare";
 
 interface UtforareFormModalProps {
@@ -16,6 +17,7 @@ interface UtforareFormModalProps {
 
 export function UtforareFormModal({ isOpen, onClose, utforare, action }: UtforareFormModalProps) {
   const [state, formAction, isPending] = useActionState(action, null);
+  const [bildUrl, setBildUrl] = useState(utforare?.bildUrl || "");
 
   // Stäng modal vid success
   useEffect(() => {
@@ -79,15 +81,13 @@ export function UtforareFormModal({ isOpen, onClose, utforare, action }: Utforar
           </div>
 
           <div>
-            <Label htmlFor="bildUrl">Bild URL</Label>
-            <Input
-              id="bildUrl"
-              name="bildUrl"
-              type="url"
-              defaultValue={utforare?.bildUrl || ""}
-              placeholder="https://..."
-              className="bg-background"
+            <BildUppladdare
+              nuvarandeBildUrl={utforare?.bildUrl || undefined}
+              onUppladdningsKlar={(url) => setBildUrl(url)}
+              label="Profilbild"
+              beskrivning="PNG, JPG eller GIF (max 5MB)"
             />
+            <input type="hidden" name="bildUrl" value={bildUrl} />
           </div>
 
           <div className="flex items-center gap-2">

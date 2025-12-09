@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
 
-export async function hamtaForetag() {
+export async function hämtaFöretag() {
   try {
     const result = await db.select().from(foretag).limit(1);
     return { success: true, data: result[0] || null };
@@ -17,7 +17,7 @@ export async function hamtaForetag() {
   }
 }
 
-export async function uppdateraForetag(id: string, data: ForetagInput) {
+export async function uppdateraFöretag(id: string, data: ForetagInput) {
   try {
     const validated = foretagSchema.parse(data);
 
@@ -52,8 +52,6 @@ export async function uppdateraForetag(id: string, data: ForetagInput) {
         webbplats: validated.webbplats,
         logoUrl: validated.logoUrl,
         oppettider: validated.oppettider as OppettiderType | null | undefined,
-        primaryColor: validated.primaryColor,
-        secondaryColor: validated.secondaryColor,
         aktiv: validated.aktiv,
         uppdateradVid: new Date(),
       })
@@ -71,7 +69,7 @@ export async function uppdateraForetag(id: string, data: ForetagInput) {
   }
 }
 
-export async function skapaForetag(data: ForetagInput) {
+export async function skapaFöretag(data: ForetagInput) {
   try {
     const validated = foretagSchema.parse(data);
 
@@ -106,8 +104,6 @@ export async function skapaForetag(data: ForetagInput) {
         webbplats: validated.webbplats,
         logoUrl: validated.logoUrl,
         oppettider: validated.oppettider as OppettiderType | null | undefined,
-        primaryColor: validated.primaryColor,
-        secondaryColor: validated.secondaryColor,
         aktiv: validated.aktiv,
       })
       .returning();
@@ -139,7 +135,7 @@ const foretagFormDataSchema = z.object({
   logoUrl: z.string().url("Ogiltig URL").max(500).optional().or(z.literal("")),
 });
 
-export async function uppdateraForetagAction(
+export async function uppdateraFöretagAction(
   _prevState: unknown,
   formData: FormData
 ): Promise<{ success: boolean; error?: string }> {
@@ -165,11 +161,14 @@ export async function uppdateraForetagAction(
     return { success: false, error: result.error.issues[0].message };
   }
 
-  const updateResult = await uppdateraForetag(id, result.data);
+  const updateResult = await uppdateraFöretag(id, {
+    ...result.data,
+    aktiv: true,
+  });
   return updateResult.success ? { success: true } : { success: false, error: updateResult.error };
 }
 
-export async function skapaForetagAction(
+export async function skapaFöretagAction(
   _prevState: unknown,
   formData: FormData
 ): Promise<{ success: boolean; error?: string }> {
@@ -190,6 +189,19 @@ export async function skapaForetagAction(
     return { success: false, error: result.error.issues[0].message };
   }
 
-  const createResult = await skapaForetag(result.data);
+  const createResult = await skapaFöretag({
+    ...result.data,
+    aktiv: true,
+  });
   return createResult.success ? { success: true } : { success: false, error: createResult.error };
+}
+
+export async function hämtaFöretagBySlug(slug: string) {
+  try {
+    const [foretagData] = await db.select().from(foretag).where(eq(foretag.slug, slug)).limit(1);
+    return foretagData || null;
+  } catch (error) {
+    console.error("Fel vid hämtning av företag:", error);
+    return null;
+  }
 }

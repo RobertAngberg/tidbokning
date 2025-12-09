@@ -28,10 +28,6 @@ export const foretag = pgTable("foretag", {
     };
   }>(),
 
-  // Tema
-  primaryColor: varchar("primary_color", { length: 7 }).default("#000000"),
-  secondaryColor: varchar("secondary_color", { length: 7 }).default("#ffffff"),
-
   aktiv: boolean("aktiv").default(true).notNull(),
   skapadVid: timestamp("skapad_vid").defaultNow().notNull(),
   uppdateradVid: timestamp("uppdaterad_vid").defaultNow().notNull(),
