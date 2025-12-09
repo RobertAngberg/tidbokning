@@ -6,10 +6,23 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { tjanstSchema } from "../validators/tjanst";
 import { z } from "zod";
+import { auth } from "../../_server/auth";
+import { headers } from "next/headers";
 
 export async function hämtaTjänster() {
   try {
-    const allaTjanster = await db.select().from(tjanster);
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.foretagsslug) {
+      throw new Error("Ingen företagsslug i session");
+    }
+
+    const allaTjanster = await db
+      .select()
+      .from(tjanster)
+      .where(eq(tjanster.foretagsslug, session.user.foretagsslug));
     return allaTjanster;
   } catch (error) {
     console.error("Fel vid hämtning av tjänster:", error);
@@ -36,6 +49,14 @@ export async function skapaTjänst(data: {
   aktiv?: boolean;
 }) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.foretagsslug) {
+      return { success: false, error: "Ingen företagsslug i session" };
+    }
+
     // Validera input
     const validatedData = tjanstSchema.parse(data);
 
@@ -48,7 +69,7 @@ export async function skapaTjänst(data: {
         pris: validatedData.pris,
         kategori: validatedData.kategori || null,
         aktiv: validatedData.aktiv ? 1 : 0,
-        foretagsslug: "roberts-massage", // Hårdkodat tills vi har företagsinställningar
+        foretagsslug: session.user.foretagsslug,
       })
       .returning();
 

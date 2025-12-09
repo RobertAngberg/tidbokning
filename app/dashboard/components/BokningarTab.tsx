@@ -83,83 +83,78 @@ export function BokningarTab({ bokningar }: BokningarTabProps) {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 flex-1 overflow-auto">
-            <div className="flex gap-4">
-              <Input
-                placeholder="Sök på namn, email eller tjänst..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="flex-1"
-              />
-              <Select value={filter} onValueChange={setFilter}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Alla status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="alla">Alla status</SelectItem>
-                  <SelectItem value="Bekräftad">Bekräftad</SelectItem>
-                  <SelectItem value="Väntande">Väntande</SelectItem>
-                  <SelectItem value="Inställd">Inställd</SelectItem>
-                  <SelectItem value="Slutförd">Slutförd</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <Input
+              placeholder="Sök på namn, email eller tjänst..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <Select value={filter} onValueChange={setFilter}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Alla status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="alla">Alla status</SelectItem>
+                <SelectItem value="Bekräftad">Bekräftad</SelectItem>
+                <SelectItem value="Väntande">Väntande</SelectItem>
+                <SelectItem value="Inställd">Inställd</SelectItem>
+                <SelectItem value="Slutförd">Slutförd</SelectItem>
+              </SelectContent>
+            </Select>
 
             {filteredBokningar.length === 0 ? (
               <p className="text-muted-foreground text-sm">Inga bokningar hittades</p>
             ) : (
               <div className="space-y-4">
                 {filteredBokningar.map((bokning) => (
-                  <div key={bokning.id} className="border rounded-lg p-4 relative">
-                    <div className="flex justify-between items-start gap-4 pr-10">
-                      <div className="flex-1">
-                        <p className="font-medium">{bokning.kund?.namn}</p>
-                        <p className="text-sm text-muted-foreground">{bokning.kund?.email}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {bokning.tjanst?.namn} •{" "}
-                          {format(new Date(bokning.startTid), "PPP 'kl' HH:mm", { locale: sv })}
-                        </p>
-                      </div>
-
-                      <div className="flex items-start gap-2">
-                        <Select
-                          value={bokning.status}
-                          onValueChange={(value) => handleStatusChange(bokning.id, value)}
-                          disabled={isPending}
-                        >
-                          <SelectTrigger className="w-[140px]">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Bekräftad">Bekräftad</SelectItem>
-                            <SelectItem value="Väntande">Väntande</SelectItem>
-                            <SelectItem value="Inställd">Inställd</SelectItem>
-                            <SelectItem value="Slutförd">Slutförd</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                  <div key={bokning.id} className="border rounded-lg p-4 space-y-3">
+                    <div>
+                      <p className="font-medium">{bokning.kund?.namn}</p>
+                      <p className="text-sm text-muted-foreground">{bokning.kund?.email}</p>
+                      <p className="text-sm text-muted-foreground">{bokning.tjanst?.namn}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {format(new Date(bokning.startTid), "PPP 'kl' HH:mm", { locale: sv })}
+                      </p>
                     </div>
 
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="absolute bottom-2 right-2">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Radera bokning?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Detta går inte att ångra. Bokningen kommer att raderas permanent.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Avbryt</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(bokning.id)}>
-                            Radera
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <div className="flex justify-between items-center">
+                      <Select
+                        value={bokning.status}
+                        onValueChange={(value) => handleStatusChange(bokning.id, value)}
+                        disabled={isPending}
+                      >
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Bekräftad">Bekräftad</SelectItem>
+                          <SelectItem value="Väntande">Väntande</SelectItem>
+                          <SelectItem value="Inställd">Inställd</SelectItem>
+                          <SelectItem value="Slutförd">Slutförd</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Radera bokning?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Detta går inte att ångra. Bokningen kommer att raderas permanent.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(bokning.id)}>
+                              Radera
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
                 ))}
               </div>

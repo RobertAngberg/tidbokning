@@ -8,11 +8,6 @@ const oppettiderSchema = z.object({
 
 export const foretagSchema = z.object({
   namn: z.string().min(1, "Namn krävs").max(255),
-  slug: z
-    .string()
-    .min(1, "Slug krävs")
-    .max(255)
-    .regex(/^[a-z0-9-]+$/, "Endast små bokstäver, siffror och bindestreck"),
   beskrivning: z.string().optional(),
 
   // Kontaktinformation

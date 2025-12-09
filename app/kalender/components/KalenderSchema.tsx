@@ -1,17 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import { Card, CardContent } from "../../_components/Card";
 import { Badge } from "../../_components/Badge";
-import { format, startOfWeek, addDays, addWeeks, subWeeks, isSameDay } from "date-fns";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../_components/Dialog";
+import { format, isSameDay } from "date-fns";
 import { sv } from "date-fns/locale";
 import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 import type { Utforare } from "../../_server/db/schema/utforare";
-import { BookingModal, type BookingFormData } from "./BookingModal";
-import { skapaBokning } from "../../dashboard/actions/bokningar";
-import { useRouter } from "next/navigation";
+import { BookingModal } from "./BookingModal";
+import { useKalenderNavigation } from "../hooks/useKalenderNavigation";
+import { useBookingSlots } from "../hooks/useBookingSlots";
+import { useBookingModal } from "../hooks/useBookingModal";
+import { useBookingDetails } from "../hooks/useBookingDetails";
+import { useBookingStatus } from "../hooks/useBookingStatus";
 
 interface KalenderSchemaProps {
   bokningar: Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>;
@@ -26,118 +29,21 @@ export function KalenderSchema({
   utforare = [],
   onBookingCreated,
 }: KalenderSchemaProps) {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSlot, setSelectedSlot] = useState<{ date: Date; time: string } | null>(null);
-  const router = useRouter();
+  const { weekStart, weekDays, goToPreviousWeek, goToNextWeek } = useKalenderNavigation();
 
-  // Räkna ut veckostart (måndag)
-  const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
-  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  const { timeSlots, getBookingForSlot, isFirstSlotForBooking, getBookingSlotSpan } =
+    useBookingSlots(bokningar);
 
-  // Tidslots från 08:00 till 17:00 (30 min intervall)
-  const timeSlots = Array.from({ length: 18 }, (_, i) => {
-    const hour = Math.floor(i / 2) + 8;
-    const minute = i % 2 === 0 ? "00" : "30";
-    return `${hour.toString().padStart(2, "0")}:${minute}`;
-  });
-
-  // Hitta bokningar för specifik dag och tid
-  const getBookingForSlot = (day: Date, timeSlot: string) => {
-    const [hour, minute] = timeSlot.split(":").map(Number);
-    const slotTime = new Date(day);
-    slotTime.setHours(hour, minute, 0, 0);
-
-    return bokningar.find((b) => {
-      const bokningStart = new Date(b.startTid);
-      const bokningEnd = new Date(b.slutTid);
-      return slotTime >= bokningStart && slotTime < bokningEnd;
-    });
-  };
-
-  // Kolla om detta är första sloten för en bokning (där vi ska rendera den)
-  const isFirstSlotForBooking = (booking: Bokning | undefined, day: Date, timeSlot: string) => {
-    if (!booking) return false;
-    const [hour, minute] = timeSlot.split(":").map(Number);
-    const slotTime = new Date(day);
-    slotTime.setHours(hour, minute, 0, 0);
-    const bokningStart = new Date(booking.startTid);
-    return slotTime.getTime() === bokningStart.getTime();
-  };
-
-  // Beräkna hur många slots en bokning tar
-  const getBookingSlotSpan = (booking: Bokning) => {
-    const start = new Date(booking.startTid);
-    const end = new Date(booking.slutTid);
-    const durationMinutes = (end.getTime() - start.getTime()) / (1000 * 60);
-    return Math.ceil(durationMinutes / 30); // 30 min per slot
-  };
-
-  // Navigation
-  const goToPreviousWeek = () => setCurrentDate(subWeeks(currentDate, 1));
-  const goToNextWeek = () => setCurrentDate(addWeeks(currentDate, 1));
-
-  // Mappar statustext från databasen till Badge-komponentens färgvarianter
-  const statusVariant = (status: string) => {
-    switch (status) {
-      case "Bekräftad":
-        return "success" as const;
-      case "Väntande":
-        return "secondary" as const;
-      case "Inställd":
-        return "destructive" as const;
-      case "Slutförd":
-        return "outline" as const;
-      default:
-        return "default" as const;
-    }
-  };
-
-  const handleSlotClick = (day: Date, timeSlot: string) => {
-    // Bara tillåt bokning om vi har tjänst och inga befintliga bokningar i sloten
-    if (!tjanst) return;
-
-    const booking = getBookingForSlot(day, timeSlot);
-    if (booking) return; // Redan bokad
-
-    setSelectedSlot({ date: day, time: timeSlot });
-    setIsModalOpen(true);
-  };
-
-  const handleBookingSubmit = async (formData: BookingFormData) => {
-    if (!selectedSlot || !tjanst) return;
-
-    // Skapa startTid från valt datum och tid
-    const [hour, minute] = selectedSlot.time.split(":").map(Number);
-    const startTid = new Date(selectedSlot.date);
-    startTid.setHours(hour, minute, 0, 0);
-
-    try {
-      const result = await skapaBokning({
-        kundNamn: formData.namn,
-        kundEmail: formData.email,
-        kundTelefon: formData.telefon,
-        tjänstId: tjanst.id,
-        utforareId: formData.utforareId,
-        startTid,
-        anteckningar: formData.anteckningar,
-      });
-
-      if (result.success) {
-        // Stäng modal och refresha sidan
-        setIsModalOpen(false);
-        router.refresh();
-        if (onBookingCreated) {
-          onBookingCreated();
-        }
-      } else {
-        alert(`Fel vid bokning: ${result.error}`);
+  const { isModalOpen, selectedSlot, handleSlotClick, handleBookingSubmit, closeModal } =
+    useBookingModal(tjanst, () => {
+      if (onBookingCreated) {
+        onBookingCreated();
       }
-    } catch (error) {
-      console.error("Fel vid bokning:", error);
-      alert("Något gick fel vid bokningen");
-    }
-  };
+    });
+
+  const { selectedBooking, openBookingDetails, closeBookingDetails } = useBookingDetails();
+
+  const { statusVariant } = useBookingStatus();
 
   return (
     <>
@@ -250,7 +156,11 @@ export function KalenderSchema({
                       >
                         {booking && isFirstSlot ? (
                           <div
-                            className="bg-amber-100 border border-amber-300 rounded p-2 text-xs absolute inset-2 overflow-hidden"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openBookingDetails(booking);
+                            }}
+                            className="bg-amber-100 border border-amber-300 rounded p-2 text-xs absolute inset-2 overflow-hidden cursor-pointer hover:bg-amber-200 transition-colors"
                             style={{
                               height: `calc(${slotSpan * 60}px - 16px)`,
                               zIndex: 10,
@@ -273,9 +183,7 @@ export function KalenderSchema({
                               {booking.status}
                             </Badge>
                           </div>
-                        ) : booking &&
-                          !isFirstSlot ? // Tom div för slots som är täckta av en bokning ovan
-                        null : tjanst ? (
+                        ) : booking && !isFirstSlot ? null : tjanst ? ( // Tom div för slots som är täckta av en bokning ovan
                           <div className="text-center text-stone-300 text-xs opacity-0 group-hover:opacity-100">
                             +
                           </div>
@@ -294,7 +202,7 @@ export function KalenderSchema({
       {selectedSlot && tjanst && (
         <BookingModal
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={closeModal}
           selectedDate={selectedSlot.date}
           selectedTime={selectedSlot.time}
           tjanst={tjanst}
@@ -302,6 +210,60 @@ export function KalenderSchema({
           onSubmit={handleBookingSubmit}
         />
       )}
+
+      {/* Booking Details Dialog */}
+      <Dialog open={!!selectedBooking} onOpenChange={(open) => !open && closeBookingDetails()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Bokningsdetaljer</DialogTitle>
+          </DialogHeader>
+
+          {selectedBooking && (
+            <div className="space-y-4">
+              <div>
+                <div className="text-sm font-semibold text-muted-foreground mb-1">Kund</div>
+                <div className="font-bold">{selectedBooking.kund?.namn}</div>
+                {selectedBooking.kund?.email && (
+                  <div className="text-sm text-muted-foreground">{selectedBooking.kund.email}</div>
+                )}
+                {selectedBooking.kund?.telefon && (
+                  <div className="text-sm text-muted-foreground">
+                    {selectedBooking.kund.telefon}
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <div className="text-sm font-semibold text-muted-foreground mb-1">Tjänst</div>
+                <div>{selectedBooking.tjanst?.namn}</div>
+              </div>
+
+              <div>
+                <div className="text-sm font-semibold text-muted-foreground mb-1">Tid</div>
+                <div>
+                  {format(new Date(selectedBooking.startTid), "PPP 'kl' HH:mm", { locale: sv })}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Varaktighet:{" "}
+                  {Math.round(
+                    (new Date(selectedBooking.slutTid).getTime() -
+                      new Date(selectedBooking.startTid).getTime()) /
+                      (1000 * 60)
+                  )}{" "}
+                  minuter
+                </div>
+              </div>
+
+              <div>
+                <div className="text-sm font-semibold text-muted-foreground mb-1">Status</div>
+                <Badge variant={statusVariant(selectedBooking.status)}>
+                  {selectedBooking.status}
+                </Badge>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

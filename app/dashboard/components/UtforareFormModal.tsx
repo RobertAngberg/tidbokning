@@ -3,6 +3,8 @@
 import { useActionState, useEffect } from "react";
 import { Input } from "../../_components/Input";
 import { Label } from "../../_components/Label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../_components/Dialog";
+import { Button } from "../../_components/Button";
 import type { Utforare } from "../../_server/db/schema/utforare";
 
 interface UtforareFormModalProps {
@@ -22,14 +24,12 @@ export function UtforareFormModal({ isOpen, onClose, utforare, action }: Utforar
     }
   }, [state?.success, onClose]);
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-card p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-bold mb-4 text-black">
-          {utforare ? "Redigera utförare" : "Lägg till utförare"}
-        </h2>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>{utforare ? "Redigera utförare" : "Lägg till utförare"}</DialogTitle>
+        </DialogHeader>
 
         <form action={formAction} className="space-y-4">
           {utforare && <input type="hidden" name="id" value={utforare.id} />}
@@ -106,24 +106,21 @@ export function UtforareFormModal({ isOpen, onClose, utforare, action }: Utforar
           {state?.error && <div className="text-red-500 text-sm">{state.error}</div>}
 
           <div className="flex gap-2 pt-4">
-            <button
+            <Button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-input rounded-md hover:bg-accent"
+              variant="outline"
+              className="flex-1"
               disabled={isPending}
             >
               Avbryt
-            </button>
-            <button
-              type="submit"
-              className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50"
-              disabled={isPending}
-            >
+            </Button>
+            <Button type="submit" className="flex-1" disabled={isPending}>
               {isPending ? "Sparar..." : utforare ? "Uppdatera" : "Lägg till"}
-            </button>
+            </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

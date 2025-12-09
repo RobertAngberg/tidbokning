@@ -27,7 +27,7 @@ export function Navigation() {
               viewBox="0 0 24 24"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="text-cyan-500"
+              className="text-teal-500"
             >
               <rect
                 x="3"
@@ -56,8 +56,8 @@ export function Navigation() {
                   onClick={() => setClickedPath(link.href)}
                   className={`text-lg transition-all duration-300 font-[family-name:var(--font-newsreader)] leading-none flex items-center ${
                     activePath === link.href
-                      ? "text-white font-bold bg-cyan-500 px-4 py-2 rounded-full hover:text-white"
-                      : "text-muted-foreground font-medium hover:text-cyan-500"
+                      ? "text-white font-bold bg-teal-500 px-4 py-2 rounded-full hover:text-white"
+                      : "text-muted-foreground font-medium hover:text-teal-500"
                   }`}
                 >
                   <span className="translate-y-0.5">{link.label}</span>

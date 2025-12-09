@@ -14,8 +14,6 @@ interface InstallningarTabProps {
   foretag: Foretag | null;
 }
 
-const DAGAR = ["måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag", "söndag"];
-
 export function InstallningarTab({ foretag }: InstallningarTabProps) {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -43,18 +41,6 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold text-white">Inställningar</h2>
-        <Button
-          onClick={handleLoggaUt}
-          disabled={isLoggingOut}
-          variant="outline"
-          className="bg-red-600 hover:bg-red-700 text-white border-red-600"
-        >
-          {isLoggingOut ? "Loggar ut..." : "Logga ut"}
-        </Button>
-      </div>
-
       <form action={formAction} className="space-y-6">
         {foretag && <input type="hidden" name="id" value={foretag.id} />}
 
@@ -64,16 +50,6 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
             <div>
               <Label htmlFor="namn">Företagsnamn *</Label>
               <Input id="namn" name="namn" defaultValue={foretag?.namn} required />
-            </div>
-            <div>
-              <Label htmlFor="slug">Slug (URL) *</Label>
-              <Input
-                id="slug"
-                name="slug"
-                defaultValue={foretag?.slug}
-                required
-                placeholder="ex: roberts-massage"
-              />
             </div>
             <div>
               <Label htmlFor="logoUrl">Logo URL</Label>
@@ -125,15 +101,24 @@ export function InstallningarTab({ foretag }: InstallningarTabProps) {
               />
             </div>
           </div>
+
+          {state?.error && <div className="text-red-500 text-sm">{state.error}</div>}
+
+          <div className="flex justify-between items-center pt-4 border-t border-border">
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Sparar..." : "Spara ändringar"}
+            </Button>
+            <Button
+              type="button"
+              onClick={handleLoggaUt}
+              disabled={isLoggingOut}
+              variant="outline"
+              className="bg-red-600 hover:bg-red-700 text-white border-red-600"
+            >
+              {isLoggingOut ? "Loggar ut..." : "Logga ut"}
+            </Button>
+          </div>
         </Card>
-
-        {state?.error && <div className="text-red-500 text-sm">{state.error}</div>}
-
-        <div className="flex justify-end">
-          <Button type="submit" disabled={isPending}>
-            {isPending ? "Sparar..." : "Spara ändringar"}
-          </Button>
-        </div>
       </form>
     </div>
   );

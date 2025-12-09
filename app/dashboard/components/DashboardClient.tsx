@@ -21,53 +21,63 @@ interface DashboardClientProps {
 
 export function DashboardClient({ bokningar, tjanster, utforare, foretag }: DashboardClientProps) {
   return (
-    // Tabs-container håller koll på vilken tab som är aktiv
-    <Tabs defaultValue="oversikt">
-      {/* TabsList = Den gråa menyn med knappar överst */}
-      <div className="flex justify-center mb-8">
-        <TabsList className="h-12 px-2">
-          {/* TabsTrigger = Varje individuell knapp i menyn */}
-          {/* "value" kopplar knappen till rätt TabsContent nedan */}
-          <TabsTrigger value="oversikt" className="px-6">
-            Översikt
-          </TabsTrigger>
-          <TabsTrigger value="bokningar" className="px-6">
-            Bokningar
-          </TabsTrigger>
-          <TabsTrigger value="tjanster" className="px-6">
-            Tjänster
-          </TabsTrigger>
-          <TabsTrigger value="utforare" className="px-6">
-            Utförare
-          </TabsTrigger>
-          <TabsTrigger value="installningar" className="px-6">
-            Inställningar
-          </TabsTrigger>
-        </TabsList>
+    <Tabs defaultValue="oversikt" className="flex flex-col lg:flex-row gap-6">
+      {/* Sidebar - vänster på desktop, överst på mobil */}
+      <TabsList className="flex flex-row lg:flex-col w-full lg:w-64 lg:self-start h-auto bg-card rounded-lg p-2 overflow-x-auto lg:overflow-x-visible lg:sticky lg:top-6">
+        <TabsTrigger
+          value="oversikt"
+          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
+        >
+          Översikt
+        </TabsTrigger>
+        <TabsTrigger
+          value="bokningar"
+          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
+        >
+          Bokningar
+        </TabsTrigger>
+        <TabsTrigger
+          value="tjanster"
+          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
+        >
+          Tjänster
+        </TabsTrigger>
+        <TabsTrigger
+          value="utforare"
+          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
+        >
+          Utförare
+        </TabsTrigger>
+        <TabsTrigger
+          value="installningar"
+          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
+        >
+          Inställningar
+        </TabsTrigger>
+      </TabsList>
+
+      {/* Content area */}
+      <div className="flex-1">
+        <TabsContent value="oversikt" className="mt-0">
+          <OversiktTab />
+        </TabsContent>
+
+        <TabsContent value="bokningar" className="mt-0">
+          <BokningarTab bokningar={bokningar} />
+        </TabsContent>
+
+        <TabsContent value="tjanster" className="mt-0">
+          <TjansterTab tjanster={tjanster} />
+        </TabsContent>
+
+        <TabsContent value="utforare" className="mt-0">
+          <UtforareTab utforare={utforare} />
+        </TabsContent>
+
+        <TabsContent value="installningar" className="mt-0">
+          <InstallningarTab foretag={foretag} />
+        </TabsContent>
       </div>
-
-      {/* TabsContent = Innehållet som visas när en tab är aktiv */}
-      {/* Endast den TabsContent vars "value" matchar den aktiva tabben visas */}
-
-      <TabsContent value="oversikt">
-        <OversiktTab />
-      </TabsContent>
-
-      <TabsContent value="bokningar">
-        <BokningarTab bokningar={bokningar} />
-      </TabsContent>
-
-      <TabsContent value="tjanster">
-        <TjansterTab tjanster={tjanster} />
-      </TabsContent>
-
-      <TabsContent value="utforare">
-        <UtforareTab utforare={utforare} />
-      </TabsContent>
-
-      <TabsContent value="installningar">
-        <InstallningarTab foretag={foretag} />
-      </TabsContent>
     </Tabs>
   );
 }

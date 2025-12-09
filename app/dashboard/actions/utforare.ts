@@ -7,6 +7,8 @@ import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { utforareInput } from "../validators/utforare";
 import { z } from "zod";
+import { auth } from "../../_server/auth";
+import { headers } from "next/headers";
 
 export async function hämtaUtförareForTjänst(tjanstId: string): Promise<Utforare[]> {
   try {
@@ -28,11 +30,18 @@ export async function hämtaUtförareForTjänst(tjanstId: string): Promise<Utfor
 
 export async function hämtaUtförare() {
   try {
-    // TODO: Hämta foretagsslug från session
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.foretagsslug) {
+      return { success: false, error: "Ingen företagsslug i session" };
+    }
+
     const allaÜtförare = await db
       .select()
       .from(utforare)
-      .where(eq(utforare.foretagsslug, "roberts-massage"));
+      .where(eq(utforare.foretagsslug, session.user.foretagsslug));
     return { success: true, data: allaÜtförare };
   } catch (error) {
     console.error("Fel vid hämtning av utförare:", error);
@@ -52,9 +61,16 @@ export async function hämtaEnUtförare(id: string) {
 
 export async function skapaUtförare(data: unknown) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.foretagsslug) {
+      return { success: false, error: "Ingen företagsslug i session" };
+    }
+
     const validated = utforareInput.parse(data);
 
-    // TODO: Hämta foretagsslug från session istället för hårdkodat
     const [nyUtförare] = await db
       .insert(utforare)
       .values({
@@ -64,7 +80,7 @@ export async function skapaUtförare(data: unknown) {
         beskrivning: validated.beskrivning || null,
         bildUrl: validated.bildUrl || null,
         aktiv: validated.aktiv,
-        foretagsslug: "roberts-massage",
+        foretagsslug: session.user.foretagsslug,
       })
       .returning();
 
@@ -92,7 +108,6 @@ export async function uppdateraUtförare(id: string, data: unknown) {
         beskrivning: validated.beskrivning || null,
         bildUrl: validated.bildUrl || null,
         aktiv: validated.aktiv,
-        foretagsslug: "roberts-massage",
         uppdateradDatum: new Date(),
       })
       .where(eq(utforare.id, id))

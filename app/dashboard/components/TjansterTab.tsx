@@ -124,59 +124,88 @@ export function TjansterTab({ tjanster }: TjansterTabProps) {
           {Object.entries(groupedTjanster).map(([kategori, tjansterIKategori]) => (
             <div key={kategori}>
               <h3 className="text-xl font-semibold mb-4 text-white">{kategori}</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {tjansterIKategori.map((tjanst) => (
-                  <Card key={tjanst.id} className="p-4 relative">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-foreground">{tjanst.namn}</h4>
-                        {tjanst.aktiv === 0 && (
-                          <span className="text-xs text-muted-foreground">(Inaktiv)</span>
-                        )}
-                      </div>
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() => openEditModal(tjanst)}
-                          className="p-1 hover:bg-accent rounded"
-                          title="Redigera"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <button className="p-1 hover:bg-accent rounded" title="Radera">
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Radera tjänst?</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Tjänsten kommer att inaktiveras. Befintliga bokningar påverkas inte.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Avbryt</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(tjanst.id)}>
-                                Radera
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                      {tjanst.beskrivning}
-                    </p>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-foreground">{tjanst.varaktighet} min</span>
-                      <span className="font-semibold text-foreground">
-                        {(tjanst.pris / 100).toFixed(0)} kr
-                      </span>
-                    </div>
-                  </Card>
-                ))}
-              </div>
+              <Card className="overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-muted">
+                      <tr className="border-b">
+                        <th className="text-left p-4 font-semibold">Namn</th>
+                        <th className="text-left p-4 font-semibold">Beskrivning</th>
+                        <th className="text-right p-4 font-semibold">Varaktighet</th>
+                        <th className="text-right p-4 font-semibold">Pris</th>
+                        <th className="text-center p-4 font-semibold">Status</th>
+                        <th className="text-right p-4 font-semibold">Åtgärder</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tjansterIKategori.map((tjanst) => (
+                        <tr key={tjanst.id} className="border-b last:border-0 hover:bg-muted/50">
+                          <td className="p-4">
+                            <span className="font-medium">{tjanst.namn}</span>
+                          </td>
+                          <td className="p-4 max-w-md">
+                            <span className="text-sm text-muted-foreground line-clamp-2">
+                              {tjanst.beskrivning || "-"}
+                            </span>
+                          </td>
+                          <td className="p-4 text-right">
+                            <span className="text-sm">{tjanst.varaktighet} min</span>
+                          </td>
+                          <td className="p-4 text-right">
+                            <span className="font-semibold">
+                              {(tjanst.pris / 100).toFixed(0)} kr
+                            </span>
+                          </td>
+                          <td className="p-4 text-center">
+                            {tjanst.aktiv === 1 ? (
+                              <span className="inline-block px-2 py-1 bg-green-500/20 text-green-600 text-xs rounded-full">
+                                Aktiv
+                              </span>
+                            ) : (
+                              <span className="inline-block px-2 py-1 bg-gray-500/20 text-gray-600 text-xs rounded-full">
+                                Inaktiv
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-4">
+                            <div className="flex gap-1 justify-end">
+                              <button
+                                onClick={() => openEditModal(tjanst)}
+                                className="p-2 hover:bg-accent rounded"
+                                title="Redigera"
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <button className="p-2 hover:bg-accent rounded" title="Radera">
+                                    <Trash2 className="h-4 w-4 text-destructive" />
+                                  </button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Radera tjänst?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Tjänsten kommer att inaktiveras. Befintliga bokningar påverkas
+                                      inte.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(tjanst.id)}>
+                                      Radera
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
             </div>
           ))}
         </div>

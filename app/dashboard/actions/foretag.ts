@@ -21,6 +21,15 @@ export async function uppdateraForetag(id: string, data: ForetagInput) {
   try {
     const validated = foretagSchema.parse(data);
 
+    // Autogenerera slug från namn
+    const slug = validated.namn
+      .toLowerCase()
+      .replace(/å/g, "a")
+      .replace(/ä/g, "a")
+      .replace(/ö/g, "o")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
     type OppettiderType = {
       [key: string]: {
         open: string;
@@ -33,7 +42,7 @@ export async function uppdateraForetag(id: string, data: ForetagInput) {
       .update(foretag)
       .set({
         namn: validated.namn,
-        slug: validated.slug,
+        slug: slug,
         beskrivning: validated.beskrivning,
         adress: validated.adress,
         postnummer: validated.postnummer,
@@ -66,6 +75,15 @@ export async function skapaForetag(data: ForetagInput) {
   try {
     const validated = foretagSchema.parse(data);
 
+    // Autogenerera slug från namn
+    const slug = validated.namn
+      .toLowerCase()
+      .replace(/å/g, "a")
+      .replace(/ä/g, "a")
+      .replace(/ö/g, "o")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "");
+
     type OppettiderType = {
       [key: string]: {
         open: string;
@@ -78,7 +96,7 @@ export async function skapaForetag(data: ForetagInput) {
       .insert(foretag)
       .values({
         namn: validated.namn,
-        slug: validated.slug,
+        slug: slug,
         beskrivning: validated.beskrivning,
         adress: validated.adress,
         postnummer: validated.postnummer,
@@ -111,11 +129,6 @@ export async function skapaForetag(data: ForetagInput) {
 
 const foretagFormDataSchema = z.object({
   namn: z.string().min(1, "Namn krävs").max(255),
-  slug: z
-    .string()
-    .min(1, "Slug krävs")
-    .max(255)
-    .regex(/^[a-z0-9-]+$/, "Endast små bokstäver, siffror och bindestreck"),
   beskrivning: z.string().optional().or(z.literal("")),
   adress: z.string().max(255).optional().or(z.literal("")),
   postnummer: z.string().max(10).optional().or(z.literal("")),
@@ -137,7 +150,6 @@ export async function uppdateraForetagAction(
 
   const rawData = {
     namn: formData.get("namn"),
-    slug: formData.get("slug"),
     beskrivning: formData.get("beskrivning") || "",
     adress: formData.get("adress") || "",
     postnummer: formData.get("postnummer") || "",
@@ -163,7 +175,6 @@ export async function skapaForetagAction(
 ): Promise<{ success: boolean; error?: string }> {
   const rawData = {
     namn: formData.get("namn"),
-    slug: formData.get("slug"),
     beskrivning: formData.get("beskrivning") || "",
     adress: formData.get("adress") || "",
     postnummer: formData.get("postnummer") || "",
