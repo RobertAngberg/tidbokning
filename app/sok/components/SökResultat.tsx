@@ -58,7 +58,7 @@ export function SökResultat({ företag }: SökResultatProps) {
 
             <div className="pt-4 border-t border-stone-200">
               <span className="text-amber-600 font-semibold text-sm group-hover:underline">
-                Boka tid →
+                Besök →
               </span>
             </div>
           </div>

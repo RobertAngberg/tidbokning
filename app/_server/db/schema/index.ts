@@ -4,4 +4,5 @@ export * from "./tjanster";
 export * from "./utforare";
 export * from "./foretag";
 export * from "./foretagBilder";
+export * from "./oppettider";
 export * from "./auth";

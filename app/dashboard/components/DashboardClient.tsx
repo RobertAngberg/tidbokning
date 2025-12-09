@@ -6,7 +6,8 @@ import { BokningarTab } from "./BokningarTab";
 import { TjansterTab } from "./TjansterTab";
 import { UtforareTab } from "./UtforareTab";
 import { BilderTab } from "./BilderTab";
-import { InstallningarTab } from "./InstallningarTab";
+import { OppettiderTab } from "./OppettiderTab";
+import { ForetagsuppgifterTab } from "./ForetagsuppgifterTab";
 import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
@@ -22,20 +23,20 @@ interface DashboardClientProps {
 
 export function DashboardClient({ bokningar, tjanster, utforare, foretag }: DashboardClientProps) {
   return (
-    <Tabs defaultValue="oversikt" className="flex flex-col lg:flex-row gap-6">
+    <Tabs defaultValue="bokningar" className="flex flex-col lg:flex-row gap-6">
       {/* Sidebar - vänster på desktop, överst på mobil */}
       <TabsList className="flex flex-row lg:flex-col w-full lg:w-64 lg:self-start h-auto bg-card rounded-lg p-2 overflow-x-auto lg:overflow-x-visible lg:sticky lg:top-6">
-        <TabsTrigger
-          value="oversikt"
-          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
-        >
-          Översikt
-        </TabsTrigger>
         <TabsTrigger
           value="bokningar"
           className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
         >
           Bokningar
+        </TabsTrigger>
+        <TabsTrigger
+          value="oversikt"
+          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
+        >
+          Översikt
         </TabsTrigger>
         <TabsTrigger
           value="tjanster"
@@ -56,21 +57,27 @@ export function DashboardClient({ bokningar, tjanster, utforare, foretag }: Dash
           Bilder
         </TabsTrigger>
         <TabsTrigger
+          value="oppettider"
+          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
+        >
+          Öppettider
+        </TabsTrigger>
+        <TabsTrigger
           value="installningar"
           className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
         >
-          Inställningar
+          Företagsuppgifter
         </TabsTrigger>
       </TabsList>
 
       {/* Content area */}
       <div className="flex-1">
-        <TabsContent value="oversikt" className="mt-0">
-          <OversiktTab />
-        </TabsContent>
-
         <TabsContent value="bokningar" className="mt-0">
           <BokningarTab bokningar={bokningar} />
+        </TabsContent>
+
+        <TabsContent value="oversikt" className="mt-0">
+          <OversiktTab />
         </TabsContent>
 
         <TabsContent value="tjanster" className="mt-0">
@@ -85,8 +92,12 @@ export function DashboardClient({ bokningar, tjanster, utforare, foretag }: Dash
           <BilderTab />
         </TabsContent>
 
+        <TabsContent value="oppettider" className="mt-0">
+          <OppettiderTab />
+        </TabsContent>
+
         <TabsContent value="installningar" className="mt-0">
-          <InstallningarTab foretag={foretag} />
+          <ForetagsuppgifterTab foretag={foretag} />
         </TabsContent>
       </div>
     </Tabs>

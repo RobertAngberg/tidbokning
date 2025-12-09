@@ -26,6 +26,13 @@ export function TjanstFormModal({
   const [kategoriInput, setKategoriInput] = useState(tjanst?.kategori || "");
   const [showSuggestions, setShowSuggestions] = useState(false);
 
+  // Återställ kategoriInput när modal öppnas eller tjanst ändras
+  useEffect(() => {
+    if (isOpen) {
+      setKategoriInput(tjanst?.kategori || "");
+    }
+  }, [isOpen, tjanst]);
+
   // Filtrera kategorier baserat på input
   const filteredKategorier = existingKategorier.filter((kat) =>
     kat.toLowerCase().includes(kategoriInput.toLowerCase())
@@ -36,7 +43,7 @@ export function TjanstFormModal({
     if (state?.success) {
       onClose();
     }
-  }, [state?.success, onClose]);
+  }, [state, onClose]);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -45,7 +52,7 @@ export function TjanstFormModal({
           <DialogTitle>{tjanst ? "Redigera tjänst" : "Lägg till tjänst"}</DialogTitle>
         </DialogHeader>
 
-        <form action={formAction} className="space-y-4">
+        <form key={tjanst?.id || "new"} action={formAction} className="space-y-4">
           {tjanst && <input type="hidden" name="id" value={tjanst.id} />}
 
           <div>
@@ -119,7 +126,10 @@ export function TjanstFormModal({
                       <button
                         key={kat}
                         type="button"
-                        onClick={() => setKategoriInput(kat)}
+                        onClick={() => {
+                          setKategoriInput(kat);
+                          setShowSuggestions(false);
+                        }}
                         className="px-3 py-1.5 text-sm bg-stone-100 hover:bg-stone-200 rounded-md transition-colors"
                       >
                         {kat}

@@ -10,11 +10,11 @@ import { uppdateraFöretagAction, skapaFöretagAction } from "../actions/foretag
 import { BildUppladdare } from "./BildUppladdare";
 import type { Foretag } from "../../_server/db/schema/foretag";
 
-interface InstallningarTabProps {
+interface ForetagsuppgifterTabProps {
   foretag: Foretag | null;
 }
 
-export function InstallningarTab({ foretag }: InstallningarTabProps) {
+export function ForetagsuppgifterTab({ foretag }: ForetagsuppgifterTabProps) {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [logoUrl, setLogoUrl] = useState(foretag?.logoUrl || "");

@@ -5,6 +5,7 @@ import { MapPin, Phone, Mail, Globe, Clock } from "lucide-react";
 import { hämtaFöretagBySlug } from "../../dashboard/actions/foretag";
 import { hämtaTjänsterForFöretag } from "../../dashboard/actions/tjanster";
 import { hämtaBilderForFöretag } from "../../dashboard/actions/bilder";
+import { hämtaÖppettiderForFöretag } from "../../dashboard/actions/oppettider";
 
 interface ForetagPageProps {
   params: Promise<{ slug: string }>;
@@ -20,10 +21,11 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
     notFound();
   }
 
-  // Hämta företagets tjänster och bilder
-  const [foretagTjanster, foretagBilder] = await Promise.all([
+  // Hämta företagets tjänster, bilder och öppettider
+  const [foretagTjanster, foretagBilder, foretagOppettider] = await Promise.all([
     hämtaTjänsterForFöretag(slug),
     hämtaBilderForFöretag(slug),
+    hämtaÖppettiderForFöretag(slug),
   ]);
 
   // Gruppera tjänster per kategori
@@ -39,28 +41,13 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-amber-50 to-stone-100 border-b border-stone-200">
         <div className="max-w-6xl mx-auto px-4 py-12">
-          <Link
-            href="/sok"
-            className="inline-flex items-center gap-2 text-stone-600 hover:text-stone-900 transition-colors mb-6"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Tillbaka till sök
-          </Link>
-
           <div className="space-y-6">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-stone-900 mb-3 font-[family-name:var(--font-newsreader)]">
                 {foretagData.namn}
               </h1>
               {foretagData.beskrivning && (
-                <p className="text-xl text-stone-700 max-w-3xl">{foretagData.beskrivning}</p>
+                <p className="text-base text-stone-600 max-w-3xl">{foretagData.beskrivning}</p>
               )}
             </div>
 
@@ -124,57 +111,81 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
               )}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Tjänster Section */}
-      <div className="max-w-6xl mx-auto px-4 py-12">
-        <h2 className="text-3xl font-bold text-stone-900 mb-8">Våra tjänster</h2>
-
-        {Object.entries(tjänsterPerKategori).map(([kategori, tjänsterLista]) => (
-          <div key={kategori} className="mb-12">
-            <h3 className="text-2xl font-semibold text-stone-800 mb-6 pb-2 border-b-2 border-amber-500">
-              {kategori}
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {tjänsterLista.map((tjanst) => (
-                <Link
-                  key={tjanst.id}
-                  href={`/foretag/${slug}/boka/${tjanst.id}`}
-                  className="bg-white rounded-xl p-6 border border-stone-200 hover:border-amber-500 hover:shadow-lg transition-all group"
-                >
-                  <div className="space-y-3">
-                    <div>
-                      <h4 className="text-xl font-bold text-stone-900 group-hover:text-amber-600 transition-colors mb-2">
-                        {tjanst.namn}
-                      </h4>
-                      {tjanst.beskrivning && (
-                        <p className="text-sm text-stone-600 line-clamp-2">{tjanst.beskrivning}</p>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between pt-3 border-t border-stone-100">
-                      <div className="flex items-center gap-2 text-stone-600">
-                        <Clock className="w-4 h-4" />
-                        <span className="text-sm">{tjanst.varaktighet} min</span>
-                      </div>
-                      <div className="text-lg font-bold text-amber-600">
-                        {(tjanst.pris / 100).toFixed(0)} kr
-                      </div>
-                    </div>
+          {/* Öppettider Section */}
+          {foretagOppettider.length > 0 && (
+            <div className="space-y-4 mt-8">
+              <h2 className="text-2xl font-bold text-stone-900">Öppettider</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {foretagOppettider.map((oppettid) => (
+                  <div
+                    key={oppettid.id}
+                    className="flex justify-between items-center bg-white/60 backdrop-blur-sm rounded-lg px-4 py-3 border border-stone-200"
+                  >
+                    <span className="font-medium capitalize text-stone-700">
+                      {oppettid.veckodag}
+                    </span>
+                    <span className="text-stone-600">
+                      {oppettid.stangt ? "Stängt" : `${oppettid.oppnar} - ${oppettid.stanger}`}
+                    </span>
                   </div>
-                </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Tjänster Section */}
+          {foretagTjanster.length > 0 && (
+            <div className="space-y-6 mt-8 pb-12">
+              <div>
+                <h2 className="text-3xl font-bold text-stone-900 mb-3">Våra tjänster</h2>
+                <hr className="border-stone-300" />
+              </div>
+
+              {Object.entries(tjänsterPerKategori).map(([kategori, tjänsterLista]) => (
+                <div key={kategori} className="space-y-4">
+                  <h3 className="text-xl font-semibold text-stone-800">{kategori}</h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {tjänsterLista.map((tjanst) => (
+                      <Link
+                        key={tjanst.id}
+                        href={`/foretag/${slug}/boka/${tjanst.id}`}
+                        className="flex flex-col bg-white rounded-xl p-6 shadow-sm border border-stone-200 hover:border-amber-400 hover:shadow-lg transition-all group h-full"
+                      >
+                        <div className="flex-1">
+                          <h4 className="text-lg font-semibold text-stone-900 group-hover:text-amber-600 transition-colors mb-2">
+                            {tjanst.namn}
+                          </h4>
+                          {tjanst.beskrivning && (
+                            <p className="text-sm text-stone-600 line-clamp-2 mb-4">
+                              {tjanst.beskrivning}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="space-y-3 pt-4 border-t border-stone-100">
+                          <div className="flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-2 text-stone-600">
+                              <Clock className="w-4 h-4" />
+                              <span className="font-medium">{tjanst.varaktighet} min</span>
+                            </div>
+                            <div className="text-xl font-bold text-amber-600">
+                              {(tjanst.pris / 100).toFixed(0)} kr
+                            </div>
+                          </div>
+                          <button className="w-full py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-semibold rounded-lg transition-colors shadow-sm">
+                            Boka
+                          </button>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               ))}
             </div>
-          </div>
-        ))}
-
-        {foretagTjanster.length === 0 && (
-          <div className="text-center py-12 text-stone-500">
-            <p className="text-lg">Inga tjänster tillgängliga för tillfället</p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

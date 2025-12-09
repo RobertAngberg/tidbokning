@@ -18,7 +18,7 @@ export const utforare = pgTable("utforare", {
   uppdateradDatum: timestamp("uppdaterad_datum").notNull().defaultNow(),
 });
 
-// Kopplingstabellen mellan utförare och tjänster
+// Många-till-många-relation: vilka tjänster varje utförare kan utföra
 export const utforareTjanster = pgTable("utforare_tjanster", {
   id: uuid("id").defaultRandom().primaryKey(),
   utforareId: uuid("utforare_id")
