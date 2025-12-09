@@ -1,9 +1,9 @@
-import { hämtaBokningar } from "./actions/bokningar";
-import { hämtaTjänster } from "./actions/tjanster";
-import { hämtaUtförare } from "./actions/utforare";
-import { hämtaFöretag } from "./actions/foretag";
-import { DashboardClient } from "./components/DashboardClient";
-import { DashboardLogin } from "./components/DashboardLogin";
+import { hämtaBokningar } from "./bokningar/actions/bokningar";
+import { hämtaTjänster } from "./tjanster/actions/tjanster";
+import { hämtaUtförare } from "./utforare/actions/utforare";
+import { hämtaFöretag } from "./foretagsuppgifter/actions/foretag";
+import { DashboardClient } from "./_shared/components/DashboardClient";
+import { DashboardLogin } from "./_shared/components/DashboardLogin";
 import { auth } from "../_server/auth";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";

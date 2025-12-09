@@ -2,10 +2,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Phone, Mail, Globe, Clock } from "lucide-react";
-import { hämtaFöretagBySlug } from "../../dashboard/actions/foretag";
-import { hämtaTjänsterForFöretag } from "../../dashboard/actions/tjanster";
-import { hämtaBilderForFöretag } from "../../dashboard/actions/bilder";
-import { hämtaÖppettiderForFöretag } from "../../dashboard/actions/oppettider";
+import { hämtaFöretagBySlug } from "../../dashboard/foretagsuppgifter/actions/foretag";
+import { hämtaTjänsterForFöretag } from "../../dashboard/tjanster/actions/tjanster";
+import { hämtaBilderForFöretag } from "../../dashboard/bilder/actions/bilder";
+import { hämtaÖppettiderForFöretag } from "../../dashboard/oppettider/actions/oppettider";
 
 interface ForetagPageProps {
   params: Promise<{ slug: string }>;

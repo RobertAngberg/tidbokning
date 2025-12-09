@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { KalenderSchema } from "../../../../dashboard/components/KalenderSchema";
+import { KalenderSchema } from "../../../../dashboard/bokningar/components/KalenderSchema";
 import {
   hämtaBokningarMedRelationer,
   hämtaTjänstForFöretag,
-} from "../../../../dashboard/actions/bokningar";
-import { hämtaAktivaUtförareForFöretag } from "../../../../dashboard/actions/utforare";
+} from "../../../../dashboard/bokningar/actions/bokningar";
+import { hämtaAktivaUtförareForFöretag } from "../../../../dashboard/utforare/actions/utforare";
 
 interface BokaPageProps {
   params: Promise<{ slug: string; tjanstId: string }>;
