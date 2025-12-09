@@ -1,24 +1,68 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { registreraAction } from "./actions";
-
-type ActionState = { success: boolean; error?: string } | null;
+import { authClient } from "../_lib/auth-client";
 
 export default function RegisteraPage() {
   const router = useRouter();
-  const [state, formAction, isPending] = useActionState<ActionState, FormData>(
-    registreraAction,
-    null
-  );
+  const [error, setError] = useState<string | null>(null);
+  const [isPending, setIsPending] = useState(false);
 
-  useEffect(() => {
-    if (state?.success) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setIsPending(true);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+
+    try {
+      // Skapa användaren
+      const signUpResult = await authClient.signUp.email({
+        email,
+        password,
+        name: "Admin",
+        roll: "admin",
+      });
+
+      if (signUpResult.error) {
+        let felmeddelande = "Kunde inte skapa konto";
+
+        if (
+          signUpResult.error.message?.includes("already exists") ||
+          signUpResult.error.message?.includes("User already exists")
+        ) {
+          felmeddelande = "En användare med denna e-postadress finns redan.";
+        }
+
+        setError(felmeddelande);
+        setIsPending(false);
+        return;
+      }
+
+      // Sign up med Better Auth skapar INTE automatisk session, logga in
+      const signInResult = await authClient.signIn.email({
+        email,
+        password,
+      });
+
+      if (signInResult.error) {
+        setError("Konto skapat men kunde inte logga in. Försök logga in manuellt.");
+        setIsPending(false);
+        return;
+      }
+
+      // Nu har vi en session, gå till onboarding
       router.push("/onboarding");
       router.refresh();
+    } catch (err) {
+      console.error("Registreringsfel:", err);
+      setError("Ett oväntat fel inträffade.");
+      setIsPending(false);
     }
-  }, [state?.success, router]);
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-stone-100 p-8">
@@ -28,7 +72,7 @@ export default function RegisteraPage() {
           <p className="text-stone-600">Registrera dig för att komma igång</p>
         </div>
 
-        <form action={formAction} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-stone-700 mb-2">
               Email
@@ -59,9 +103,9 @@ export default function RegisteraPage() {
             <p className="text-xs text-stone-500 mt-1">Minst 8 tecken</p>
           </div>
 
-          {state?.error && (
+          {error && (
             <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
-              {state.error}
+              {error}
             </div>
           )}
 

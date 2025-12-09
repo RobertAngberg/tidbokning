@@ -1,7 +1,8 @@
 "use server";
 
-import { authClient } from "../../_lib/auth-client";
+import { auth } from "../../_server/auth";
 import { z } from "zod";
+import { headers } from "next/headers";
 
 const loginFormDataSchema = z.object({
   email: z.string().email("Ogiltig e-postadress"),
@@ -25,17 +26,13 @@ export async function loggaInAction(
   const { email, password } = result.data;
 
   try {
-    const { error } = await authClient.signIn.email({
-      email,
-      password,
+    await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+      },
+      headers: await headers(),
     });
-
-    if (error) {
-      return {
-        success: false,
-        error: error.message || "Fel email eller lösenord",
-      };
-    }
 
     return { success: true };
   } catch (err) {

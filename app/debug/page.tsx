@@ -3,7 +3,8 @@ import { tjanster } from "../_server/db/schema/tjanster";
 import { bokningar } from "../_server/db/schema/bokningar";
 import { anvandare } from "../_server/db/schema/anvandare";
 import { utforare, utforareTjanster } from "../_server/db/schema/utforare";
-import { user } from "../_server/db/schema/auth";
+import { user, session, account, verification } from "../_server/db/schema/auth";
+import { foretag } from "../_server/db/schema/foretag";
 import { DebugClient } from "./components/DebugClient";
 
 export default async function DebugPage() {
@@ -13,6 +14,10 @@ export default async function DebugPage() {
   const allUtforare = await db.select().from(utforare);
   const allUtforareTjanster = await db.select().from(utforareTjanster);
   const allUsers = await db.select().from(user);
+  const allForetag = await db.select().from(foretag);
+  const allSessions = await db.select().from(session);
+  const allAccounts = await db.select().from(account);
+  const allVerifications = await db.select().from(verification);
 
   return (
     <DebugClient
@@ -22,6 +27,10 @@ export default async function DebugPage() {
       utforare={allUtforare}
       utforareTjanster={allUtforareTjanster}
       users={allUsers}
+      foretag={allForetag}
+      sessions={allSessions}
+      accounts={allAccounts}
+      verifications={allVerifications}
     />
   );
 }

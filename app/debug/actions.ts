@@ -6,6 +6,7 @@ import { bokningar } from "../_server/db/schema/bokningar";
 import { anvandare } from "../_server/db/schema/anvandare";
 import { utforare, utforareTjanster } from "../_server/db/schema/utforare";
 import { user, session, account } from "../_server/db/schema/auth";
+import { foretag } from "../_server/db/schema/foretag";
 import { inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -83,5 +84,16 @@ export async function raderaUsers(ids: string[]) {
   } catch (error) {
     console.error("Fel vid radering av användare:", error);
     return { success: false, error: "Kunde inte radera användare" };
+  }
+}
+
+export async function raderaFöretag(ids: string[]) {
+  try {
+    await db.delete(foretag).where(inArray(foretag.id, ids));
+    revalidatePath("/debug");
+    return { success: true };
+  } catch (error) {
+    console.error("Fel vid radering av företag:", error);
+    return { success: false, error: "Kunde inte radera företag" };
   }
 }

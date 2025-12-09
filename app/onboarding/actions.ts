@@ -2,7 +2,7 @@
 
 import { db } from "../_server/db";
 import { foretag } from "../_server/db/schema/foretag";
-import { anvandare } from "../_server/db/schema/anvandare";
+import { user } from "../_server/db/schema/auth";
 import { auth } from "../_server/auth";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
@@ -28,6 +28,11 @@ export async function skapaFöretagOchAdminAction(
       headers: await headers(),
     });
 
+    console.log("=== ONBOARDING SESSION DEBUG ===");
+    console.log("Session:", JSON.stringify(session, null, 2));
+    console.log("User ID:", session?.user?.id);
+    console.log("================================");
+
     if (!session?.user?.id) {
       return { success: false, error: "Du måste vara inloggad" };
     }
@@ -47,7 +52,7 @@ export async function skapaFöretagOchAdminAction(
       return { success: false, error: result.error.issues[0].message };
     }
 
-    const { foretagsnamn, beskrivning, telefon, email } = result.data;
+    const { foretagsnamn, adress, postnummer, stad, telefon, webbplats } = result.data;
 
     // Generera slug från företagsnamnet
     const slug = foretagsnamn
@@ -58,6 +63,8 @@ export async function skapaFöretagOchAdminAction(
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-|-$/g, "");
 
+    console.log(`🔍 Genererad slug: "${slug}" från företagsnamn: "${foretagsnamn}"`);
+
     // Kolla om slug redan finns
     const [existingForetag] = await db
       .select()
@@ -65,7 +72,12 @@ export async function skapaFöretagOchAdminAction(
       .where(eq(foretag.slug, slug))
       .limit(1);
 
+    console.log(`📊 Befintligt företag:`, existingForetag || "Inget hittat");
+
     if (existingForetag) {
+      console.log(
+        `⚠️  Företag med slug "${slug}" finns redan (från företagsnamn "${foretagsnamn}")`
+      );
       return {
         success: false,
         error: "Ett företag med detta namn finns redan. Välj ett annat namn.",
@@ -78,21 +90,23 @@ export async function skapaFöretagOchAdminAction(
       .values({
         namn: foretagsnamn,
         slug: slug,
-        beskrivning: beskrivning || null,
+        adress: adress || null,
+        postnummer: postnummer || null,
+        stad: stad || null,
         telefon: telefon || null,
-        email: email || null,
+        webbplats: webbplats || null,
         aktiv: true,
       })
       .returning();
 
     // Uppdatera användaren till admin och koppla till företaget
     await db
-      .update(anvandare)
+      .update(user)
       .set({
         roll: "admin",
         foretagsslug: slug,
       })
-      .where(eq(anvandare.id, session.user.id));
+      .where(eq(user.id, session.user.id));
 
     revalidatePath("/dashboard");
     return { success: true };

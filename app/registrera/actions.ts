@@ -1,7 +1,8 @@
 "use server";
 
-import { authClient } from "../_lib/auth-client";
+import { auth } from "../_server/auth";
 import { z } from "zod";
+import { headers } from "next/headers";
 
 const registerFormDataSchema = z.object({
   email: z.string().email("Ogiltig e-postadress"),
@@ -25,41 +26,58 @@ export async function registreraAction(
   const { email, password } = result.data;
 
   try {
-    const { error } = await authClient.signUp.email({
-      email,
-      password,
-      name: "Admin", // Tillfälligt namn
-      roll: "admin", // Sätt som admin direkt
+    // Skapa användaren
+    await auth.api.signUpEmail({
+      body: {
+        email,
+        password,
+        name: "Admin",
+        roll: "admin",
+      },
+      headers: await headers(),
     });
 
-    if (error) {
-      // Översätt vanliga felmeddelanden till svenska
-      let felmeddelande = "Kunde inte skapa konto";
+    console.log("=== SIGNUP SUCCESS DEBUG ===");
+    console.log("User created successfully");
 
-      if (
-        error.message?.includes("already exists") ||
-        error.message?.includes("User already exists")
-      ) {
-        felmeddelande =
-          "En användare med denna e-postadress finns redan. Använd en annan e-postadress.";
-      } else if (error.message?.includes("Invalid email")) {
-        felmeddelande = "Ogiltig e-postadress";
-      } else if (error.message?.includes("Password")) {
-        felmeddelande = "Lösenordet uppfyller inte kraven";
-      }
+    // Logga in användaren direkt efter signup
+    await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+      },
+      headers: await headers(),
+    });
 
-      return {
-        success: false,
-        error: felmeddelande,
-      };
-    }
+    // Verifiera att session skapades
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+    console.log("Session after signin:", JSON.stringify(session, null, 2));
+    console.log("============================");
 
     return { success: true };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Registreringsfel:", error);
+
+    let felmeddelande = "Ett oväntat fel inträffade. Försök igen.";
+
+    if (
+      error?.message?.includes("already exists") ||
+      error?.message?.includes("User already exists") ||
+      error?.message?.includes("duplicate key")
+    ) {
+      felmeddelande =
+        "En användare med denna e-postadress finns redan. Använd en annan e-postadress.";
+    } else if (error?.message?.includes("Invalid email")) {
+      felmeddelande = "Ogiltig e-postadress";
+    } else if (error?.message?.includes("Password")) {
+      felmeddelande = "Lösenordet uppfyller inte kraven";
+    }
+
     return {
       success: false,
-      error: "Ett oväntat fel inträffade. Försök igen.",
+      error: felmeddelande,
     };
   }
 }

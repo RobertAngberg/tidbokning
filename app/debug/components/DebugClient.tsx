@@ -8,11 +8,13 @@ import {
   raderaUtförare,
   raderaUtförareTjänster,
   raderaUsers,
+  raderaFöretag,
 } from "../actions";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
 import type { Utforare } from "../../_server/db/schema/utforare";
+import type { Foretag } from "../../_server/db/schema/foretag";
 
 interface UtforareTjanster {
   id: string;
@@ -40,6 +42,10 @@ interface DebugClientProps {
   utforare: Utforare[];
   utforareTjanster: UtforareTjanster[];
   users: User[];
+  foretag: Foretag[];
+  sessions: any[];
+  accounts: any[];
+  verifications: any[];
 }
 
 export function DebugClient({
@@ -49,6 +55,10 @@ export function DebugClient({
   utforare,
   utforareTjanster,
   users,
+  foretag,
+  sessions,
+  accounts,
+  verifications,
 }: DebugClientProps) {
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-slate-50 to-slate-100">
@@ -108,6 +118,73 @@ export function DebugClient({
                   <span className="text-sm font-mono">{u.foretagsslug}</span>
                 ) : (
                   <span className="text-slate-400 italic text-sm">Ingen</span>
+                ),
+            },
+          ]}
+        />
+
+        <DebugTable
+          title="Företag"
+          data={foretag}
+          color="indigo"
+          onDelete={raderaFöretag}
+          columns={[
+            { key: "select", label: "" },
+            {
+              key: "id",
+              label: "ID",
+              width: "w-24",
+              render: (f) => (
+                <span
+                  className="text-sm text-slate-500 font-mono max-w-[6rem] truncate block"
+                  title={f.id}
+                >
+                  {f.id}
+                </span>
+              ),
+            },
+            {
+              key: "namn",
+              label: "Namn",
+              render: (f) => <span className="font-medium">{f.namn}</span>,
+            },
+            {
+              key: "slug",
+              label: "Slug",
+              render: (f) => <span className="text-sm font-mono text-slate-600">{f.slug}</span>,
+            },
+            {
+              key: "telefon",
+              label: "Telefon",
+              render: (f) =>
+                f.telefon ? (
+                  <span className="text-sm">{f.telefon}</span>
+                ) : (
+                  <span className="text-slate-400 italic text-sm">-</span>
+                ),
+            },
+            {
+              key: "email",
+              label: "Email",
+              render: (f) =>
+                f.email ? (
+                  <span className="text-sm">{f.email}</span>
+                ) : (
+                  <span className="text-slate-400 italic text-sm">-</span>
+                ),
+            },
+            {
+              key: "aktiv",
+              label: "Status",
+              render: (f) =>
+                f.aktiv ? (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    ✓ Aktiv
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    ✗ Inaktiv
+                  </span>
                 ),
             },
           ]}
@@ -351,6 +428,115 @@ export function DebugClient({
               key: "skapadDatum",
               label: "Skapad",
               render: (ut) => new Date(ut.skapadDatum).toLocaleString("sv-SE"),
+            },
+          ]}
+        />
+
+        <DebugTable
+          title="Sessions"
+          data={sessions}
+          color="cyan"
+          columns={[
+            {
+              key: "id",
+              label: "ID",
+              width: "w-32",
+              render: (s) => (
+                <span className="text-sm text-slate-500 font-mono truncate block" title={s.id}>
+                  {s.id.substring(0, 12)}...
+                </span>
+              ),
+            },
+            {
+              key: "userId",
+              label: "User ID",
+              width: "w-32",
+              render: (s) => (
+                <span className="text-sm text-slate-500 font-mono truncate block" title={s.userId}>
+                  {s.userId.substring(0, 12)}...
+                </span>
+              ),
+            },
+            {
+              key: "expiresAt",
+              label: "Utgår",
+              render: (s) => new Date(s.expiresAt).toLocaleString("sv-SE"),
+            },
+            {
+              key: "ipAddress",
+              label: "IP",
+              render: (s) => <span className="text-sm font-mono">{s.ipAddress || "-"}</span>,
+            },
+          ]}
+        />
+
+        <DebugTable
+          title="Accounts"
+          data={accounts}
+          color="teal"
+          columns={[
+            {
+              key: "id",
+              label: "ID",
+              width: "w-24",
+              render: (a) => (
+                <span className="text-sm text-slate-500 font-mono truncate block" title={a.id}>
+                  {a.id.substring(0, 10)}...
+                </span>
+              ),
+            },
+            {
+              key: "userId",
+              label: "User ID",
+              width: "w-32",
+              render: (a) => (
+                <span className="text-sm text-slate-500 font-mono truncate block" title={a.userId}>
+                  {a.userId.substring(0, 12)}...
+                </span>
+              ),
+            },
+            {
+              key: "providerId",
+              label: "Provider",
+              render: (a) => <span className="text-sm">{a.providerId}</span>,
+            },
+            {
+              key: "createdAt",
+              label: "Skapad",
+              render: (a) => new Date(a.createdAt).toLocaleString("sv-SE"),
+            },
+          ]}
+        />
+
+        <DebugTable
+          title="Verifications"
+          data={verifications}
+          color="lime"
+          columns={[
+            {
+              key: "id",
+              label: "ID",
+              width: "w-24",
+              render: (v) => (
+                <span className="text-sm text-slate-500 font-mono truncate block" title={v.id}>
+                  {v.id.substring(0, 10)}...
+                </span>
+              ),
+            },
+            {
+              key: "identifier",
+              label: "Identifier",
+              render: (v) => <span className="text-sm">{v.identifier}</span>,
+            },
+            {
+              key: "value",
+              label: "Value",
+              render: (v) => <span className="text-sm font-mono">{v.value}</span>,
+            },
+            {
+              key: "expiresAt",
+              label: "Utgår",
+              render: (v) => new Date(v.expiresAt).toLocaleString("sv-SE"),
             },
           ]}
         />
