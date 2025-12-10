@@ -253,7 +253,7 @@ export function DebugClient({
           <DebugTable
             title="Företag"
             data={foretag}
-            color="indigo"
+            color="blue"
             onDelete={raderaFöretag}
             columns={[
               { key: "select", label: "" },
@@ -479,7 +479,7 @@ export function DebugClient({
           <DebugTable
             title="Recensioner"
             data={recensioner}
-            color="rose"
+            color="pink"
             onDelete={raderaRecensioner}
             columns={[
               { key: "select", label: "" },
