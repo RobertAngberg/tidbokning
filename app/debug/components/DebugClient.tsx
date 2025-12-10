@@ -66,7 +66,11 @@ interface Account {
   accountId: string;
   accessToken: string | null;
   refreshToken: string | null;
-  expiresAt: Date | null;
+  idToken: string | null;
+  accessTokenExpiresAt: Date | null;
+  refreshTokenExpiresAt: Date | null;
+  scope: string | null;
+  password: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
