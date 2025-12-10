@@ -1,7 +1,9 @@
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import * as anvandareSchema from "./schema/anvandare";
+import * as kunderSchema from "./schema/kunder";
 import * as bokningarSchema from "./schema/bokningar";
+import * as recensionerSchema from "./schema/recensioner";
 import * as tjansterSchema from "./schema/tjanster";
 import * as utforareSchema from "./schema/utforare";
 import * as oppettiderSchema from "./schema/oppettider";
@@ -10,7 +12,9 @@ import { config } from "dotenv";
 
 const schema = {
   ...anvandareSchema,
+  ...kunderSchema,
   ...bokningarSchema,
+  ...recensionerSchema,
   ...tjansterSchema,
   ...utforareSchema,
   ...oppettiderSchema,

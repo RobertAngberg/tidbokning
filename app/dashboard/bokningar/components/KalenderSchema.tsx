@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Card, CardContent } from "../../../_components/Card";
 import { Badge } from "../../../_components/Badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../_components/Dialog";
@@ -31,12 +32,7 @@ export function KalenderSchema({
 }: KalenderSchemaProps) {
   const { weekStart, weekDays, goToPreviousWeek, goToNextWeek } = useKalenderNavigation();
 
-  // Debug: Visa antal bokningar
-  console.log("KalenderSchema - Antal bokningar:", bokningar.length);
-  console.log("KalenderSchema - Första bokningen:", bokningar[0]);
-
-  const { timeSlots, getBookingForSlot, isFirstSlotForBooking, getBookingSlotSpan } =
-    useBookingSlots(bokningar);
+  const { timeSlots, getBookingForSlot } = useBookingSlots(bokningar);
 
   const { isModalOpen, selectedSlot, handleSlotClick, handleBookingSubmit, closeModal } =
     useBookingModal(tjanst, () => {
@@ -53,7 +49,7 @@ export function KalenderSchema({
     <>
       <Card className="overflow-hidden border-stone-200">
         <CardContent className="pt-6">
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Veckonavigation */}
             <div className="flex items-center justify-between mb-4">
               <button
@@ -88,121 +84,90 @@ export function KalenderSchema({
               </button>
             </div>
 
-            {/* Veckovy */}
-            <div className="border border-stone-200 rounded-xl overflow-hidden">
-              <div className="grid grid-cols-8 bg-stone-50">
-                {/* Tidkolumn header */}
-                <div className="p-3 border-b border-r border-stone-200 bg-stone-100">
-                  <span className="text-xs font-bold text-stone-600 uppercase">Tid</span>
-                </div>
+            {/* Kalender */}
+            <div className="grid grid-cols-7 gap-px bg-stone-200 border border-stone-200">
+              {/* Header - Veckodagar */}
+              {weekDays.map((day, idx) => {
+                const isToday = isSameDay(day, new Date());
+                const isWeekend = idx >= 5;
 
-                {/* Dagheaders */}
-                {weekDays.map((day, idx) => {
-                  const isToday = isSameDay(day, new Date());
-                  const isWeekend = idx >= 5;
-
-                  return (
-                    <div
-                      key={day.toISOString()}
-                      className={`p-3 border-b border-stone-200 text-center ${
-                        idx < 6 ? "border-r" : ""
-                      } ${isToday ? "bg-amber-50" : ""}`}
-                    >
-                      <div className="text-xs font-semibold text-stone-500 uppercase">
-                        {format(day, "EEE", { locale: sv })}
-                      </div>
-                      <div
-                        className={`text-lg font-bold mt-1 ${
-                          isToday
-                            ? "text-amber-700"
-                            : isWeekend
-                            ? "text-stone-400"
-                            : "text-stone-800"
-                        }`}
-                      >
-                        {format(day, "d", { locale: sv })}
-                      </div>
+                return (
+                  <div key={day.toISOString()} className="p-3 text-center bg-white">
+                    <div className="text-xs font-semibold text-stone-500 uppercase mb-1">
+                      {format(day, "EEE", { locale: sv })}
                     </div>
-                  );
-                })}
-              </div>
-
-              {/* Tidsslots */}
-              {timeSlots.map((timeSlot, slotIdx) => (
-                <div key={timeSlot} className="grid grid-cols-8">
-                  {/* Tidkolumn */}
-                  <div
-                    className={`p-2 border-r border-stone-200 bg-stone-50 text-xs font-semibold text-stone-600 text-right ${
-                      slotIdx < timeSlots.length - 1 ? "border-b" : ""
-                    }`}
-                  >
-                    {timeSlot}
+                    <div
+                      className={`text-lg font-bold ${
+                        isToday ? "text-amber-700" : isWeekend ? "text-stone-400" : "text-stone-800"
+                      }`}
+                    >
+                      {format(day, "d", { locale: sv })}
+                    </div>
+                    {isToday && (
+                      <Badge className="bg-amber-500 text-white text-[10px] mt-1">Idag</Badge>
+                    )}
                   </div>
+                );
+              })}
 
-                  {/* Dagkolumner */}
-                  {weekDays.map((day, dayIdx) => {
+              {/* Tidsslots - Varje rad är en tid */}
+              {timeSlots.map((timeSlot) => (
+                <React.Fragment key={timeSlot}>
+                  {/* Dagkolumner - kort för varje timslot */}
+                  {weekDays.map((day) => {
                     const booking = getBookingForSlot(day, timeSlot);
-                    const isToday = isSameDay(day, new Date());
-                    const isFirstSlot = isFirstSlotForBooking(booking, day, timeSlot);
-                    const slotSpan = booking && isFirstSlot ? getBookingSlotSpan(booking) : 1;
 
-                    return (
-                      <div
-                        key={`${day.toISOString()}-${timeSlot}`}
-                        onClick={() => !booking && tjanst && handleSlotClick(day, timeSlot)}
-                        className={`p-2 min-h-[45px] ${dayIdx < 6 ? "border-r" : ""} ${
-                          slotIdx < timeSlots.length - 1 ? "border-b" : ""
-                        } border-stone-200 ${isToday ? "bg-amber-50/30" : "bg-white"} ${
-                          !booking && tjanst
-                            ? "hover:bg-amber-50 cursor-pointer"
-                            : "hover:bg-stone-50"
-                        } transition-colors relative`}
-                      >
-                        {booking && isFirstSlot ? (
-                          <div
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // Tillåt bara klick på dashboard (när tjanst är undefined)
-                              if (!tjanst) {
-                                openBookingDetails(booking);
-                              }
-                            }}
-                            className={`bg-amber-100 border border-amber-300 rounded p-1.5 text-xs absolute inset-2 overflow-hidden transition-colors flex flex-col items-center justify-center gap-0.5 ${
-                              tjanst ? "" : "cursor-pointer hover:bg-amber-200"
+                    if (booking) {
+                      // Bokat slot
+                      return (
+                        <div key={`${day.toISOString()}-${timeSlot}`} className="p-1 bg-white">
+                          <button
+                            onClick={() => !tjanst && openBookingDetails(booking)}
+                            disabled={!!tjanst}
+                            className={`w-full h-full p-1.5 rounded-lg border-2 border-stone-200 bg-stone-50 text-stone-400 text-xs font-medium ${
+                              tjanst ? "cursor-not-allowed" : "cursor-pointer hover:bg-stone-100"
                             }`}
-                            style={{
-                              height: `calc(${slotSpan * 45}px - 16px)`,
-                              zIndex: 10,
-                            }}
                           >
-                            {tjanst ? (
-                              // Visa bara "Bokat" för kunder på företagssidan
-                              <div className="font-bold text-stone-800 text-[11px] leading-tight text-center">
-                                Bokat
+                            <div className="text-center line-through">{timeSlot}</div>
+                            {!tjanst && booking.kund && (
+                              <div className="text-[10px] mt-1 truncate">{booking.kund.namn}</div>
+                            )}
+                          </button>
+                        </div>
+                      );
+                    }
+
+                    // Ledigt slot - visa som klickbart kort med tid och pris
+                    return (
+                      <div key={`${day.toISOString()}-${timeSlot}`} className="p-1 bg-white">
+                        <button
+                          onClick={() => tjanst && handleSlotClick(day, timeSlot)}
+                          disabled={!tjanst}
+                          className={`w-full h-full p-2 rounded-lg border transition-all ${
+                            tjanst
+                              ? "border-amber-200 bg-white hover:bg-amber-50 hover:border-amber-400 hover:shadow-md cursor-pointer active:scale-95"
+                              : "border-stone-200 bg-stone-50 cursor-not-allowed"
+                          }`}
+                        >
+                          <div className="text-center">
+                            <div
+                              className={`text-sm font-bold ${
+                                tjanst ? "text-stone-800" : "text-stone-400"
+                              }`}
+                            >
+                              {timeSlot}
+                            </div>
+                            {tjanst && (
+                              <div className="text-amber-600 text-xs font-semibold">
+                                {tjanst.pris / 100} kr
                               </div>
-                            ) : (
-                              // Visa kund + tjänst på dashboard
-                              <>
-                                <div className="font-bold text-stone-800 text-[11px] leading-tight text-center break-words w-full">
-                                  {booking.kund?.namn}
-                                </div>
-                                {booking.tjanst?.namn && (
-                                  <div className="text-stone-600 text-[9px] leading-tight text-center break-words w-full">
-                                    {booking.tjanst.namn}
-                                  </div>
-                                )}
-                              </>
                             )}
                           </div>
-                        ) : booking && !isFirstSlot ? null : tjanst ? ( // Tom div för slots som är täckta av en bokning ovan
-                          <div className="text-center text-stone-300 text-xs opacity-0 group-hover:opacity-100">
-                            +
-                          </div>
-                        ) : null}
+                        </button>
                       </div>
                     );
                   })}
-                </div>
+                </React.Fragment>
               ))}
             </div>
           </div>

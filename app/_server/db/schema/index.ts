@@ -1,5 +1,7 @@
 export * from "./anvandare";
+export * from "./kunder";
 export * from "./bokningar";
+export * from "./recensioner";
 export * from "./tjanster";
 export * from "./utforare";
 export * from "./foretag";

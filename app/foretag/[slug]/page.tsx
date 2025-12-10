@@ -1,11 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Phone, Mail, Globe, Clock } from "lucide-react";
+import { MapPin, Phone, Mail, Globe, Clock, Star } from "lucide-react";
 import { hämtaFöretagBySlug } from "../../dashboard/foretagsuppgifter/actions/foretag";
 import { hämtaTjänsterForFöretag } from "../../dashboard/tjanster/actions/tjanster";
 import { hämtaBilderForFöretag } from "../../dashboard/bilder/actions/bilder";
 import { hämtaÖppettiderForFöretag } from "../../dashboard/oppettider/actions/oppettider";
+import { hämtaRecensioner, hämtaSnittbetyg } from "../../dashboard/recensioner/actions/recensioner";
+import { RecensionsFormular } from "./components/RecensionsFormular";
 
 interface ForetagPageProps {
   params: Promise<{ slug: string }>;
@@ -21,12 +23,15 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
     notFound();
   }
 
-  // Hämta företagets tjänster, bilder och öppettider
-  const [foretagTjanster, foretagBilder, foretagOppettider] = await Promise.all([
-    hämtaTjänsterForFöretag(slug),
-    hämtaBilderForFöretag(slug),
-    hämtaÖppettiderForFöretag(slug),
-  ]);
+  // Hämta företagets tjänster, bilder, öppettider och recensioner
+  const [foretagTjanster, foretagBilder, foretagOppettider, recensioner, snittbetyg] =
+    await Promise.all([
+      hämtaTjänsterForFöretag(slug),
+      hämtaBilderForFöretag(slug),
+      hämtaÖppettiderForFöretag(slug),
+      hämtaRecensioner(slug),
+      hämtaSnittbetyg(slug),
+    ]);
 
   // Gruppera tjänster per kategori
   const tjänsterPerKategori = foretagTjanster.reduce((acc, tjanst) => {
@@ -40,7 +45,7 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
     <div className="min-h-screen">
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-amber-50 to-stone-100 border-b border-stone-200">
-        <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="max-w-4xl mx-auto px-4 py-12">
           <div className="space-y-6">
             <div>
               <h1 className="text-4xl md:text-5xl font-bold text-stone-900 mb-3 font-[family-name:var(--font-newsreader)]">
@@ -53,7 +58,7 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
 
             {/* Bildgalleri */}
             {foretagBilder.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
                 {foretagBilder.map((bild) => (
                   <div
                     key={bild.id}
@@ -71,7 +76,7 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
             )}
 
             {/* Kontaktinfo */}
-            <div className="flex flex-wrap gap-6 text-stone-600">
+            <div className="flex flex-wrap justify-center gap-6 text-stone-600 mt-8">
               {foretagData.adress && foretagData.stad && (
                 <div className="flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-amber-600" />
@@ -110,6 +115,23 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
                 </div>
               )}
             </div>
+
+            {/* Karta */}
+            {foretagData.adress && foretagData.stad && (
+              <div className="mt-8 rounded-lg border border-stone-200 shadow-sm overflow-hidden h-[300px]">
+                <iframe
+                  src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                    `${foretagData.adress}, ${foretagData.stad}`
+                  )}&output=embed&hl=sv&z=15`}
+                  width="100%"
+                  height="100%"
+                  className="rounded-lg"
+                  loading="lazy"
+                  title="Företagets plats"
+                  style={{ border: 0 }}
+                />
+              </div>
+            )}
           </div>
 
           {/* Öppettider Section */}
@@ -146,7 +168,7 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
                 <div key={kategori} className="space-y-4">
                   <h3 className="text-xl font-semibold text-stone-800">{kategori}</h3>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {tjänsterLista.map((tjanst) => (
                       <Link
                         key={tjanst.id}
@@ -185,6 +207,89 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
               ))}
             </div>
           )}
+
+          {/* Recensioner Section */}
+          <div className="space-y-6 mt-12 pb-12">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-3xl font-bold text-stone-900 mb-2">Recensioner</h2>
+                {snittbetyg !== null && (
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-5 h-5 ${
+                            i < Math.round(snittbetyg)
+                              ? "fill-amber-400 text-amber-400"
+                              : "text-stone-300"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-lg font-semibold text-stone-700">
+                      {snittbetyg.toFixed(1)}
+                    </span>
+                    <span className="text-stone-500">
+                      ({recensioner.length} {recensioner.length === 1 ? "recension" : "recensioner"}
+                      )
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {recensioner.length === 0 ? (
+              <div className="space-y-6">
+                <div className="bg-white rounded-xl p-8 text-center border border-stone-200">
+                  <p className="text-stone-500 mb-4">
+                    Inga recensioner ännu. Bli den första att recensera!
+                  </p>
+                </div>
+                <RecensionsFormular foretagsslug={slug} />
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <RecensionsFormular foretagsslug={slug} />
+                {recensioner.map((recension) => (
+                  <div
+                    key={recension.id}
+                    className="bg-white rounded-xl p-6 shadow-sm border border-stone-200"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <div className="font-semibold text-stone-900">
+                          {recension.kund?.namn || "Anonym"}
+                        </div>
+                        <div className="flex items-center gap-1 mt-1">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-4 h-4 ${
+                                i < recension.betyg
+                                  ? "fill-amber-400 text-amber-400"
+                                  : "text-stone-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <div className="text-sm text-stone-500">
+                        {new Date(recension.skapadDatum).toLocaleDateString("sv-SE", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </div>
+                    </div>
+                    {recension.kommentar && (
+                      <p className="text-stone-700 leading-relaxed">{recension.kommentar}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

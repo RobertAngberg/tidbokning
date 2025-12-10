@@ -3,10 +3,10 @@
 import { db } from "../../../_server/db";
 import { bokningar } from "../../../_server/db/schema/bokningar";
 import { tjanster } from "../../../_server/db/schema/tjanster";
-import { anvandare } from "../../../_server/db/schema/anvandare";
+import { kunder } from "../../../_server/db/schema/kunder";
 import type { Bokning } from "../../../_server/db/schema/bokningar";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
-import type { Anvandare } from "../../../_server/db/schema/anvandare";
+import type { Kund } from "../../../_server/db/schema/kunder";
 import { revalidatePath } from "next/cache";
 import { eq, and } from "drizzle-orm";
 import { z } from "zod";
@@ -59,16 +59,15 @@ export async function skapaBokning(data: BokningInput): Promise<BokningResult> {
 
     // Skapa kund om den inte finns (förenklat - i verkligheten skulle vi kolla email)
     const [kund] = await db
-      .insert(anvandare)
+      .insert(kunder)
       .values({
         email: data.kundEmail,
         namn: data.kundNamn,
         telefon: data.kundTelefon,
-        roll: "kund",
-        foretagsslug: "demo", // Hårdkodat för nu
+        foretagsslug: tjänst.foretagsslug,
       })
       .onConflictDoUpdate({
-        target: anvandare.email,
+        target: kunder.email,
         set: {
           namn: data.kundNamn,
           telefon: data.kundTelefon,
@@ -319,7 +318,7 @@ export async function raderaBokning(
 
 export async function hämtaBokningarMedRelationer(
   foretagsslug: string
-): Promise<Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>> {
+): Promise<Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null }>> {
   try {
     const foretagBokningar = await db
       .select({
@@ -335,12 +334,12 @@ export async function hämtaBokningarMedRelationer(
         slutTid: bokningar.slutTid,
         status: bokningar.status,
         anteckningar: bokningar.anteckningar,
-        kund: anvandare,
+        kund: kunder,
         tjanst: tjanster,
       })
       .from(bokningar)
       .where(eq(bokningar.foretagsslug, foretagsslug))
-      .leftJoin(anvandare, eq(bokningar.kundId, anvandare.id))
+      .leftJoin(kunder, eq(bokningar.kundId, kunder.id))
       .leftJoin(tjanster, eq(bokningar.tjanstId, tjanster.id));
 
     console.log("🔍 Antal bokningar hittade:", foretagBokningar.length);

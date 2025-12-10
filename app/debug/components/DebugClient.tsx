@@ -5,6 +5,8 @@ import {
   raderaTjänster,
   raderaBokningar,
   raderaAnvändare,
+  raderaKunder,
+  raderaRecensioner,
   raderaUtförare,
   raderaUtförareTjänster,
   raderaUsers,
@@ -13,6 +15,7 @@ import {
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
+import type { Kund } from "../../_server/db/schema/kunder";
 import type { Utforare } from "../../_server/db/schema/utforare";
 import type { Foretag } from "../../_server/db/schema/foretag";
 
@@ -35,10 +38,22 @@ interface User {
   foretagsslug: string | null;
 }
 
+interface Recension {
+  id: string;
+  kundId: string;
+  bokningId: string;
+  foretagsslug: string;
+  betyg: number;
+  kommentar: string | null;
+  skapadDatum: Date;
+}
+
 interface DebugClientProps {
   tjanster: Tjanst[];
   bokningar: Bokning[];
   anvandare: Anvandare[];
+  kunder: Kund[];
+  recensioner: Recension[];
   utforare: Utforare[];
   utforareTjanster: UtforareTjanster[];
   users: User[];
@@ -52,6 +67,8 @@ export function DebugClient({
   tjanster,
   bokningar,
   anvandare,
+  kunder,
+  recensioner,
   utforare,
   utforareTjanster,
   users,
@@ -65,6 +82,8 @@ export function DebugClient({
     { id: "foretag", label: "Företag", color: "blue" },
     { id: "tjanster", label: "Tjänster", color: "green" },
     { id: "bokningar", label: "Bokningar", color: "amber" },
+    { id: "kunder", label: "Kunder", color: "teal" },
+    { id: "recensioner", label: "Recensioner", color: "rose" },
     { id: "anvandare", label: "Användare (legacy)", color: "orange" },
     { id: "utforare", label: "Utförare", color: "pink" },
     { id: "utforare-tjanster", label: "Tjänster per utförare", color: "cyan" },
@@ -118,6 +137,18 @@ export function DebugClient({
               Bokningar
             </button>
             <button
+              onClick={() => scrollToSection("kunder")}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 hover:scale-[1.03] bg-teal-600 hover:bg-teal-700 text-white"
+            >
+              Kunder
+            </button>
+            <button
+              onClick={() => scrollToSection("recensioner")}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 hover:scale-[1.03] bg-rose-600 hover:bg-rose-700 text-white"
+            >
+              Recensioner
+            </button>
+            <button
               onClick={() => scrollToSection("anvandare")}
               className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 hover:scale-[1.03] bg-orange-600 hover:bg-orange-700 text-white"
             >
@@ -125,7 +156,7 @@ export function DebugClient({
             </button>
             <button
               onClick={() => scrollToSection("utforare")}
-              className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 hover:scale-[1.03] bg-teal-600 hover:bg-teal-700 text-white"
+              className="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 hover:scale-[1.03] bg-pink-600 hover:bg-pink-700 text-white"
             >
               Utförare
             </button>
@@ -397,6 +428,105 @@ export function DebugClient({
                 render: (b) => (
                   <span className="text-sm text-slate-600 font-mono">{b.tjanstId}</span>
                 ),
+              },
+            ]}
+          />
+        </div>
+
+        <div id="kunder">
+          <DebugTable
+            title="Kunder"
+            data={kunder}
+            color="teal"
+            onDelete={raderaKunder}
+            columns={[
+              { key: "select", label: "" },
+              {
+                key: "id",
+                label: "ID",
+                width: "w-24",
+                render: (k) => (
+                  <span
+                    className="text-sm text-slate-500 font-mono max-w-[6rem] truncate block"
+                    title={k.id}
+                  >
+                    {k.id}
+                  </span>
+                ),
+              },
+              {
+                key: "namn",
+                label: "Namn",
+                render: (k) => <span className="font-medium">{k.namn}</span>,
+              },
+              { key: "email", label: "Email" },
+              { key: "telefon", label: "Telefon", render: (k) => k.telefon || "-" },
+              {
+                key: "foretagsslug",
+                label: "Företag",
+                render: (k) =>
+                  k.foretagsslug ? (
+                    <span className="text-sm font-mono">{k.foretagsslug}</span>
+                  ) : (
+                    <span className="text-slate-400 italic text-sm">Ingen</span>
+                  ),
+              },
+            ]}
+          />
+        </div>
+
+        <div id="recensioner">
+          <DebugTable
+            title="Recensioner"
+            data={recensioner}
+            color="rose"
+            onDelete={raderaRecensioner}
+            columns={[
+              { key: "select", label: "" },
+              {
+                key: "id",
+                label: "ID",
+                width: "w-24",
+                render: (r) => (
+                  <span
+                    className="text-sm text-slate-500 font-mono max-w-[6rem] truncate block"
+                    title={r.id}
+                  >
+                    {r.id}
+                  </span>
+                ),
+              },
+              {
+                key: "betyg",
+                label: "Betyg",
+                render: (r) => (
+                  <span className="font-semibold text-amber-600">
+                    {"★".repeat(r.betyg)}
+                    {"☆".repeat(5 - r.betyg)}
+                  </span>
+                ),
+              },
+              {
+                key: "kommentar",
+                label: "Kommentar",
+                render: (r) =>
+                  r.kommentar ? (
+                    <span className="text-sm max-w-xs truncate block" title={r.kommentar}>
+                      {r.kommentar}
+                    </span>
+                  ) : (
+                    <span className="text-slate-400 italic text-sm">Ingen kommentar</span>
+                  ),
+              },
+              {
+                key: "foretagsslug",
+                label: "Företag",
+                render: (r) => <span className="text-sm font-mono">{r.foretagsslug}</span>,
+              },
+              {
+                key: "skapadDatum",
+                label: "Skapad",
+                render: (r) => new Date(r.skapadDatum).toLocaleDateString("sv-SE"),
               },
             ]}
           />

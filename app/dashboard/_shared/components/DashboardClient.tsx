@@ -8,20 +8,38 @@ import { UtforareTab } from "../../utforare/components/UtforareTab";
 import { BilderTab } from "../../bilder/components/BilderTab";
 import { OppettiderTab } from "../../oppettider/components/OppettiderTab";
 import { ForetagsuppgifterTab } from "../../foretagsuppgifter/components/ForetagsuppgifterTab";
+import { RecensionerTab } from "../../recensioner/components/RecensionerTab";
 import type { Bokning } from "../../../_server/db/schema/bokningar";
-import type { Anvandare } from "../../../_server/db/schema/anvandare";
+import type { Kund } from "../../../_server/db/schema/kunder";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import type { Utforare } from "../../../_server/db/schema/utforare";
 import type { Foretag } from "../../../_server/db/schema/foretag";
 
 interface DashboardClientProps {
-  bokningar: Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>;
+  bokningar: Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null }>;
   tjanster: Tjanst[];
   utforare: Utforare[];
   foretag: Foretag | null;
+  recensioner: Array<{
+    id: string;
+    betyg: number;
+    kommentar: string | null;
+    skapadDatum: Date;
+    kund: {
+      namn: string;
+    } | null;
+  }>;
+  snittbetyg: number | null;
 }
 
-export function DashboardClient({ bokningar, tjanster, utforare, foretag }: DashboardClientProps) {
+export function DashboardClient({
+  bokningar,
+  tjanster,
+  utforare,
+  foretag,
+  recensioner,
+  snittbetyg,
+}: DashboardClientProps) {
   return (
     <Tabs defaultValue="bokningar" className="flex flex-col lg:flex-row gap-6">
       {/* Sidebar - vänster på desktop, överst på mobil */}
@@ -63,6 +81,12 @@ export function DashboardClient({ bokningar, tjanster, utforare, foretag }: Dash
           Öppettider
         </TabsTrigger>
         <TabsTrigger
+          value="recensioner"
+          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
+        >
+          Recensioner
+        </TabsTrigger>
+        <TabsTrigger
           value="installningar"
           className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
         >
@@ -94,6 +118,10 @@ export function DashboardClient({ bokningar, tjanster, utforare, foretag }: Dash
 
         <TabsContent value="oppettider" className="mt-0">
           <OppettiderTab />
+        </TabsContent>
+
+        <TabsContent value="recensioner" className="mt-0">
+          <RecensionerTab recensioner={recensioner} snittbetyg={snittbetyg} />
         </TabsContent>
 
         <TabsContent value="installningar" className="mt-0">

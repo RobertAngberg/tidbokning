@@ -1,5 +1,6 @@
 import { pgTable, text, timestamp, uuid, integer, boolean } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
+import { kunder } from "./kunder";
 import { anvandare } from "./anvandare";
 import { tjanster } from "./tjanster";
 import { utforare } from "./utforare";
@@ -7,7 +8,7 @@ import { utforare } from "./utforare";
 export const bokningar = pgTable("bokningar", {
   id: uuid("id").defaultRandom().primaryKey(),
   kundId: uuid("kund_id")
-    .references(() => anvandare.id)
+    .references(() => kunder.id)
     .notNull(),
   personalId: uuid("personal_id").references(() => anvandare.id),
   tjanstId: uuid("tjanst_id")
@@ -28,9 +29,9 @@ export const bokningar = pgTable("bokningar", {
 });
 
 export const bokningarRelations = relations(bokningar, ({ one }) => ({
-  kund: one(anvandare, {
+  kund: one(kunder, {
     fields: [bokningar.kundId],
-    references: [anvandare.id],
+    references: [kunder.id],
   }),
   tjanst: one(tjanster, {
     fields: [bokningar.tjanstId],

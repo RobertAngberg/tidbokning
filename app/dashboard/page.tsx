@@ -2,6 +2,7 @@ import { hämtaBokningar } from "./bokningar/actions/bokningar";
 import { hämtaTjänster } from "./tjanster/actions/tjanster";
 import { hämtaUtförare } from "./utforare/actions/utforare";
 import { hämtaFöretag } from "./foretagsuppgifter/actions/foretag";
+import { hämtaRecensioner, hämtaSnittbetyg } from "./recensioner/actions/recensioner";
 import { DashboardClient } from "./_shared/components/DashboardClient";
 import { DashboardLogin } from "./_shared/components/DashboardLogin";
 import { auth } from "../_server/auth";
@@ -43,12 +44,15 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
-  const [bokningar, tjanster, utforareResult, foretagResult] = await Promise.all([
-    hämtaBokningar(),
-    hämtaTjänster(),
-    hämtaUtförare(),
-    hämtaFöretag(foretagsslug),
-  ]);
+  const [bokningar, tjanster, utforareResult, foretagResult, recensioner, snittbetyg] =
+    await Promise.all([
+      hämtaBokningar(),
+      hämtaTjänster(),
+      hämtaUtförare(),
+      hämtaFöretag(foretagsslug),
+      hämtaRecensioner(foretagsslug),
+      hämtaSnittbetyg(foretagsslug),
+    ]);
 
   const foretag = foretagResult.success ? foretagResult.data : null;
   const utforare = utforareResult.success ? utforareResult.data || [] : [];
@@ -61,6 +65,8 @@ export default async function DashboardPage() {
           tjanster={tjanster}
           utforare={utforare}
           foretag={foretag ?? null}
+          recensioner={recensioner}
+          snittbetyg={snittbetyg}
         />
       </div>
     </div>

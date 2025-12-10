@@ -2,6 +2,8 @@ import { db } from "../_server/db";
 import { tjanster } from "../_server/db/schema/tjanster";
 import { bokningar } from "../_server/db/schema/bokningar";
 import { anvandare } from "../_server/db/schema/anvandare";
+import { kunder } from "../_server/db/schema/kunder";
+import { recensioner } from "../_server/db/schema/recensioner";
 import { utforare, utforareTjanster } from "../_server/db/schema/utforare";
 import { user, session, account, verification } from "../_server/db/schema/auth";
 import { foretag } from "../_server/db/schema/foretag";
@@ -11,6 +13,8 @@ export default async function DebugPage() {
   const allTjanster = await db.select().from(tjanster);
   const allBokningar = await db.select().from(bokningar);
   const allAnvandare = await db.select().from(anvandare);
+  const allKunder = await db.select().from(kunder);
+  const allRecensioner = await db.select().from(recensioner);
   const allUtforare = await db.select().from(utforare);
   const allUtforareTjanster = await db.select().from(utforareTjanster);
   const allUsers = await db.select().from(user);
@@ -24,6 +28,8 @@ export default async function DebugPage() {
       tjanster={allTjanster}
       bokningar={allBokningar}
       anvandare={allAnvandare}
+      kunder={allKunder}
+      recensioner={allRecensioner}
       utforare={allUtforare}
       utforareTjanster={allUtforareTjanster}
       users={allUsers}

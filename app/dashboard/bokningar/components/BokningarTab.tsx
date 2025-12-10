@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { Bokning } from "../../../_server/db/schema/bokningar";
-import type { Anvandare } from "../../../_server/db/schema/anvandare";
+import type { Kund } from "../../../_server/db/schema/kunder";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import { KalenderSchema } from "./KalenderSchema";
 import {
@@ -39,7 +39,7 @@ import { sv } from "date-fns/locale";
 import { Trash2 } from "lucide-react";
 
 interface BokningarTabProps {
-  bokningar: Array<Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }>;
+  bokningar: Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null }>;
 }
 
 export function BokningarTab({ bokningar }: BokningarTabProps) {
@@ -47,6 +47,11 @@ export function BokningarTab({ bokningar }: BokningarTabProps) {
   const [isPending, startTransition] = useTransition();
   const [filter, setFilter] = useState<string>("alla");
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Refresh data när komponenten mountas
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
 
   const handleStatusChange = (bokningId: string, newStatus: string) => {
     startTransition(async () => {

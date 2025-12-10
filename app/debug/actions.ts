@@ -4,6 +4,8 @@ import { db } from "../_server/db";
 import { tjanster } from "../_server/db/schema/tjanster";
 import { bokningar } from "../_server/db/schema/bokningar";
 import { anvandare } from "../_server/db/schema/anvandare";
+import { kunder } from "../_server/db/schema/kunder";
+import { recensioner } from "../_server/db/schema/recensioner";
 import { utforare, utforareTjanster } from "../_server/db/schema/utforare";
 import { user, session, account } from "../_server/db/schema/auth";
 import { foretag } from "../_server/db/schema/foretag";
@@ -95,5 +97,35 @@ export async function raderaFöretag(ids: string[]) {
   } catch (error) {
     console.error("Fel vid radering av företag:", error);
     return { success: false, error: "Kunde inte radera företag" };
+  }
+}
+
+export async function raderaKunder(ids: string[]) {
+  try {
+    // Radera först recensioner kopplade till kunderna
+    await db.delete(recensioner).where(inArray(recensioner.kundId, ids));
+
+    // Radera sedan bokningar kopplade till kunderna
+    await db.delete(bokningar).where(inArray(bokningar.kundId, ids));
+
+    // Radera slutligen kunderna
+    await db.delete(kunder).where(inArray(kunder.id, ids));
+
+    revalidatePath("/debug");
+    return { success: true };
+  } catch (error) {
+    console.error("Fel vid radering av kunder:", error);
+    return { success: false, error: "Kunde inte radera kunder" };
+  }
+}
+
+export async function raderaRecensioner(ids: string[]) {
+  try {
+    await db.delete(recensioner).where(inArray(recensioner.id, ids));
+    revalidatePath("/debug");
+    return { success: true };
+  } catch (error) {
+    console.error("Fel vid radering av recensioner:", error);
+    return { success: false, error: "Kunde inte radera recensioner" };
   }
 }
