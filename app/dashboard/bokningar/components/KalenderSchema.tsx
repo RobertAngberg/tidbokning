@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Card, CardContent } from "../../../_components/Card";
-import { Badge } from "../../../_components/Badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../_components/Dialog";
 import { format, isSameDay } from "date-fns";
 import { sv } from "date-fns/locale";
@@ -18,7 +17,6 @@ import { useKalenderNavigation } from "../hooks/useKalenderNavigation";
 import { useBookingSlots } from "../hooks/useBookingSlots";
 import { useBookingModal } from "../hooks/useBookingModal";
 import { useBookingDetails } from "../hooks/useBookingDetails";
-import { useBookingStatus } from "../hooks/useBookingStatus";
 import { useDragAndDrop } from "../hooks/useDragAndDrop";
 import { RedigeraBokningModal } from "./RedigeraBokningModal";
 
@@ -74,8 +72,6 @@ export function KalenderSchema({
   });
 
   const { selectedBooking, openBookingDetails, closeBookingDetails } = useBookingDetails();
-
-  const { statusVariant } = useBookingStatus();
 
   const {
     draggedItem,
@@ -137,7 +133,6 @@ export function KalenderSchema({
                 </svg>
               </button>
               <h2 className="text-xl font-bold text-stone-800 flex items-center gap-2">
-                <span>📅</span>
                 <span>
                   Vecka {format(weekStart, "w", { locale: sv })} •{" "}
                   {format(weekStart, "yyyy", { locale: sv })}

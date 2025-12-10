@@ -25,7 +25,6 @@ export default function HomePage() {
           </div>
 
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
-            <div className="text-4xl mb-3">📅</div>
             <h3 className="text-lg font-bold text-white mb-2">Boka Online</h3>
             <p className="text-white/80 text-sm">Välj tid som passar dig, utan att behöva ringa</p>
           </div>

@@ -91,7 +91,7 @@ export function KalenderBokningModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-serif text-2xl font-normal">
             Skapa bokning -{" "}
@@ -163,7 +163,7 @@ export function KalenderBokningModal({
             </div>
           )}
 
-          <div className="flex gap-2 pt-4">
+          <div className="flex gap-2 pt-2">
             <Button
               type="submit"
               disabled={isPending}
