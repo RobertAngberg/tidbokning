@@ -123,12 +123,11 @@ export function KundBokningModal({
           {utforare.length > 0 && (
             <div>
               <label htmlFor="utforare" className="block text-sm font-semibold text-stone-700 mb-1">
-                Välj utförare *
+                Välj utförare (valfritt)
               </label>
               <select
                 id="utforare"
                 name="utforareId"
-                required
                 className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               >
                 <option value="">Valfri utförare</option>

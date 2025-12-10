@@ -4,6 +4,7 @@ import { hämtaUtförare } from "./utforare/actions/utforare";
 import { hamtaForetag } from "./foretagsuppgifter/actions/foretag";
 import { hamtaRecensioner, hamtaSnittbetyg } from "./recensioner/actions/recensioner";
 import { hamtaLunchtider } from "./bokningar/actions/lunchtider";
+import { hamtaOppettider } from "./oppettider/actions/oppettider";
 import { DashboardClient } from "./_shared/components/DashboardClient";
 import { DashboardLogin } from "./_shared/components/DashboardLogin";
 import { auth } from "../_server/auth";
@@ -45,19 +46,38 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
-  const [bokningar, tjanster, utforareResult, foretagResult, recensioner, snittbetyg, lunchtider] =
-    await Promise.all([
-      hamtaBokningar(),
-      hamtaTjanster(),
-      hämtaUtförare(),
-      hamtaForetag(foretagsslug),
-      hamtaRecensioner(foretagsslug),
-      hamtaSnittbetyg(foretagsslug),
-      hamtaLunchtider(foretagsslug),
-    ]);
+  const [
+    bokningar,
+    tjanster,
+    utforareResult,
+    foretagResult,
+    recensioner,
+    snittbetyg,
+    lunchtider,
+    oppettiderArray,
+  ] = await Promise.all([
+    hamtaBokningar(),
+    hamtaTjanster(),
+    hämtaUtförare(),
+    hamtaForetag(foretagsslug),
+    hamtaRecensioner(foretagsslug),
+    hamtaSnittbetyg(foretagsslug),
+    hamtaLunchtider(foretagsslug),
+    hamtaOppettider(),
+  ]);
 
   const foretag = foretagResult.success ? foretagResult.data : null;
   const utforare = utforareResult.success ? utforareResult.data || [] : [];
+
+  // Konvertera öppettider till format som kalendern förstår
+  const oppettider = oppettiderArray.reduce((acc, o) => {
+    acc[o.veckodag] = {
+      open: o.oppnar ? o.oppnar.substring(0, 5) : "08:00", // "HH:MM:SS" -> "HH:MM"
+      close: o.stanger ? o.stanger.substring(0, 5) : "17:00", // "HH:MM:SS" -> "HH:MM"
+      stangt: o.stangt,
+    };
+    return acc;
+  }, {} as { [key: string]: { open: string; close: string; stangt: boolean } });
 
   return (
     <div className="min-h-screen p-8">
@@ -71,6 +91,7 @@ export default async function DashboardPage() {
           snittbetyg={snittbetyg}
           lunchtider={lunchtider}
           foretagsslug={foretagsslug}
+          oppettider={oppettider}
         />
       </div>
     </div>

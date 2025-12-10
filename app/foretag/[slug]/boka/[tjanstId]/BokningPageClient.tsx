@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { KalenderSchema } from "../../../../dashboard/bokningar/components/KalenderSchema";
 import Image from "next/image";
 import type { Bokning } from "../../../../_server/db/schema/bokningar";
@@ -19,6 +20,13 @@ interface BokningPageClientProps {
   utforareTillganglighet: UtforareTillganglighet[];
   lunchtider: Lunchtid[];
   slug: string;
+  oppettider: {
+    [key: string]: {
+      open: string;
+      close: string;
+      stangt: boolean;
+    };
+  };
 }
 
 export function BokningPageClient({
@@ -28,6 +36,7 @@ export function BokningPageClient({
   utforareTillganglighet,
   lunchtider,
   slug,
+  oppettider,
 }: BokningPageClientProps) {
   const [selectedUtforareId, setSelectedUtforareId] = useState<string | null>(null);
 
@@ -37,6 +46,24 @@ export function BokningPageClient({
       <div className="lg:col-span-1 space-y-8">
         {/* Tjänst info */}
         <div className="bg-white rounded-xl p-6 border border-stone-200">
+          {/* Avbryt-länk */}
+          <div className="mb-4">
+            <Link
+              href={`/foretag/${slug}`}
+              className="inline-flex items-center gap-2 text-stone-600 hover:text-amber-600 transition-colors text-sm font-medium"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              Avbryt
+            </Link>
+          </div>
+
           <h1 className="text-2xl font-bold text-stone-800 mb-2 font-[family-name:var(--font-newsreader)]">
             {tjanst.namn}
           </h1>
@@ -126,6 +153,7 @@ export function BokningPageClient({
           lunchtider={lunchtider}
           foretagsslug={slug}
           selectedUtforareId={selectedUtforareId}
+          oppettider={oppettider}
         />
       </div>
     </div>

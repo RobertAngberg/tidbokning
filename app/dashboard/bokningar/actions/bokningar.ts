@@ -5,6 +5,7 @@ import { bokningar } from "../../../_server/db/schema/bokningar";
 import { tjanster } from "../../../_server/db/schema/tjanster";
 import { kunder } from "../../../_server/db/schema/kunder";
 import { utforare } from "../../../_server/db/schema/utforare";
+import { recensioner } from "../../../_server/db/schema/recensioner";
 import type { Bokning } from "../../../_server/db/schema/bokningar";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import type { Kund } from "../../../_server/db/schema/kunder";
@@ -21,7 +22,7 @@ const bokningSchema = z.object({
   kundEmail: z.string().email("Ogiltig e-postadress"),
   kundTelefon: z.string().optional().or(z.literal("")),
   tjänstId: z.string().uuid("Ogiltig tjänst"),
-  utforareId: z.string().uuid("Ogiltig utförare").optional(),
+  utforareId: z.string().uuid("Ogiltig utförare").optional().or(z.literal("")),
   startTid: z.date(),
   anteckningar: z.string().optional(),
 });
@@ -83,7 +84,7 @@ export async function skapaBokning(data: BokningInput): Promise<BokningResult> {
       .values({
         kundId: kund.id,
         tjanstId: data.tjänstId,
-        utforareId: data.utforareId,
+        utforareId: data.utforareId && data.utforareId !== "" ? data.utforareId : null,
         startTid: data.startTid,
         slutTid: slutTid,
         status: "Bekräftad",
@@ -383,6 +384,10 @@ export async function raderaBokning(
       return { success: false, error: validated.error.issues[0].message };
     }
 
+    // Radera eventuella recensioner först (foreign key constraint)
+    await db.delete(recensioner).where(eq(recensioner.bokningId, validated.data));
+
+    // Radera bokningen
     await db.delete(bokningar).where(eq(bokningar.id, validated.data));
 
     revalidatePath("/");

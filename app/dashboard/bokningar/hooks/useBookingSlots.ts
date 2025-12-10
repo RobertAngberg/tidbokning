@@ -10,17 +10,61 @@ type BokningMedRelationer = Bokning & {
   utforare: Utforare | null;
 };
 
-export function useBookingSlots(bokningar: BokningMedRelationer[]) {
-  // Tidslots från 08:00 till 17:00 (30 min intervall)
-  const timeSlots = useMemo(
-    () =>
-      Array.from({ length: 18 }, (_, i) => {
+type Oppettider =
+  | {
+      [key: string]: {
+        open: string;
+        close: string;
+        stangt: boolean;
+      };
+    }
+  | null
+  | undefined;
+
+export function useBookingSlots(
+  bokningar: BokningMedRelationer[],
+  oppettider?: Oppettider,
+  weekDays?: Date[]
+) {
+  // Generera tidslots baserat på öppettider eller fallback till 08:00-17:00
+  const timeSlots = useMemo(() => {
+    // Om inga öppettider finns, använd default 08:00-17:00
+    if (!oppettider || !weekDays || weekDays.length === 0) {
+      return Array.from({ length: 18 }, (_, i) => {
         const hour = Math.floor(i / 2) + 8;
         const minute = i % 2 === 0 ? "00" : "30";
         return `${hour.toString().padStart(2, "0")}:${minute}`;
-      }),
-    []
-  );
+      });
+    }
+
+    // Hitta min och max tid från alla öppettider
+    const veckodagar = ["söndag", "måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag"];
+    let minHour = 8;
+    let maxHour = 17;
+
+    weekDays.forEach((day) => {
+      const veckodag = veckodagar[day.getDay()];
+      const dagensOppettider = oppettider[veckodag];
+
+      if (dagensOppettider && !dagensOppettider.stangt) {
+        const openHour = parseInt(dagensOppettider.open.split(":")[0]);
+        const closeHour = parseInt(dagensOppettider.close.split(":")[0]);
+        const closeMinute = parseInt(dagensOppettider.close.split(":")[1]);
+
+        minHour = Math.min(minHour, openHour);
+        maxHour = Math.max(maxHour, closeMinute > 0 ? closeHour + 1 : closeHour);
+      }
+    });
+
+    // Generera slots från minHour till maxHour
+    const slots = [];
+    for (let hour = minHour; hour < maxHour; hour++) {
+      slots.push(`${hour.toString().padStart(2, "0")}:00`);
+      slots.push(`${hour.toString().padStart(2, "0")}:30`);
+    }
+
+    return slots;
+  }, [oppettider, weekDays]);
 
   // Hitta bokningar för specifik dag och tid
   const getBookingForSlot = (day: Date, timeSlot: string) => {

@@ -35,6 +35,13 @@ interface DashboardClientProps {
     } | null;
   }>;
   snittbetyg: number | null;
+  oppettider: {
+    [key: string]: {
+      open: string;
+      close: string;
+      stangt: boolean;
+    };
+  };
 }
 
 export function DashboardClient({
@@ -46,6 +53,7 @@ export function DashboardClient({
   snittbetyg,
   lunchtider,
   foretagsslug,
+  oppettider,
 }: DashboardClientProps) {
   return (
     <Tabs defaultValue="bokningar" className="flex flex-col lg:flex-row gap-6">
@@ -110,6 +118,8 @@ export function DashboardClient({
             utforare={utforare}
             lunchtider={lunchtider}
             foretagsslug={foretagsslug}
+            foretag={foretag}
+            oppettider={oppettider}
           />
         </TabsContent>
 

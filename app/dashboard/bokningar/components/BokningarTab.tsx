@@ -39,6 +39,7 @@ import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { Trash2 } from "lucide-react";
 import type { Utforare } from "../../../_server/db/schema/utforare";
+import type { Foretag } from "../../../_server/db/schema/foretag";
 
 interface BokningarTabProps {
   bokningar: Array<
@@ -48,6 +49,14 @@ interface BokningarTabProps {
   utforare: Utforare[];
   lunchtider: Lunchtid[];
   foretagsslug: string;
+  foretag: Foretag | null;
+  oppettider: {
+    [key: string]: {
+      open: string;
+      close: string;
+      stangt: boolean;
+    };
+  };
 }
 
 export function BokningarTab({
@@ -56,6 +65,8 @@ export function BokningarTab({
   utforare,
   lunchtider,
   foretagsslug,
+  foretag,
+  oppettider,
 }: BokningarTabProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -101,6 +112,7 @@ export function BokningarTab({
         foretagsslug={foretagsslug}
         tjanster={tjanster}
         utforare={utforare}
+        oppettider={oppettider}
         onBookingCreated={() => router.refresh()}
       />
     </div>

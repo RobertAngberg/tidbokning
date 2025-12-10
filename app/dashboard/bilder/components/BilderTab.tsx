@@ -28,17 +28,23 @@ export function BilderTab() {
           <p className="text-muted-foreground mb-4">
             Börja med att ladda upp bilder som visar ditt företag
           </p>
-          <Button onClick={öppnaFilväljare} disabled={uppladdning} variant="outline">
-            <Plus className="w-4 h-4 mr-2" />
-            {uppladdning ? "Laddar upp..." : "Ladda upp bild(er)"}
-          </Button>
+          <button
+            onClick={öppnaFilväljare}
+            disabled={uppladdning}
+            className="px-4 py-2 bg-white text-black rounded-md hover:bg-white/90 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            + {uppladdning ? "Laddar upp..." : "Ladda upp bild(er)"}
+          </button>
         </Card>
       ) : (
         <div className="space-y-4">
-          <Button onClick={öppnaFilväljare} disabled={uppladdning} variant="outline">
-            <Plus className="w-4 h-4 mr-2" />
-            {uppladdning ? "Laddar upp..." : "Ladda upp bild(er)"}
-          </Button>
+          <button
+            onClick={öppnaFilväljare}
+            disabled={uppladdning}
+            className="px-4 py-2 bg-white text-black rounded-md hover:bg-white/90 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            + {uppladdning ? "Laddar upp..." : "Ladda upp bild(er)"}
+          </button>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {bilder.map((bild) => (

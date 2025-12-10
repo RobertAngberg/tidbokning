@@ -8,6 +8,7 @@ import {
 import { hamtaAktivaUtforareForForetag } from "../../../../dashboard/utforare/actions/utforare";
 import { hamtaLunchtider } from "../../../../dashboard/bokningar/actions/lunchtider";
 import { hamtaAllaUtforareTillganglighet } from "../../../../dashboard/utforare/actions/tillganglighet";
+import { hamtaOppettiderForForetag } from "../../../../dashboard/oppettider/actions/oppettider";
 
 interface BokaPageProps {
   params: Promise<{ slug: string; tjanstId: string }>;
@@ -35,6 +36,19 @@ export default async function BokaTjanstPage({ params }: BokaPageProps) {
   // Hämta utförares tillgänglighet
   const utforareTillganglighet = await hamtaAllaUtforareTillganglighet(slug);
 
+  // Hämta öppettider
+  const oppettiderArray = await hamtaOppettiderForForetag(slug);
+
+  // Konvertera öppettider till format som kalendern förstår
+  const oppettider = oppettiderArray.reduce((acc, o) => {
+    acc[o.veckodag] = {
+      open: o.oppnar ? o.oppnar.substring(0, 5) : "08:00", // "HH:MM:SS" -> "HH:MM"
+      close: o.stanger ? o.stanger.substring(0, 5) : "17:00", // "HH:MM:SS" -> "HH:MM"
+      stangt: o.stangt,
+    };
+    return acc;
+  }, {} as { [key: string]: { open: string; close: string; stangt: boolean } });
+
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto">
@@ -45,25 +59,8 @@ export default async function BokaTjanstPage({ params }: BokaPageProps) {
           utforareTillganglighet={utforareTillganglighet}
           lunchtider={lunchtider}
           slug={slug}
+          oppettider={oppettider}
         />
-
-        {/* Tillbaka-länk */}
-        <div className="mt-8">
-          <Link
-            href={`/foretag/${slug}`}
-            className="inline-flex items-center gap-2 text-stone-600 hover:text-amber-600 transition-colors text-sm"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Tillbaka till företaget
-          </Link>
-        </div>
       </div>
     </div>
   );

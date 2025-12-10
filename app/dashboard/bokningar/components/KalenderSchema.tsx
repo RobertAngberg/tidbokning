@@ -32,6 +32,13 @@ interface KalenderSchemaProps {
   utforareTillganglighet?: UtforareTillganglighet[];
   selectedUtforareId?: string | null;
   onBookingCreated?: () => void;
+  oppettider?: {
+    [key: string]: {
+      open: string;
+      close: string;
+      stangt: boolean;
+    };
+  } | null;
 }
 
 export function KalenderSchema({
@@ -44,6 +51,7 @@ export function KalenderSchema({
   utforareTillganglighet = [],
   selectedUtforareId: selectedUtforareIdProp,
   onBookingCreated,
+  oppettider,
 }: KalenderSchemaProps) {
   const [dashboardModalOpen, setDashboardModalOpen] = React.useState(false);
   const [selectedDashboardSlot, setSelectedDashboardSlot] = React.useState<{
@@ -63,7 +71,7 @@ export function KalenderSchema({
 
   const { weekStart, weekDays, goToPreviousWeek, goToNextWeek } = useKalenderNavigation();
 
-  const { timeSlots, getBookingForSlot } = useBookingSlots(bokningar);
+  const { timeSlots, getBookingForSlot } = useBookingSlots(bokningar, oppettider, weekDays);
 
   const { isModalOpen, selectedSlot, handleSlotClick, closeModal } = useBookingModal(tjanst, () => {
     if (onBookingCreated) {
@@ -85,9 +93,34 @@ export function KalenderSchema({
     handleCancelMove,
   } = useDragAndDrop(foretagsslug, onBookingCreated);
 
+  // Funktion för att kolla om tid är inom företagets öppettider
+  const isWithinOpeningHours = (day: Date, timeSlot: string): boolean => {
+    if (!oppettider) return true; // Om inga öppettider, tillåt allt
+
+    const veckodagar = ["söndag", "måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag"];
+    const veckodag = veckodagar[day.getDay()];
+    const dagensOppettider = oppettider[veckodag];
+
+    // Om inga öppettider finns för denna dag, använd default (08:00-17:00)
+    if (!dagensOppettider) return true;
+
+    // Om stängt denna dag, returnera false
+    if (dagensOppettider.stangt) return false;
+
+    const slotTime = timeSlot; // "HH:MM"
+    const openTime = dagensOppettider.open; // "HH:MM"
+    const closeTime = dagensOppettider.close; // "HH:MM"
+
+    // Kolla om sloten är inom öppettiderna
+    return slotTime >= openTime && slotTime < closeTime;
+  };
+
   // Funktion för att kolla om tid är tillgänglig för vald utförare
   const isTimeAvailableForUtforare = (day: Date, timeSlot: string): boolean => {
-    // Om ingen utförare är vald, visa alla tider
+    // Kolla först om tiden är inom öppettiderna
+    if (!isWithinOpeningHours(day, timeSlot)) return false;
+
+    // Om ingen utförare är vald, visa alla tider (som är inom öppettiderna)
     if (!selectedUtforareId) return true;
 
     // Hämta veckodag (måndag, tisdag, etc.)
