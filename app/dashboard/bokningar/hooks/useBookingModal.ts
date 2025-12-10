@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
-import type { BookingFormData } from "../components/BookingModal";
+import type { BookingFormData } from "../components/KundBokningModal";
 import { skapaBokning } from "../actions/bokningar";
 import { useRouter } from "next/navigation";
 
