@@ -12,7 +12,7 @@ const newsreader = Newsreader({
 
 export const metadata: Metadata = {
   title: "Tidbokning - Boka dina tider enkelt",
-  description: "Ett modernt tidsbokningssystem för företag och kunder",
+  description: "Ett modernt tidsbokningssystem for foretag och kunder",
 };
 
 export default function RootLayout({
