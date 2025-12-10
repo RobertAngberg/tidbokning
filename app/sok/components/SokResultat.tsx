@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { MapPin, Phone } from "lucide-react";
 
-interface Företag {
+interface Foretag {
   id: string;
   namn: string;
   slug: string;
@@ -14,14 +14,15 @@ interface Företag {
   logoUrl: string | null;
 }
 
-interface SökResultatProps {
-  företag: Företag[];
+interface SokResultatProps {
+  foretag: Foretag[];
+  sokterm?: string;
 }
 
-export function SökResultat({ företag }: SökResultatProps) {
+export function SokResultat({ foretag }: SokResultatProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {företag.map((f) => (
+      {foretag.map((f) => (
         <Link
           key={f.id}
           href={`/foretag/${f.slug}`}

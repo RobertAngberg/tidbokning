@@ -4,24 +4,24 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
-export function SökForetag() {
-  const [sökterm, setSökterm] = useState("");
+export function SokForetag() {
+  const [sokterm, setSokterm] = useState("");
   const router = useRouter();
 
-  const handleSök = (e: React.FormEvent) => {
+  const handleSok = (e: React.FormEvent) => {
     e.preventDefault();
-    if (sökterm.trim()) {
-      router.push(`/sok?q=${encodeURIComponent(sökterm.trim())}`);
+    if (sokterm.trim()) {
+      router.push(`/sok?q=${encodeURIComponent(sokterm.trim())}`);
     }
   };
 
   return (
-    <form onSubmit={handleSök} className="w-full max-w-2xl mx-auto">
+    <form onSubmit={handleSok} className="w-full max-w-2xl mx-auto">
       <div className="relative">
         <input
           type="text"
-          value={sökterm}
-          onChange={(e) => setSökterm(e.target.value)}
+          value={sokterm}
+          onChange={(e) => setSokterm(e.target.value)}
           placeholder="Sök efter företag, tjänster eller behandlingar..."
           className="w-full px-6 py-4 pr-14 text-lg rounded-full bg-white/95 backdrop-blur-md border-2 border-white/20 focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-500/20 transition-all"
         />

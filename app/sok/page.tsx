@@ -1,5 +1,5 @@
 import { sökForetag } from "./actions/search";
-import { SökResultat } from "./components/SökResultat";
+import { SokResultat } from "./components/SokResultat";
 import Link from "next/link";
 
 interface SökPageProps {
@@ -45,7 +45,7 @@ export default async function SökPage({ searchParams }: SökPageProps) {
             <p className="text-white/80 text-lg">Ange en sökterm för att hitta företag</p>
           </div>
         ) : resultat.success && resultat.data && resultat.data.length > 0 ? (
-          <SökResultat företag={resultat.data} />
+          <SokResultat foretag={resultat.data} sokterm={sökterm} />
         ) : resultat.success ? (
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-12 border border-white/20 text-center">
             <div className="text-6xl mb-4">🔍</div>

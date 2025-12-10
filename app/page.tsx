@@ -1,4 +1,4 @@
-import { SökForetag } from "./_components/SökForetag";
+import { SokForetag } from "./_components/SokForetag";
 
 export default function HomePage() {
   return (
@@ -13,7 +13,7 @@ export default function HomePage() {
           </p>
         </div>
 
-        <SökForetag />
+        <SokForetag />
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6">
           <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20">
