@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { Tjanst } from "../_server/db/schema/tjanster";
-import type { BookingFormData } from "../dashboard/components/BookingModal";
-import { skapaBokning } from "../dashboard/actions/bokningar";
+import type { BookingFormData } from "../dashboard/bokningar/components/BookingModal";
+import { skapaBokning } from "../dashboard/bokningar/actions/bokningar";
 import { useRouter } from "next/navigation";
 
 export function useBookingModal(tjanst?: Tjanst, onBookingCreated?: () => void) {
