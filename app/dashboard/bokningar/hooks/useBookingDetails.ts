@@ -1,16 +1,14 @@
 import { useState } from "react";
 import type { Bokning } from "../../../_server/db/schema/bokningar";
-import type { Anvandare } from "../../../_server/db/schema/anvandare";
+import type { Kund } from "../../../_server/db/schema/kunder";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 
 export function useBookingDetails() {
   const [selectedBooking, setSelectedBooking] = useState<
-    (Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }) | null
+    (Bokning & { kund: Kund | null; tjanst: Tjanst | null }) | null
   >(null);
 
-  const openBookingDetails = (
-    booking: Bokning & { kund: Anvandare | null; tjanst: Tjanst | null }
-  ) => {
+  const openBookingDetails = (booking: Bokning & { kund: Kund | null; tjanst: Tjanst | null }) => {
     setSelectedBooking(booking);
   };
 

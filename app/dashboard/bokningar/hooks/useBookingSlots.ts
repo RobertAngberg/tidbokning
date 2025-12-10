@@ -1,9 +1,9 @@
 import type { Bokning } from "../../../_server/db/schema/bokningar";
-import type { Anvandare } from "../../../_server/db/schema/anvandare";
+import type { Kund } from "../../../_server/db/schema/kunder";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 
 type BokningMedRelationer = Bokning & {
-  kund: Anvandare | null;
+  kund: Kund | null;
   tjanst: Tjanst | null;
 };
 

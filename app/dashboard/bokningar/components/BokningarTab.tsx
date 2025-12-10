@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { Bokning } from "../../../_server/db/schema/bokningar";
 import type { Kund } from "../../../_server/db/schema/kunder";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
+import type { Lunchtid } from "../../../_server/db/schema/lunchtider";
 import { KalenderSchema } from "./KalenderSchema";
 import {
   Card,
@@ -37,12 +38,23 @@ import { uppdateraBokningsstatus, raderaBokning } from "../actions/bokningar";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { Trash2 } from "lucide-react";
+import type { Utforare } from "../../../_server/db/schema/utforare";
 
 interface BokningarTabProps {
   bokningar: Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null }>;
+  tjanster: Tjanst[];
+  utforare: Utforare[];
+  lunchtider: Lunchtid[];
+  foretagsslug: string;
 }
 
-export function BokningarTab({ bokningar }: BokningarTabProps) {
+export function BokningarTab({
+  bokningar,
+  tjanster,
+  utforare,
+  lunchtider,
+  foretagsslug,
+}: BokningarTabProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [filter, setFilter] = useState<string>("alla");
@@ -82,7 +94,14 @@ export function BokningarTab({ bokningar }: BokningarTabProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <div className="lg:col-span-2">
-        <KalenderSchema bokningar={bokningar} />
+        <KalenderSchema
+          bokningar={bokningar}
+          lunchtider={lunchtider}
+          foretagsslug={foretagsslug}
+          tjanster={tjanster}
+          utforare={utforare}
+          onBookingCreated={() => router.refresh()}
+        />
       </div>
       <div>
         <Card className="h-full flex flex-col">

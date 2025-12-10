@@ -342,9 +342,6 @@ export async function hämtaBokningarMedRelationer(
       .leftJoin(kunder, eq(bokningar.kundId, kunder.id))
       .leftJoin(tjanster, eq(bokningar.tjanstId, tjanster.id));
 
-    console.log("🔍 Antal bokningar hittade:", foretagBokningar.length);
-    console.log("🔍 Första bokningen:", foretagBokningar[0]);
-
     return foretagBokningar;
   } catch (error) {
     console.error("Fel vid hämtning av bokningar:", error);
@@ -367,5 +364,43 @@ export async function hämtaTjänstForFöretag(
   } catch (error) {
     console.error("Fel vid hämtning av tjänst:", error);
     return null;
+  }
+}
+
+export async function flyttaBokning(bokningId: string, nyStartTid: Date): Promise<BokningResult> {
+  try {
+    // Hämta befintlig bokning med tjänst info
+    const befintligBokning = await db.query.bokningar.findFirst({
+      where: eq(bokningar.id, bokningId),
+      with: {
+        tjanst: true,
+      },
+    });
+
+    if (!befintligBokning) {
+      return { success: false, error: "Bokningen finns inte" };
+    }
+
+    // Beräkna ny sluttid baserat på tjänstens varaktighet
+    const nySlutTid = new Date(nyStartTid);
+    if (befintligBokning.tjanst) {
+      nySlutTid.setMinutes(nySlutTid.getMinutes() + befintligBokning.tjanst.varaktighet);
+    }
+
+    // Uppdatera bokning
+    const [uppdateradBokning] = await db
+      .update(bokningar)
+      .set({
+        startTid: nyStartTid,
+        slutTid: nySlutTid,
+      })
+      .where(eq(bokningar.id, bokningId))
+      .returning();
+
+    revalidatePath("/dashboard/bokningar");
+    return { success: true, bokning: uppdateradBokning };
+  } catch (error) {
+    console.error("Fel vid flytt av bokning:", error);
+    return { success: false, error: "Något gick fel vid flytten" };
   }
 }

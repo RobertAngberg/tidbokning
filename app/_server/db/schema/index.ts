@@ -7,4 +7,5 @@ export * from "./utforare";
 export * from "./foretag";
 export * from "./foretagBilder";
 export * from "./oppettider";
+export * from "./lunchtider";
 export * from "./auth";

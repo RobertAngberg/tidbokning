@@ -15,6 +15,13 @@
       "when": 1765322334722,
       "tag": "0001_cynical_aqueduct",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1765327383071,
+      "tag": "0002_legal_molten_man",
+      "breakpoints": true
     }
   ]
 }

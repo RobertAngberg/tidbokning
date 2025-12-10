@@ -14,12 +14,15 @@ import type { Kund } from "../../../_server/db/schema/kunder";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import type { Utforare } from "../../../_server/db/schema/utforare";
 import type { Foretag } from "../../../_server/db/schema/foretag";
+import type { Lunchtid } from "../../../_server/db/schema/lunchtider";
 
 interface DashboardClientProps {
   bokningar: Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null }>;
   tjanster: Tjanst[];
   utforare: Utforare[];
   foretag: Foretag | null;
+  lunchtider: Lunchtid[];
+  foretagsslug: string;
   recensioner: Array<{
     id: string;
     betyg: number;
@@ -39,6 +42,8 @@ export function DashboardClient({
   foretag,
   recensioner,
   snittbetyg,
+  lunchtider,
+  foretagsslug,
 }: DashboardClientProps) {
   return (
     <Tabs defaultValue="bokningar" className="flex flex-col lg:flex-row gap-6">
@@ -97,7 +102,13 @@ export function DashboardClient({
       {/* Content area */}
       <div className="flex-1">
         <TabsContent value="bokningar" className="mt-0">
-          <BokningarTab bokningar={bokningar} />
+          <BokningarTab
+            bokningar={bokningar}
+            tjanster={tjanster}
+            utforare={utforare}
+            lunchtider={lunchtider}
+            foretagsslug={foretagsslug}
+          />
         </TabsContent>
 
         <TabsContent value="oversikt" className="mt-0">

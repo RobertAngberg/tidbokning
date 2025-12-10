@@ -3,6 +3,7 @@ import { hämtaTjänster } from "./tjanster/actions/tjanster";
 import { hämtaUtförare } from "./utforare/actions/utforare";
 import { hämtaFöretag } from "./foretagsuppgifter/actions/foretag";
 import { hämtaRecensioner, hämtaSnittbetyg } from "./recensioner/actions/recensioner";
+import { hamtaLunchtider } from "./bokningar/actions/lunchtider";
 import { DashboardClient } from "./_shared/components/DashboardClient";
 import { DashboardLogin } from "./_shared/components/DashboardLogin";
 import { auth } from "../_server/auth";
@@ -44,7 +45,7 @@ export default async function DashboardPage() {
     redirect("/onboarding");
   }
 
-  const [bokningar, tjanster, utforareResult, foretagResult, recensioner, snittbetyg] =
+  const [bokningar, tjanster, utforareResult, foretagResult, recensioner, snittbetyg, lunchtider] =
     await Promise.all([
       hämtaBokningar(),
       hämtaTjänster(),
@@ -52,6 +53,7 @@ export default async function DashboardPage() {
       hämtaFöretag(foretagsslug),
       hämtaRecensioner(foretagsslug),
       hämtaSnittbetyg(foretagsslug),
+      hamtaLunchtider(foretagsslug),
     ]);
 
   const foretag = foretagResult.success ? foretagResult.data : null;
@@ -67,6 +69,8 @@ export default async function DashboardPage() {
           foretag={foretag ?? null}
           recensioner={recensioner}
           snittbetyg={snittbetyg}
+          lunchtider={lunchtider}
+          foretagsslug={foretagsslug}
         />
       </div>
     </div>

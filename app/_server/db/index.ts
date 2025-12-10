@@ -7,6 +7,7 @@ import * as recensionerSchema from "./schema/recensioner";
 import * as tjansterSchema from "./schema/tjanster";
 import * as utforareSchema from "./schema/utforare";
 import * as oppettiderSchema from "./schema/oppettider";
+import * as lunchtiderSchema from "./schema/lunchtider";
 import * as authSchema from "./schema/auth";
 import { config } from "dotenv";
 
@@ -18,6 +19,7 @@ const schema = {
   ...tjansterSchema,
   ...utforareSchema,
   ...oppettiderSchema,
+  ...lunchtiderSchema,
   ...authSchema,
 };
 
