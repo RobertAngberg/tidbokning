@@ -118,6 +118,7 @@ export async function hämtaBokningar(): Promise<
       with: {
         kund: true,
         tjanst: true,
+        utforare: true,
       },
       orderBy: (bokningar, { desc }) => [desc(bokningar.skapadDatum)],
     });
