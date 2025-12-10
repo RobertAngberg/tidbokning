@@ -14,7 +14,7 @@ import {
   raderaSessions,
   raderaAccounts,
   raderaVerifications,
-} from "../actions";
+} from "../actions/debug";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";

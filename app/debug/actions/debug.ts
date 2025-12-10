@@ -1,14 +1,14 @@
 "use server";
 
-import { db } from "../_server/db";
-import { tjanster } from "../_server/db/schema/tjanster";
-import { bokningar } from "../_server/db/schema/bokningar";
-import { anvandare } from "../_server/db/schema/anvandare";
-import { kunder } from "../_server/db/schema/kunder";
-import { recensioner } from "../_server/db/schema/recensioner";
-import { utforare, utforareTjanster } from "../_server/db/schema/utforare";
-import { user, session, account, verification } from "../_server/db/schema/auth";
-import { foretag } from "../_server/db/schema/foretag";
+import { db } from "../../_server/db";
+import { tjanster } from "../../_server/db/schema/tjanster";
+import { bokningar } from "../../_server/db/schema/bokningar";
+import { anvandare } from "../../_server/db/schema/anvandare";
+import { kunder } from "../../_server/db/schema/kunder";
+import { recensioner } from "../../_server/db/schema/recensioner";
+import { utforare, utforareTjanster } from "../../_server/db/schema/utforare";
+import { user, session, account, verification } from "../../_server/db/schema/auth";
+import { foretag } from "../../_server/db/schema/foretag";
 import { inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 

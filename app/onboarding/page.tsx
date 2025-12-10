@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { skapaForetagOchAdminAction } from "./actions";
+import { skapaForetagOchAdminAction } from "./actions/onboarding";
 
 type ActionState = { success: boolean; error?: string } | null;
 
