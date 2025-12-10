@@ -1,9 +1,9 @@
 import { useMemo } from "react";
 import type { Bokning } from "../_server/db/schema/bokningar";
-import type { Anvandare } from "../_server/db/schema/anvandare";
+import type { Kund } from "../_server/db/schema/kunder";
 import type { Tjanst } from "../_server/db/schema/tjanster";
 
-type BokningMedRelationer = Bokning & { kund: Anvandare | null; tjanst: Tjanst | null };
+type BokningMedRelationer = Bokning & { kund: Kund | null; tjanst: Tjanst | null };
 
 export function useBookingSlots(bokningar: BokningMedRelationer[]) {
   // Tidslots från 08:00 till 17:00 (30 min intervall)
