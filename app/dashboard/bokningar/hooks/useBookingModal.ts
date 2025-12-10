@@ -50,11 +50,17 @@ export function useBookingModal(tjanst?: Tjanst, onBookingCreated?: () => void) 
     }
   };
 
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedSlot(null);
+  };
+
   return {
     isModalOpen,
     setIsModalOpen,
     selectedSlot,
     handleSlotClick,
     handleBookingSubmit,
+    closeModal,
   };
 }
