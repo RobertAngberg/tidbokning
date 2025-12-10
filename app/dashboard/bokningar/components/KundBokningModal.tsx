@@ -1,19 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../_components/Dialog";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import type { Utforare } from "../../../_server/db/schema/utforare";
-
-interface KundBokningModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  selectedDate: Date;
-  selectedTime: string;
-  tjanst: Tjanst;
-  utforare: Utforare[];
-  onSubmit: (data: BookingFormData) => Promise<void>;
-}
+import { useKundBokning } from "../hooks/useKundBokning";
 
 export interface BookingFormData {
   namn: string;
@@ -23,6 +13,16 @@ export interface BookingFormData {
   anteckningar?: string;
 }
 
+interface KundBokningModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  selectedDate: Date;
+  selectedTime: string;
+  tjanst: Tjanst;
+  utforare: Utforare[];
+  onSuccess?: () => void;
+}
+
 export function KundBokningModal({
   isOpen,
   onClose,
@@ -30,39 +30,15 @@ export function KundBokningModal({
   selectedTime,
   tjanst,
   utforare,
-  onSubmit,
+  onSuccess,
 }: KundBokningModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<BookingFormData>({
-    namn: "",
-    email: "",
-    telefon: "",
-    utforareId: "",
-    anteckningar: "",
+  const { isPending, error, formAction } = useKundBokning({
+    selectedDate,
+    selectedTime,
+    tjänstId: tjanst.id,
+    onSuccess,
+    onClose,
   });
-
-  if (!isOpen) return null;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    try {
-      await onSubmit(formData);
-      onClose();
-      // Reset form
-      setFormData({
-        namn: "",
-        email: "",
-        telefon: "",
-        utforareId: utforare[0]?.id || "",
-        anteckningar: "",
-      });
-    } catch (error) {
-      console.error("Fel vid bokning:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const formatDate = () => {
     return selectedDate.toLocaleDateString("sv-SE", {
@@ -74,26 +50,18 @@ export function KundBokningModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-stone-200">
-          <div>
-            <h2 className="text-lg font-bold text-stone-800">Boka tid</h2>
-            <p className="text-xs text-stone-600 mt-0.5">
-              {formatDate()} • {selectedTime}
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-stone-400 hover:text-stone-600 transition-colors"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="font-serif text-3xl font-normal">Boka tid</DialogTitle>
+          <p className="text-base text-stone-600 mt-1">
+            {formatDate()} • {selectedTime}
+          </p>
+        </DialogHeader>
+        <hr className="border-stone-200" />
 
         {/* Tjänst info */}
-        <div className="p-4 bg-amber-50 border-b border-amber-100">
+        <div className="p-4 bg-amber-50 border border-amber-100 rounded-lg -mt-2">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-bold text-stone-800">{tjanst.namn}</h3>
@@ -105,7 +73,7 @@ export function KundBokningModal({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-4 space-y-3">
+        <form action={formAction} className="space-y-3">
           {/* Namn */}
           <div>
             <label htmlFor="namn" className="block text-sm font-semibold text-stone-700 mb-1">
@@ -114,11 +82,11 @@ export function KundBokningModal({
             <input
               type="text"
               id="namn"
+              name="namn"
               required
-              value={formData.namn}
-              onChange={(e) => setFormData({ ...formData, namn: e.target.value })}
               className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               placeholder="Ditt fullständiga namn"
+              autoFocus
             />
           </div>
 
@@ -130,9 +98,8 @@ export function KundBokningModal({
             <input
               type="email"
               id="email"
+              name="email"
               required
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               placeholder="din@email.se"
             />
@@ -146,8 +113,7 @@ export function KundBokningModal({
             <input
               type="tel"
               id="telefon"
-              value={formData.telefon}
-              onChange={(e) => setFormData({ ...formData, telefon: e.target.value })}
+              name="telefon"
               className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               placeholder="070-123 45 67"
             />
@@ -161,9 +127,8 @@ export function KundBokningModal({
               </label>
               <select
                 id="utforare"
+                name="utforareId"
                 required
-                value={formData.utforareId}
-                onChange={(e) => setFormData({ ...formData, utforareId: e.target.value })}
                 className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               >
                 <option value="">Valfri utförare</option>
@@ -186,13 +151,18 @@ export function KundBokningModal({
             </label>
             <textarea
               id="anteckningar"
-              value={formData.anteckningar}
-              onChange={(e) => setFormData({ ...formData, anteckningar: e.target.value })}
+              name="anteckningar"
               rows={2}
               className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               placeholder="Eventuella önskemål eller information..."
             />
           </div>
+
+          {error && (
+            <div className="p-3 rounded-lg bg-red-50 text-red-800 border border-red-200 text-sm">
+              {error}
+            </div>
+          )}
 
           {/* Buttons */}
           <div className="flex gap-3 pt-2">
@@ -205,14 +175,14 @@ export function KundBokningModal({
             </button>
             <button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isPending}
               className="flex-1 px-4 py-2 bg-amber-500 text-white rounded-lg font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Bokar..." : "Bekräfta bokning"}
+              {isPending ? "Bokar..." : "Bekräfta bokning"}
             </button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

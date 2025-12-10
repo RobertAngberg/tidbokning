@@ -20,6 +20,7 @@ import { useBookingModal } from "../hooks/useBookingModal";
 import { useBookingDetails } from "../hooks/useBookingDetails";
 import { useBookingStatus } from "../hooks/useBookingStatus";
 import { useDragAndDrop } from "../hooks/useDragAndDrop";
+import { RedigeraBokningModal } from "./RedigeraBokningModal";
 
 interface KalenderSchemaProps {
   bokningar: Array<
@@ -66,12 +67,11 @@ export function KalenderSchema({
 
   const { timeSlots, getBookingForSlot } = useBookingSlots(bokningar);
 
-  const { isModalOpen, selectedSlot, handleSlotClick, handleBookingSubmit, closeModal } =
-    useBookingModal(tjanst, () => {
-      if (onBookingCreated) {
-        onBookingCreated();
-      }
-    });
+  const { isModalOpen, selectedSlot, handleSlotClick, closeModal } = useBookingModal(tjanst, () => {
+    if (onBookingCreated) {
+      onBookingCreated();
+    }
+  });
 
   const { selectedBooking, openBookingDetails, closeBookingDetails } = useBookingDetails();
 
@@ -169,7 +169,7 @@ export function KalenderSchema({
                   return (
                     <div
                       key={day.toISOString()}
-                      className={`p-3 text-center sticky top-0 z-10 ${
+                      className={`p-3 text-center sticky top-0 z-10 border-b-4 border-stone-300 ${
                         isToday ? "bg-stone-700" : "bg-white"
                       }`}
                     >
@@ -349,7 +349,9 @@ export function KalenderSchema({
           selectedTime={selectedSlot.time}
           tjanst={tjanst}
           utforare={utforare}
-          onSubmit={handleBookingSubmit}
+          onSuccess={() => {
+            if (onBookingCreated) onBookingCreated();
+          }}
         />
       )}
 
@@ -371,64 +373,20 @@ export function KalenderSchema({
         />
       )}
 
-      {/* Booking Details Dialog */}
-      <Dialog open={!!selectedBooking} onOpenChange={(open) => !open && closeBookingDetails()}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Bokningsdetaljer</DialogTitle>
-          </DialogHeader>
-
-          {selectedBooking && (
-            <div className="space-y-4">
-              <div>
-                <div className="text-sm font-semibold text-muted-foreground mb-1">Kund</div>
-                <div className="font-bold">{selectedBooking.kund?.namn}</div>
-                {selectedBooking.kund?.email && (
-                  <div className="text-sm text-muted-foreground">{selectedBooking.kund.email}</div>
-                )}
-                {selectedBooking.kund?.telefon && (
-                  <div className="text-sm text-muted-foreground">
-                    {selectedBooking.kund.telefon}
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <div className="text-sm font-semibold text-muted-foreground mb-1">Tjänst</div>
-                <div>{selectedBooking.tjanst?.namn}</div>
-              </div>
-
-              <div>
-                <div className="text-sm font-semibold text-muted-foreground mb-1">Utförare</div>
-                <div>{selectedBooking.utforare?.namn || "Ingen utförare vald"}</div>
-              </div>
-
-              <div>
-                <div className="text-sm font-semibold text-muted-foreground mb-1">Tid</div>
-                <div>
-                  {format(new Date(selectedBooking.startTid), "PPP 'kl' HH:mm", { locale: sv })}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Varaktighet:{" "}
-                  {Math.round(
-                    (new Date(selectedBooking.slutTid).getTime() -
-                      new Date(selectedBooking.startTid).getTime()) /
-                      (1000 * 60)
-                  )}{" "}
-                  minuter
-                </div>
-              </div>
-
-              <div>
-                <div className="text-sm font-semibold text-muted-foreground mb-1">Status</div>
-                <Badge variant={statusVariant(selectedBooking.status)}>
-                  {selectedBooking.status}
-                </Badge>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
+      {/* Booking Details Dialog - now editable */}
+      {selectedBooking && (
+        <RedigeraBokningModal
+          isOpen={!!selectedBooking}
+          onClose={closeBookingDetails}
+          bokning={selectedBooking}
+          tjanster={tjanster}
+          utforare={utforare}
+          onUpdate={() => {
+            closeBookingDetails();
+            if (onBookingCreated) onBookingCreated();
+          }}
+        />
+      )}
 
       {/* Move Confirmation Dialog */}
       <Dialog open={moveConfirmOpen} onOpenChange={(open) => !open && handleCancelMove()}>

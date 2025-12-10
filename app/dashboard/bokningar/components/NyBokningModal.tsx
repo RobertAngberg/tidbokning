@@ -19,9 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../_components/Select";
-import { skapaBokning } from "../actions/bokningar";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import type { Utforare } from "../../../_server/db/schema/utforare";
+import { useNyBokning } from "../hooks/useNyBokning";
 
 interface NyBokningModalProps {
   tjanster: Tjanst[];
@@ -29,62 +29,60 @@ interface NyBokningModalProps {
   onSuccess?: () => void;
 }
 
+function TjanstSelect({ tjanster }: { tjanster: Tjanst[] }) {
+  const [value, setValue] = useState("");
+
+  return (
+    <div>
+      <input type="hidden" name="tjänstId" value={value} />
+      <Label htmlFor="tjänst">Tjänst *</Label>
+      <Select value={value} onValueChange={setValue} required>
+        <SelectTrigger>
+          <SelectValue placeholder="Välj tjänst" />
+        </SelectTrigger>
+        <SelectContent>
+          {tjanster.map((tjanst) => (
+            <SelectItem key={tjanst.id} value={tjanst.id}>
+              {tjanst.namn} - {tjanst.pris / 100} kr ({tjanst.varaktighet} min)
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
+function UtforareSelect({ utforare }: { utforare: Utforare[] }) {
+  const [value, setValue] = useState("");
+
+  return (
+    <div>
+      <input type="hidden" name="utforareId" value={value} />
+      <Label htmlFor="utforare">Utförare (valfritt)</Label>
+      <Select value={value} onValueChange={setValue}>
+        <SelectTrigger>
+          <SelectValue placeholder="Välj utförare" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="">Ingen specifik utförare</SelectItem>
+          {utforare.map((utf) => (
+            <SelectItem key={utf.id} value={utf.id}>
+              {utf.namn}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
+}
+
 export function NyBokningModal({ tjanster, utforare, onSuccess }: NyBokningModalProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState({
-    kundNamn: "",
-    kundEmail: "",
-    kundTelefon: "",
-    tjänstId: "",
-    utforareId: "",
-    datum: "",
-    tid: "",
-    anteckningar: "",
+  const { isPending, error, formAction } = useNyBokning({
+    onSuccess,
+    onClose: () => setIsOpen(false),
   });
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
-
-    // Kombinera datum och tid till Date object
-    const [year, month, day] = formData.datum.split("-").map(Number);
-    const [hours, minutes] = formData.tid.split(":").map(Number);
-    const startTid = new Date(year, month - 1, day, hours, minutes);
-
-    const result = await skapaBokning({
-      kundNamn: formData.kundNamn,
-      kundEmail: formData.kundEmail,
-      kundTelefon: formData.kundTelefon,
-      tjänstId: formData.tjänstId,
-      utforareId: formData.utforareId || undefined,
-      startTid,
-      anteckningar: formData.anteckningar || undefined,
-    });
-
-    setIsSubmitting(false);
-
-    if (result.success) {
-      // Reset form
-      setFormData({
-        kundNamn: "",
-        kundEmail: "",
-        kundTelefon: "",
-        tjänstId: "",
-        utforareId: "",
-        datum: "",
-        tid: "",
-        anteckningar: "",
-      });
-      setIsOpen(false);
-      if (onSuccess) onSuccess();
-    } else {
-      setError(result.error || "Något gick fel");
-    }
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -98,28 +96,21 @@ export function NyBokningModal({ tjanster, utforare, onSuccess }: NyBokningModal
         <DialogHeader>
           <DialogTitle>Skapa ny bokning</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form action={formAction} className="space-y-4">
           {/* Kunduppgifter */}
           <div className="space-y-4 border-b pb-4">
             <h3 className="font-semibold text-stone-900">Kunduppgifter</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="kundNamn">Namn *</Label>
-                <Input
-                  id="kundNamn"
-                  value={formData.kundNamn}
-                  onChange={(e) => setFormData({ ...formData, kundNamn: e.target.value })}
-                  required
-                  placeholder="Kundens namn"
-                />
+                <Input id="kundNamn" name="kundNamn" required placeholder="Kundens namn" />
               </div>
               <div>
                 <Label htmlFor="kundEmail">E-post *</Label>
                 <Input
                   id="kundEmail"
+                  name="kundEmail"
                   type="email"
-                  value={formData.kundEmail}
-                  onChange={(e) => setFormData({ ...formData, kundEmail: e.target.value })}
                   required
                   placeholder="kund@example.com"
                 />
@@ -129,80 +120,24 @@ export function NyBokningModal({ tjanster, utforare, onSuccess }: NyBokningModal
               <Label htmlFor="kundTelefon">
                 Telefon <span className="text-stone-500 font-normal">(valfritt)</span>
               </Label>
-              <Input
-                id="kundTelefon"
-                type="tel"
-                value={formData.kundTelefon}
-                onChange={(e) => setFormData({ ...formData, kundTelefon: e.target.value })}
-                placeholder="070-123 45 67"
-              />
+              <Input id="kundTelefon" name="kundTelefon" type="tel" placeholder="070-123 45 67" />
             </div>
           </div>
 
           {/* Bokningsdetaljer */}
           <div className="space-y-4 border-b pb-4">
             <h3 className="font-semibold text-stone-900">Bokningsdetaljer</h3>
-            <div>
-              <Label htmlFor="tjänst">Tjänst *</Label>
-              <Select
-                value={formData.tjänstId}
-                onValueChange={(value) => setFormData({ ...formData, tjänstId: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Välj tjänst" />
-                </SelectTrigger>
-                <SelectContent>
-                  {tjanster.map((tjanst) => (
-                    <SelectItem key={tjanst.id} value={tjanst.id}>
-                      {tjanst.namn} - {tjanst.pris / 100} kr ({tjanst.varaktighet} min)
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {utforare.length > 0 && (
-              <div>
-                <Label htmlFor="utforare">Utförare (valfritt)</Label>
-                <Select
-                  value={formData.utforareId}
-                  onValueChange={(value) => setFormData({ ...formData, utforareId: value })}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Välj utförare" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">Ingen specifik utförare</SelectItem>
-                    {utforare.map((utf) => (
-                      <SelectItem key={utf.id} value={utf.id}>
-                        {utf.namn}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
+            <TjanstSelect tjanster={tjanster} />
+            {utforare.length > 0 && <UtforareSelect utforare={utforare} />}
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="datum">Datum *</Label>
-                <Input
-                  id="datum"
-                  type="date"
-                  value={formData.datum}
-                  onChange={(e) => setFormData({ ...formData, datum: e.target.value })}
-                  required
-                />
+                <Input id="datum" name="datum" type="date" required />
               </div>
               <div>
                 <Label htmlFor="tid">Tid *</Label>
-                <Input
-                  id="tid"
-                  type="time"
-                  value={formData.tid}
-                  onChange={(e) => setFormData({ ...formData, tid: e.target.value })}
-                  required
-                />
+                <Input id="tid" name="tid" type="time" required />
               </div>
             </div>
           </div>
@@ -212,8 +147,7 @@ export function NyBokningModal({ tjanster, utforare, onSuccess }: NyBokningModal
             <Label htmlFor="anteckningar">Anteckningar (valfritt)</Label>
             <textarea
               id="anteckningar"
-              value={formData.anteckningar}
-              onChange={(e) => setFormData({ ...formData, anteckningar: e.target.value })}
+              name="anteckningar"
               placeholder="Eventuella anteckningar om bokningen..."
               rows={3}
               className="w-full rounded-md border border-stone-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
@@ -229,10 +163,10 @@ export function NyBokningModal({ tjanster, utforare, onSuccess }: NyBokningModal
           <div className="flex gap-2 pt-4">
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isPending}
               className="flex-1 bg-teal-600 hover:bg-teal-700 text-white"
             >
-              {isSubmitting ? "Skapar..." : "Skapa bokning"}
+              {isPending ? "Skapar..." : "Skapa bokning"}
             </Button>
             <Button
               type="button"

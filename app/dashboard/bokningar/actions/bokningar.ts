@@ -263,6 +263,80 @@ export async function uppdateraBokning(
   }
 }
 
+// New comprehensive update function
+export async function uppdateraBokningFullstandig(
+  bokningId: string,
+  data: {
+    kundNamn: string;
+    kundEmail: string;
+    kundTelefon?: string;
+    tjanstId: string;
+    utforareId: string;
+    startTid: string;
+    status: "Bekräftad" | "Väntande" | "Inställd" | "Slutförd";
+    anteckningar?: string;
+  }
+): Promise<BokningResult> {
+  try {
+    // Hämta befintlig bokning med kund
+    const befintligBokning = await db.query.bokningar.findFirst({
+      where: eq(bokningar.id, bokningId),
+      with: {
+        kund: true,
+      },
+    });
+
+    if (!befintligBokning) {
+      return { success: false, error: "Bokningen finns inte" };
+    }
+
+    // Uppdatera kunduppgifter
+    if (befintligBokning.kundId) {
+      await db
+        .update(kunder)
+        .set({
+          namn: data.kundNamn,
+          email: data.kundEmail,
+          telefon: data.kundTelefon || null,
+        })
+        .where(eq(kunder.id, befintligBokning.kundId));
+    }
+
+    // Beräkna slutTid baserat på tjänstens varaktighet
+    const tjänst = await db.query.tjanster.findFirst({
+      where: eq(tjanster.id, data.tjanstId),
+    });
+
+    if (!tjänst) {
+      return { success: false, error: "Tjänsten finns inte" };
+    }
+
+    const startTidDate = new Date(data.startTid);
+    const slutTidDate = new Date(startTidDate);
+    slutTidDate.setMinutes(slutTidDate.getMinutes() + tjänst.varaktighet);
+
+    // Uppdatera bokning
+    const [uppdateradBokning] = await db
+      .update(bokningar)
+      .set({
+        tjanstId: data.tjanstId,
+        utforareId: data.utforareId || null,
+        startTid: startTidDate,
+        slutTid: slutTidDate,
+        status: data.status,
+        anteckningar: data.anteckningar || null,
+      })
+      .where(eq(bokningar.id, bokningId))
+      .returning();
+
+    revalidatePath("/");
+    return { success: true, bokning: uppdateradBokning };
+  } catch (error) {
+    console.error("Fel vid fullständig uppdatering av bokning:", error);
+    return { success: false, error: "Något gick fel vid uppdateringen" };
+  }
+}
+
 const bokningsstatusSchema = z.object({
   bokningId: z.string().uuid("Ogiltigt boknings-ID"),
   status: z.enum(["Bekräftad", "Väntande", "Inställd", "Slutförd"], {
