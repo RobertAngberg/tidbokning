@@ -141,12 +141,11 @@ export function BookingModal({
           {/* Telefon */}
           <div>
             <label htmlFor="telefon" className="block text-sm font-semibold text-stone-700 mb-1">
-              Telefon *
+              Telefon <span className="text-stone-500 font-normal">(valfritt)</span>
             </label>
             <input
               type="tel"
               id="telefon"
-              required
               value={formData.telefon}
               onChange={(e) => setFormData({ ...formData, telefon: e.target.value })}
               className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"

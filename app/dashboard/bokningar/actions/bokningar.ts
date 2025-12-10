@@ -4,9 +4,11 @@ import { db } from "../../../_server/db";
 import { bokningar } from "../../../_server/db/schema/bokningar";
 import { tjanster } from "../../../_server/db/schema/tjanster";
 import { kunder } from "../../../_server/db/schema/kunder";
+import { utforare } from "../../../_server/db/schema/utforare";
 import type { Bokning } from "../../../_server/db/schema/bokningar";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import type { Kund } from "../../../_server/db/schema/kunder";
+import type { Utforare } from "../../../_server/db/schema/utforare";
 import { revalidatePath } from "next/cache";
 import { eq, and } from "drizzle-orm";
 import { z } from "zod";
@@ -336,11 +338,13 @@ export async function hämtaBokningarMedRelationer(
         anteckningar: bokningar.anteckningar,
         kund: kunder,
         tjanst: tjanster,
+        utforare: utforare,
       })
       .from(bokningar)
       .where(eq(bokningar.foretagsslug, foretagsslug))
       .leftJoin(kunder, eq(bokningar.kundId, kunder.id))
-      .leftJoin(tjanster, eq(bokningar.tjanstId, tjanster.id));
+      .leftJoin(tjanster, eq(bokningar.tjanstId, tjanster.id))
+      .leftJoin(utforare, eq(bokningar.utforareId, utforare.id));
 
     return foretagBokningar;
   } catch (error) {

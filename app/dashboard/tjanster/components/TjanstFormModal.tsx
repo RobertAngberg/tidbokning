@@ -1,10 +1,11 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "../../../_components/Input";
 import { Label } from "../../../_components/Label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../_components/Dialog";
 import { Button } from "../../../_components/Button";
+import { useTjanstForm } from "../hooks/useTjanstForm";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 
 interface TjanstFormModalProps {
@@ -22,28 +23,22 @@ export function TjanstFormModal({
   action,
   existingKategorier,
 }: TjanstFormModalProps) {
-  const [state, formAction, isPending] = useActionState(action, null);
+  const { state, isPending, formAction, createKategoriSelectHandler } = useTjanstForm({
+    tjanst,
+    action,
+    onClose,
+  });
+
   const [kategoriInput, setKategoriInput] = useState(tjanst?.kategori || "");
-  const [showSuggestions, setShowSuggestions] = useState(false);
 
   // Återställ kategoriInput när modal öppnas eller tjanst ändras
   useEffect(() => {
     if (isOpen) {
       setKategoriInput(tjanst?.kategori || "");
     }
-  }, [isOpen, tjanst]);
+  }, [isOpen, tjanst?.kategori]);
 
-  // Filtrera kategorier baserat på input
-  const filteredKategorier = existingKategorier.filter((kat) =>
-    kat.toLowerCase().includes(kategoriInput.toLowerCase())
-  );
-
-  // Stäng modal vid success
-  useEffect(() => {
-    if (state?.success) {
-      onClose();
-    }
-  }, [state, onClose]);
+  const handleKategoriSelect = createKategoriSelectHandler(setKategoriInput);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
@@ -126,10 +121,7 @@ export function TjanstFormModal({
                       <button
                         key={kat}
                         type="button"
-                        onClick={() => {
-                          setKategoriInput(kat);
-                          setShowSuggestions(false);
-                        }}
+                        onClick={() => handleKategoriSelect(kat)}
                         className="px-3 py-1.5 text-sm bg-stone-100 hover:bg-stone-200 rounded-md transition-colors"
                       >
                         {kat}

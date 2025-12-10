@@ -1,13 +1,12 @@
 "use client";
 
-import { useState, useActionState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Card } from "../../../_components/Card";
 import { Label } from "../../../_components/Label";
 import { Input } from "../../../_components/Input";
 import { Button } from "../../../_components/Button";
 import { uppdateraFöretagAction, skapaFöretagAction } from "../actions/foretag";
 import { BildUppladdare } from "../../bilder/components/BildUppladdare";
+import { useForetagsuppgifter } from "../hooks/useForetagsuppgifter";
 import type { Foretag } from "../../../_server/db/schema/foretag";
 
 interface ForetagsuppgifterTabProps {
@@ -15,38 +14,10 @@ interface ForetagsuppgifterTabProps {
 }
 
 export function ForetagsuppgifterTab({ foretag }: ForetagsuppgifterTabProps) {
-  const router = useRouter();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [logoUrl, setLogoUrl] = useState(foretag?.logoUrl || "");
-
   const action = foretag ? uppdateraFöretagAction : skapaFöretagAction;
-  const [state, formAction, isPending] = useActionState<
-    { success: boolean; error?: string } | null,
-    FormData
-  >(action, null);
 
-  const handleLogoUpload = (url: string) => {
-    setLogoUrl(url);
-  };
-
-  useEffect(() => {
-    if (state?.success) {
-      router.refresh();
-    }
-  }, [state?.success, router]);
-
-  const handleLoggaUt = async () => {
-    setIsLoggingOut(true);
-    try {
-      const { authClient } = await import("../../../_lib/auth-client");
-      await authClient.signOut();
-      router.push("/dashboard");
-      router.refresh();
-    } catch (error) {
-      console.error("Fel vid utloggning:", error);
-      setIsLoggingOut(false);
-    }
-  };
+  const { logoUrl, isLoggingOut, state, isPending, formAction, handleLogoUpload, handleLoggaUt } =
+    useForetagsuppgifter({ foretag, action });
 
   return (
     <div className="space-y-6">

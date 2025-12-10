@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { Card } from "../../../_components/Card";
 import {
   Select,
@@ -22,7 +20,8 @@ import {
   AlertDialogTrigger,
 } from "../../../_components/AlertDialog";
 import { TjanstFormModal } from "./TjanstFormModal";
-import { skapaTjänstAction, uppdateraTjänstAction, raderaTjänst } from "../actions/tjanster";
+import { skapaTjänstAction, uppdateraTjänstAction } from "../actions/tjanster";
+import { useTjanster } from "../hooks/useTjanster";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -31,49 +30,22 @@ interface TjansterTabProps {
 }
 
 export function TjansterTab({ tjanster }: TjansterTabProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTjanst, setEditingTjanst] = useState<Tjanst | undefined>();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [kategoriFilter, setKategoriFilter] = useState<string>("alla");
-  const [visaInaktiva, setVisaInaktiva] = useState(false);
-
-  const kategorier = Array.from(new Set(tjanster.map((t) => t.kategori).filter(Boolean)));
-
-  const filteredTjanster = tjanster.filter((tjanst) => {
-    const matchesSearch =
-      tjanst.namn.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      tjanst.beskrivning?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesKategori = kategoriFilter === "alla" || tjanst.kategori === kategoriFilter;
-    const matchesAktiv = visaInaktiva || tjanst.aktiv === 1;
-    return matchesSearch && matchesKategori && matchesAktiv;
-  });
-
-  const groupedTjanster = filteredTjanster.reduce((acc, tjanst) => {
-    const kategori = tjanst.kategori || "Övrigt";
-    if (!acc[kategori]) acc[kategori] = [];
-    acc[kategori].push(tjanst);
-    return acc;
-  }, {} as Record<string, Tjanst[]>);
-
-  const handleDelete = async (id: string) => {
-    startTransition(async () => {
-      await raderaTjänst(id);
-      router.refresh();
-    });
-  };
-
-  const openCreateModal = () => {
-    setEditingTjanst(undefined);
-    setIsModalOpen(true);
-  };
-
-  const openEditModal = (tjanst: Tjanst) => {
-    setEditingTjanst(tjanst);
-    setIsModalOpen(true);
-  };
+  const {
+    isModalOpen,
+    editingTjanst,
+    searchTerm,
+    kategoriFilter,
+    visaInaktiva,
+    kategorier,
+    groupedTjanster,
+    setSearchTerm,
+    setKategoriFilter,
+    setVisaInaktiva,
+    handleDelete,
+    openCreateModal,
+    openEditModal,
+    closeModal,
+  } = useTjanster(tjanster);
 
   return (
     <div className="space-y-6">
@@ -213,10 +185,7 @@ export function TjansterTab({ tjanster }: TjansterTabProps) {
 
       <TjanstFormModal
         isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setEditingTjanst(undefined);
-        }}
+        onClose={closeModal}
         action={editingTjanst ? uppdateraTjänstAction : skapaTjänstAction}
         tjanst={editingTjanst}
         existingKategorier={kategorier}

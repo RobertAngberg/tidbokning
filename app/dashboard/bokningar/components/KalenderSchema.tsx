@@ -21,7 +21,9 @@ import { useBookingStatus } from "../hooks/useBookingStatus";
 import { useDragAndDrop } from "../hooks/useDragAndDrop";
 
 interface KalenderSchemaProps {
-  bokningar: Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null }>;
+  bokningar: Array<
+    Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }
+  >;
   lunchtider: Lunchtid[];
   foretagsslug: string;
   tjanst?: Tjanst;
@@ -344,6 +346,11 @@ export function KalenderSchema({
               <div>
                 <div className="text-sm font-semibold text-muted-foreground mb-1">Tjänst</div>
                 <div>{selectedBooking.tjanst?.namn}</div>
+              </div>
+
+              <div>
+                <div className="text-sm font-semibold text-muted-foreground mb-1">Utförare</div>
+                <div>{selectedBooking.utforare?.namn || "Ingen utförare vald"}</div>
               </div>
 
               <div>

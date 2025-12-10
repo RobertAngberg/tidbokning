@@ -126,13 +126,14 @@ export function KalenderBokningModal({
               </div>
             </div>
             <div>
-              <Label htmlFor="kundTelefon">Telefon *</Label>
+              <Label htmlFor="kundTelefon">
+                Telefon <span className="text-stone-500 font-normal">(valfritt)</span>
+              </Label>
               <Input
                 id="kundTelefon"
                 type="tel"
                 value={formData.kundTelefon}
                 onChange={(e) => setFormData({ ...formData, kundTelefon: e.target.value })}
-                required
                 placeholder="070-123 45 67"
               />
             </div>

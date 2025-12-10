@@ -1,31 +1,30 @@
 "use client";
 
-import { useState } from "react";
 import { Label } from "../../../_components/Label";
 import { Input } from "../../../_components/Input";
-import { Button } from "../../../_components/Button";
 import type { Oppettid } from "../../../_server/db/schema/oppettider";
 
 interface OppettiderDagRadProps {
   dag: string;
   oppettid?: Oppettid;
-  onSpara: (dag: string, oppnar: string, stanger: string, stangt: boolean) => Promise<void>;
-  sparar: boolean;
+  onChange: (dag: string, oppnar: string, stanger: string, stangt: boolean) => void;
 }
 
-export function OppettiderDagRad({ dag, oppettid, onSpara, sparar }: OppettiderDagRadProps) {
-  const [oppnar, setOppnar] = useState(oppettid?.oppnar || "09:00");
-  const [stanger, setStanger] = useState(oppettid?.stanger || "17:00");
-  const [stangt, setStangt] = useState(oppettid?.stangt || false);
-  const [harAndrats, setHarAndrats] = useState(false);
+export function OppettiderDagRad({ dag, oppettid, onChange }: OppettiderDagRadProps) {
+  const oppnar = oppettid?.oppnar || "09:00";
+  const stanger = oppettid?.stanger || "17:00";
+  const stangt = oppettid?.stangt || false;
 
-  const handleChange = () => {
-    setHarAndrats(true);
+  const handleStangtChange = (checked: boolean) => {
+    onChange(dag, oppnar, stanger, checked);
   };
 
-  const handleSpara = async () => {
-    await onSpara(dag, oppnar, stanger, stangt);
-    setHarAndrats(false);
+  const handleOppnarChange = (value: string) => {
+    onChange(dag, value, stanger, stangt);
+  };
+
+  const handleStangerChange = (value: string) => {
+    onChange(dag, oppnar, value, stangt);
   };
 
   return (
@@ -36,10 +35,7 @@ export function OppettiderDagRad({ dag, oppettid, onSpara, sparar }: OppettiderD
         <input
           type="checkbox"
           checked={stangt}
-          onChange={(e) => {
-            setStangt(e.target.checked);
-            handleChange();
-          }}
+          onChange={(e) => handleStangtChange(e.target.checked)}
           className="w-4 h-4 rounded border-stone-300"
         />
         <Label className="text-sm">Stängt</Label>
@@ -52,10 +48,7 @@ export function OppettiderDagRad({ dag, oppettid, onSpara, sparar }: OppettiderD
             <Input
               type="time"
               value={oppnar}
-              onChange={(e) => {
-                setOppnar(e.target.value);
-                handleChange();
-              }}
+              onChange={(e) => handleOppnarChange(e.target.value)}
               className="w-32"
             />
           </div>
@@ -65,25 +58,12 @@ export function OppettiderDagRad({ dag, oppettid, onSpara, sparar }: OppettiderD
             <Input
               type="time"
               value={stanger}
-              onChange={(e) => {
-                setStanger(e.target.value);
-                handleChange();
-              }}
+              onChange={(e) => handleStangerChange(e.target.value)}
               className="w-32"
             />
           </div>
         </>
       )}
-
-      <Button
-        onClick={handleSpara}
-        disabled={!harAndrats || sparar}
-        variant={harAndrats ? "default" : "outline"}
-        size="sm"
-        className="ml-auto"
-      >
-        {sparar ? "Sparar..." : "Spara"}
-      </Button>
     </div>
   );
 }

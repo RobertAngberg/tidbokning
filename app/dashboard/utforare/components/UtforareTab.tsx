@@ -1,7 +1,5 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { Card } from "../../../_components/Card";
 import { Input } from "../../../_components/Input";
 import {
@@ -16,7 +14,8 @@ import {
   AlertDialogTrigger,
 } from "../../../_components/AlertDialog";
 import { UtforareFormModal } from "./UtforareFormModal";
-import { skapaUtförareAction, uppdateraUtförareAction, raderaUtförare } from "../actions/utforare";
+import { skapaUtförareAction, uppdateraUtförareAction } from "../actions/utforare";
+import { useUtforare } from "../hooks/useUtforare";
 import type { Utforare } from "../../../_server/db/schema/utforare";
 import { Pencil, Trash2, Mail, Phone } from "lucide-react";
 
@@ -25,38 +24,19 @@ interface UtforareTabProps {
 }
 
 export function UtforareTab({ utforare }: UtforareTabProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingUtforare, setEditingUtforare] = useState<Utforare | undefined>();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [visaInaktiva, setVisaInaktiva] = useState(false);
-
-  const filteredUtforare = utforare.filter((person) => {
-    const matchesSearch =
-      person.namn.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (person.email && person.email.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesAktiv = visaInaktiva || person.aktiv;
-    return matchesSearch && matchesAktiv;
-  });
-
-  const handleDelete = async (id: string) => {
-    startTransition(async () => {
-      await raderaUtförare(id);
-      router.refresh();
-    });
-  };
-
-  const openCreateModal = () => {
-    setEditingUtforare(undefined);
-    setIsModalOpen(true);
-  };
-
-  const openEditModal = (person: Utforare) => {
-    setEditingUtforare(person);
-    setIsModalOpen(true);
-  };
+  const {
+    isModalOpen,
+    editingUtforare,
+    searchTerm,
+    visaInaktiva,
+    filteredUtforare,
+    setSearchTerm,
+    setVisaInaktiva,
+    handleDelete,
+    openCreateModal,
+    openEditModal,
+    closeModal,
+  } = useUtforare(utforare);
 
   return (
     <div className="space-y-6">
@@ -165,10 +145,7 @@ export function UtforareTab({ utforare }: UtforareTabProps) {
 
       <UtforareFormModal
         isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setEditingUtforare(undefined);
-        }}
+        onClose={closeModal}
         action={editingUtforare ? uppdateraUtförareAction : skapaUtförareAction}
         utforare={editingUtforare}
       />
