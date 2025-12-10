@@ -675,7 +675,7 @@ export function DebugClient({
           <DebugTable
             title="Sessions"
             data={sessions}
-            color="cyan"
+            color="emerald"
             columns={[
               {
                 key: "id",
@@ -761,7 +761,7 @@ export function DebugClient({
           <DebugTable
             title="Verifications"
             data={verifications}
-            color="lime"
+            color="green"
             columns={[
               {
                 key: "id",
