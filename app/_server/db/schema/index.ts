@@ -4,6 +4,7 @@ export * from "./bokningar";
 export * from "./recensioner";
 export * from "./tjanster";
 export * from "./utforare";
+export * from "./utforare-tillganglighet";
 export * from "./foretag";
 export * from "./foretagBilder";
 export * from "./oppettider";

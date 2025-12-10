@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import type { Utforare } from "../../../_server/db/schema/utforare";
 
-interface BookingModalProps {
+interface KundBokningModalProps {
   isOpen: boolean;
   onClose: () => void;
   selectedDate: Date;
@@ -23,7 +23,7 @@ export interface BookingFormData {
   anteckningar?: string;
 }
 
-export function BookingModal({
+export function KundBokningModal({
   isOpen,
   onClose,
   selectedDate,
@@ -31,13 +31,13 @@ export function BookingModal({
   tjanst,
   utforare,
   onSubmit,
-}: BookingModalProps) {
+}: KundBokningModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<BookingFormData>({
     namn: "",
     email: "",
     telefon: "",
-    utforareId: utforare[0]?.id || "",
+    utforareId: "",
     anteckningar: "",
   });
 
@@ -166,6 +166,7 @@ export function BookingModal({
                 onChange={(e) => setFormData({ ...formData, utforareId: e.target.value })}
                 className="w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
               >
+                <option value="">Valfri utförare</option>
                 {utforare.map((u) => (
                   <option key={u.id} value={u.id}>
                     {u.namn}

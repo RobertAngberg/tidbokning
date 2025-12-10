@@ -1,4 +1,4 @@
-import { SokForetag } from "./_components/SokForetag";
+import { SokForetag } from "./sok/components/SokForetag";
 
 export default function HomePage() {
   return (

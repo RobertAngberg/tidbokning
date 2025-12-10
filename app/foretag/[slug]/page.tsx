@@ -24,7 +24,7 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
   }
 
   // Hämta företagets tjänster, bilder, öppettider och recensioner
-  const [foretagTjanster, foretagBilder, foretagOppettider, recensioner, snittbetyg] =
+  const [foretagTjanster, foretagBilder, foretagOppettiderData, recensioner, snittbetyg] =
     await Promise.all([
       hamtaTjansterForForetag(slug),
       hamtaBilderForForetag(slug),
@@ -32,6 +32,25 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
       hamtaRecensioner(slug),
       hamtaSnittbetyg(slug),
     ]);
+
+  // Definiera alla veckodagar med default-värden
+  const ALLA_VECKODAGAR = ["måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag", "söndag"];
+
+  // Skapa en komplett lista med alla veckodagar (använd sparad data eller default)
+  const foretagOppettider = ALLA_VECKODAGAR.map((dag) => {
+    const sparadOppettid = foretagOppettiderData.find((o) => o.veckodag === dag);
+    const arVardag = !["lördag", "söndag"].includes(dag);
+    return (
+      sparadOppettid || {
+        id: dag,
+        veckodag: dag,
+        oppnar: "08:00",
+        stanger: "17:00",
+        stangt: !arVardag,
+        foretagsslug: slug,
+      }
+    );
+  });
 
   // Gruppera tjänster per kategori
   const tjänsterPerKategori = foretagTjanster.reduce((acc, tjanst) => {
@@ -54,6 +73,47 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
               {foretagData.beskrivning && (
                 <p className="text-base text-stone-600 max-w-3xl">{foretagData.beskrivning}</p>
               )}
+
+              {/* Kontaktinfo */}
+              <div className="flex flex-wrap gap-6 text-stone-600 mt-6">
+                {foretagData.adress && foretagData.stad && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-amber-600" />
+                    <span>
+                      {foretagData.adress}, {foretagData.stad}
+                    </span>
+                  </div>
+                )}
+                {foretagData.telefon && (
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-5 h-5 text-amber-600" />
+                    <a href={`tel:${foretagData.telefon}`} className="hover:text-amber-600">
+                      {foretagData.telefon}
+                    </a>
+                  </div>
+                )}
+                {foretagData.email && (
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-5 h-5 text-amber-600" />
+                    <a href={`mailto:${foretagData.email}`} className="hover:text-amber-600">
+                      {foretagData.email}
+                    </a>
+                  </div>
+                )}
+                {foretagData.webbplats && (
+                  <div className="flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-amber-600" />
+                    <a
+                      href={foretagData.webbplats}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-amber-600"
+                    >
+                      Besök hemsida
+                    </a>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Bildgalleri */}
@@ -75,86 +135,47 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
               </div>
             )}
 
-            {/* Kontaktinfo */}
-            <div className="flex flex-wrap justify-center gap-6 text-stone-600 mt-8">
-              {foretagData.adress && foretagData.stad && (
-                <div className="flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-amber-600" />
-                  <span>
-                    {foretagData.adress}, {foretagData.stad}
-                  </span>
-                </div>
-              )}
-              {foretagData.telefon && (
-                <div className="flex items-center gap-2">
-                  <Phone className="w-5 h-5 text-amber-600" />
-                  <a href={`tel:${foretagData.telefon}`} className="hover:text-amber-600">
-                    {foretagData.telefon}
-                  </a>
-                </div>
-              )}
-              {foretagData.email && (
-                <div className="flex items-center gap-2">
-                  <Mail className="w-5 h-5 text-amber-600" />
-                  <a href={`mailto:${foretagData.email}`} className="hover:text-amber-600">
-                    {foretagData.email}
-                  </a>
-                </div>
-              )}
-              {foretagData.webbplats && (
-                <div className="flex items-center gap-2">
-                  <Globe className="w-5 h-5 text-amber-600" />
-                  <a
-                    href={foretagData.webbplats}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-amber-600"
-                  >
-                    Besök hemsida
-                  </a>
-                </div>
-              )}
-            </div>
-
-            {/* Karta */}
-            {foretagData.adress && foretagData.stad && (
-              <div className="mt-8 rounded-lg border border-stone-200 shadow-sm overflow-hidden h-[300px]">
-                <iframe
-                  src={`https://maps.google.com/maps?q=${encodeURIComponent(
-                    `${foretagData.adress}, ${foretagData.stad}`
-                  )}&output=embed&hl=sv&z=15`}
-                  width="100%"
-                  height="100%"
-                  className="rounded-lg"
-                  loading="lazy"
-                  title="Företagets plats"
-                  style={{ border: 0 }}
-                />
-              </div>
-            )}
-          </div>
-
-          {/* Öppettider Section */}
-          {foretagOppettider.length > 0 && (
-            <div className="space-y-4 mt-8">
-              <h2 className="text-2xl font-bold text-stone-900">Öppettider</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {foretagOppettider.map((oppettid) => (
-                  <div
-                    key={oppettid.id}
-                    className="flex justify-between items-center bg-white/60 backdrop-blur-sm rounded-lg px-4 py-3 border border-stone-200"
-                  >
-                    <span className="font-medium capitalize text-stone-700">
-                      {oppettid.veckodag}
-                    </span>
-                    <span className="text-stone-600">
-                      {oppettid.stangt ? "Stängt" : `${oppettid.oppnar} - ${oppettid.stanger}`}
-                    </span>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+              {/* Vänster kolumn: Karta */}
+              <div className="lg:col-span-2 space-y-8">
+                {/* Karta */}
+                {foretagData.adress && foretagData.stad && (
+                  <div className="rounded-lg border border-stone-200 shadow-sm overflow-hidden h-[300px]">
+                    <iframe
+                      src={`https://maps.google.com/maps?q=${encodeURIComponent(
+                        `${foretagData.adress}, ${foretagData.stad}`
+                      )}&output=embed&hl=sv&z=15`}
+                      width="100%"
+                      height="100%"
+                      className="rounded-lg"
+                      loading="lazy"
+                      title="Företagets plats"
+                      style={{ border: 0 }}
+                    />
                   </div>
-                ))}
+                )}
               </div>
+
+              {/* Höger kolumn: Öppettider */}
+              {foretagOppettider.length > 0 && (
+                <div className="space-y-4">
+                  <h2 className="text-2xl font-semibold text-stone-900">Öppettider</h2>
+                  <div className="space-y-2.5">
+                    {foretagOppettider.map((oppettid) => (
+                      <div key={oppettid.id} className="flex justify-between text-base">
+                        <span className="font-medium capitalize text-stone-700">
+                          {oppettid.veckodag}
+                        </span>
+                        <span className="text-stone-600">
+                          {oppettid.stangt ? "Stängt" : `${oppettid.oppnar} - ${oppettid.stanger}`}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
           {/* Tjänster Section */}
           {foretagTjanster.length > 0 && (

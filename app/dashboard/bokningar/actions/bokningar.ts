@@ -19,7 +19,7 @@ import { headers } from "next/headers";
 const bokningSchema = z.object({
   kundNamn: z.string().min(2, "Namnet måste vara minst 2 tecken"),
   kundEmail: z.string().email("Ogiltig e-postadress"),
-  kundTelefon: z.string().min(10, "Telefonnummer måste vara minst 10 siffror"),
+  kundTelefon: z.string().optional().or(z.literal("")),
   tjänstId: z.string().uuid("Ogiltig tjänst"),
   utforareId: z.string().uuid("Ogiltig utförare").optional(),
   startTid: z.date(),

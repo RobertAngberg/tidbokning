@@ -11,9 +11,11 @@ interface OppettiderDagRadProps {
 }
 
 export function OppettiderDagRad({ dag, oppettid, onChange }: OppettiderDagRadProps) {
-  const oppnar = oppettid?.oppnar || "09:00";
+  // Default till öppet 08:00-17:00 för vardagar
+  const arVardag = !["lördag", "söndag"].includes(dag);
+  const oppnar = oppettid?.oppnar || "08:00";
   const stanger = oppettid?.stanger || "17:00";
-  const stangt = oppettid?.stangt || false;
+  const stangt = oppettid?.stangt ?? !arVardag; // Stängt på helger som default
 
   const handleStangtChange = (checked: boolean) => {
     onChange(dag, oppnar, stanger, checked);

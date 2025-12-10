@@ -88,16 +88,16 @@ export function DashboardClient({
           Öppettider
         </TabsTrigger>
         <TabsTrigger
-          value="recensioner"
-          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
-        >
-          Recensioner
-        </TabsTrigger>
-        <TabsTrigger
           value="installningar"
           className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
         >
           Företagsuppgifter
+        </TabsTrigger>
+        <TabsTrigger
+          value="recensioner"
+          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
+        >
+          Recensioner
         </TabsTrigger>
       </TabsList>
 

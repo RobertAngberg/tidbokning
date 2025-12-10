@@ -115,7 +115,9 @@ export function TjanstFormModal({
 
               {existingKategorier.length > 0 && (
                 <div className="mt-2">
-                  <span className="text-xs text-stone-500 mb-2 block">Välj befintlig:</span>
+                  <span className="text-xs text-stone-500 mb-2 block">
+                    Välj befintlig kategori:
+                  </span>
                   <div className="flex flex-wrap gap-2">
                     {existingKategorier.map((kat) => (
                       <button

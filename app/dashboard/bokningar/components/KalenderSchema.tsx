@@ -11,7 +11,8 @@ import type { Kund } from "../../../_server/db/schema/kunder";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import type { Utforare } from "../../../_server/db/schema/utforare";
 import type { Lunchtid } from "../../../_server/db/schema/lunchtider";
-import { BookingModal } from "./BookingModal";
+import type { UtforareTillganglighet } from "../../../_server/db/schema/utforare-tillganglighet";
+import { KundBokningModal } from "./KundBokningModal";
 import { KalenderBokningModal } from "./KalenderBokningModal";
 import { useKalenderNavigation } from "../hooks/useKalenderNavigation";
 import { useBookingSlots } from "../hooks/useBookingSlots";
@@ -29,6 +30,8 @@ interface KalenderSchemaProps {
   tjanst?: Tjanst;
   tjanster?: Tjanst[];
   utforare?: Utforare[];
+  utforareTillganglighet?: UtforareTillganglighet[];
+  selectedUtforareId?: string | null;
   onBookingCreated?: () => void;
 }
 
@@ -39,6 +42,8 @@ export function KalenderSchema({
   tjanst,
   tjanster = [],
   utforare = [],
+  utforareTillganglighet = [],
+  selectedUtforareId: selectedUtforareIdProp,
   onBookingCreated,
 }: KalenderSchemaProps) {
   const [dashboardModalOpen, setDashboardModalOpen] = React.useState(false);
@@ -46,6 +51,16 @@ export function KalenderSchema({
     date: Date;
     time: string;
   } | null>(null);
+  const [selectedUtforareId, setSelectedUtforareId] = React.useState<string | null>(
+    selectedUtforareIdProp || null
+  );
+
+  // Uppdatera state när prop ändras (från parent)
+  React.useEffect(() => {
+    if (selectedUtforareIdProp !== undefined) {
+      setSelectedUtforareId(selectedUtforareIdProp);
+    }
+  }, [selectedUtforareIdProp]);
 
   const { weekStart, weekDays, goToPreviousWeek, goToNextWeek } = useKalenderNavigation();
 
@@ -73,6 +88,33 @@ export function KalenderSchema({
     handleConfirmMove,
     handleCancelMove,
   } = useDragAndDrop(foretagsslug, onBookingCreated);
+
+  // Funktion för att kolla om tid är tillgänglig för vald utförare
+  const isTimeAvailableForUtforare = (day: Date, timeSlot: string): boolean => {
+    // Om ingen utförare är vald, visa alla tider
+    if (!selectedUtforareId) return true;
+
+    // Hämta veckodag (måndag, tisdag, etc.)
+    const veckodagar = ["söndag", "måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag"];
+    const veckodag = veckodagar[day.getDay()];
+
+    // Hitta tillgänglighet för vald utförare och denna veckodag
+    const tillganglighet = utforareTillganglighet.find(
+      (t) => t.utforareId === selectedUtforareId && t.veckodag === veckodag && t.ledig
+    );
+
+    // Om ingen tillgänglighet finns för denna dag, visa inte tiden
+    if (!tillganglighet) return false;
+
+    // Kolla om tiden är inom utförarens arbetstider
+    const slotTime = timeSlot; // "HH:MM"
+    const startTime = tillganglighet.startTid?.substring(0, 5); // "HH:MM:SS" -> "HH:MM"
+    const slutTime = tillganglighet.slutTid?.substring(0, 5);
+
+    if (!startTime || !slutTime) return false;
+
+    return slotTime >= startTime && slotTime < slutTime;
+  };
 
   return (
     <>
@@ -239,7 +281,10 @@ export function KalenderSchema({
 
                       // Ledigt slot - visa som klickbart kort med tid och pris
                       const isDashboardMode = !tjanst && tjanster.length > 0;
-                      const isClickable = tjanst || isDashboardMode;
+
+                      // Kolla om tiden är tillgänglig för vald utförare
+                      const isAvailableForUtforare = isTimeAvailableForUtforare(day, timeSlot);
+                      const isClickable = (tjanst || isDashboardMode) && isAvailableForUtforare;
 
                       return (
                         <div
@@ -272,9 +317,14 @@ export function KalenderSchema({
                               >
                                 {timeSlot}
                               </div>
-                              {tjanst && (
+                              {tjanst && isClickable && (
                                 <div className="text-amber-600 text-xs font-semibold">
                                   {tjanst.pris / 100} kr
+                                </div>
+                              )}
+                              {!isAvailableForUtforare && selectedUtforareId && (
+                                <div className="text-[10px] text-stone-400 mt-1">
+                                  Ej tillgänglig
                                 </div>
                               )}
                             </div>
@@ -292,7 +342,7 @@ export function KalenderSchema({
 
       {/* Booking Modal */}
       {selectedSlot && tjanst && (
-        <BookingModal
+        <KundBokningModal
           isOpen={isModalOpen}
           onClose={closeModal}
           selectedDate={selectedSlot.date}

@@ -22,6 +22,27 @@
       "when": 1765327383071,
       "tag": "0002_legal_molten_man",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1765342906937,
+      "tag": "0003_bent_lester",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1765343254412,
+      "tag": "0004_crazy_centennial",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1765343697191,
+      "tag": "0005_green_grey_gargoyle",
+      "breakpoints": true
     }
   ]
 }

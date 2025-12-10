@@ -1,0 +1,1276 @@
+{
+  "id": "88cccba5-7c87-4f93-b132-2a208aae8b05",
+  "prevId": "eb1c2f3a-2748-4fde-8418-1a64ac8de1b1",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.anvandare": {
+      "name": "anvandare",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "namn": {
+          "name": "namn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telefon": {
+          "name": "telefon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "roll": {
+          "name": "roll",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'kund'"
+        },
+        "foretagsslug": {
+          "name": "foretagsslug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "skapad_datum": {
+          "name": "skapad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "uppdaterad_datum": {
+          "name": "uppdaterad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "anvandare_email_unique": {
+          "name": "anvandare_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.kunder": {
+      "name": "kunder",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "namn": {
+          "name": "namn",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telefon": {
+          "name": "telefon",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "foretagsslug": {
+          "name": "foretagsslug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "skapad_datum": {
+          "name": "skapad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "uppdaterad_datum": {
+          "name": "uppdaterad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "kunder_email_unique": {
+          "name": "kunder_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.bokningar": {
+      "name": "bokningar",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "kund_id": {
+          "name": "kund_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "personal_id": {
+          "name": "personal_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tjanst_id": {
+          "name": "tjanst_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "utforare_id": {
+          "name": "utforare_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "start_tid": {
+          "name": "start_tid",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slut_tid": {
+          "name": "slut_tid",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Väntande'"
+        },
+        "anteckningar": {
+          "name": "anteckningar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "foretagsslug": {
+          "name": "foretagsslug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "skapad_datum": {
+          "name": "skapad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "uppdaterad_datum": {
+          "name": "uppdaterad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "bokningar_kund_id_kunder_id_fk": {
+          "name": "bokningar_kund_id_kunder_id_fk",
+          "tableFrom": "bokningar",
+          "tableTo": "kunder",
+          "columnsFrom": [
+            "kund_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "bokningar_personal_id_anvandare_id_fk": {
+          "name": "bokningar_personal_id_anvandare_id_fk",
+          "tableFrom": "bokningar",
+          "tableTo": "anvandare",
+          "columnsFrom": [
+            "personal_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "bokningar_tjanst_id_tjanster_id_fk": {
+          "name": "bokningar_tjanst_id_tjanster_id_fk",
+          "tableFrom": "bokningar",
+          "tableTo": "tjanster",
+          "columnsFrom": [
+            "tjanst_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "bokningar_utforare_id_utforare_id_fk": {
+          "name": "bokningar_utforare_id_utforare_id_fk",
+          "tableFrom": "bokningar",
+          "tableTo": "utforare",
+          "columnsFrom": [
+            "utforare_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.recensioner": {
+      "name": "recensioner",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "kund_id": {
+          "name": "kund_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bokning_id": {
+          "name": "bokning_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foretagsslug": {
+          "name": "foretagsslug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "betyg": {
+          "name": "betyg",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kommentar": {
+          "name": "kommentar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "skapad_datum": {
+          "name": "skapad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "recensioner_kund_id_kunder_id_fk": {
+          "name": "recensioner_kund_id_kunder_id_fk",
+          "tableFrom": "recensioner",
+          "tableTo": "kunder",
+          "columnsFrom": [
+            "kund_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "recensioner_bokning_id_bokningar_id_fk": {
+          "name": "recensioner_bokning_id_bokningar_id_fk",
+          "tableFrom": "recensioner",
+          "tableTo": "bokningar",
+          "columnsFrom": [
+            "bokning_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "recensioner_bokning_id_unique": {
+          "name": "recensioner_bokning_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "bokning_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tjanster": {
+      "name": "tjanster",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "namn": {
+          "name": "namn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "beskrivning": {
+          "name": "beskrivning",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "varaktighet": {
+          "name": "varaktighet",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pris": {
+          "name": "pris",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foretagsslug": {
+          "name": "foretagsslug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kategori": {
+          "name": "kategori",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aktiv": {
+          "name": "aktiv",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "skapad_datum": {
+          "name": "skapad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "uppdaterad_datum": {
+          "name": "uppdaterad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.utforare": {
+      "name": "utforare",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "namn": {
+          "name": "namn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "telefon": {
+          "name": "telefon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "beskrivning": {
+          "name": "beskrivning",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "bild_url": {
+          "name": "bild_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aktiv": {
+          "name": "aktiv",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "foretagsslug": {
+          "name": "foretagsslug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "skapad_datum": {
+          "name": "skapad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "uppdaterad_datum": {
+          "name": "uppdaterad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "utforare_foretagsslug_foretag_slug_fk": {
+          "name": "utforare_foretagsslug_foretag_slug_fk",
+          "tableFrom": "utforare",
+          "tableTo": "foretag",
+          "columnsFrom": [
+            "foretagsslug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.utforare_tjanster": {
+      "name": "utforare_tjanster",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "utforare_id": {
+          "name": "utforare_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tjanst_id": {
+          "name": "tjanst_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "skapad_datum": {
+          "name": "skapad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "utforare_tjanster_utforare_id_utforare_id_fk": {
+          "name": "utforare_tjanster_utforare_id_utforare_id_fk",
+          "tableFrom": "utforare_tjanster",
+          "tableTo": "utforare",
+          "columnsFrom": [
+            "utforare_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "utforare_tjanster_tjanst_id_tjanster_id_fk": {
+          "name": "utforare_tjanster_tjanst_id_tjanster_id_fk",
+          "tableFrom": "utforare_tjanster",
+          "tableTo": "tjanster",
+          "columnsFrom": [
+            "tjanst_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.foretag": {
+      "name": "foretag",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "namn": {
+          "name": "namn",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "beskrivning": {
+          "name": "beskrivning",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "adress": {
+          "name": "adress",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "postnummer": {
+          "name": "postnummer",
+          "type": "varchar(10)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stad": {
+          "name": "stad",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "telefon": {
+          "name": "telefon",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "webbplats": {
+          "name": "webbplats",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "logo_url": {
+          "name": "logo_url",
+          "type": "varchar(500)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "oppettider": {
+          "name": "oppettider",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "aktiv": {
+          "name": "aktiv",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "skapad_vid": {
+          "name": "skapad_vid",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "uppdaterad_vid": {
+          "name": "uppdaterad_vid",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "foretag_slug_unique": {
+          "name": "foretag_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.foretag_bilder": {
+      "name": "foretag_bilder",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(255)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "foretagsslug": {
+          "name": "foretagsslug",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bild_url": {
+          "name": "bild_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "beskrivning": {
+          "name": "beskrivning",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sorteringsordning": {
+          "name": "sorteringsordning",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "skapad_datum": {
+          "name": "skapad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "foretag_bilder_foretagsslug_foretag_slug_fk": {
+          "name": "foretag_bilder_foretagsslug_foretag_slug_fk",
+          "tableFrom": "foretag_bilder",
+          "tableTo": "foretag",
+          "columnsFrom": [
+            "foretagsslug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.oppettider": {
+      "name": "oppettider",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "foretagsslug": {
+          "name": "foretagsslug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "utforare_id": {
+          "name": "utforare_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "veckodag": {
+          "name": "veckodag",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "oppnar": {
+          "name": "oppnar",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stanger": {
+          "name": "stanger",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "stangt": {
+          "name": "stangt",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "oppettider_foretagsslug_foretag_slug_fk": {
+          "name": "oppettider_foretagsslug_foretag_slug_fk",
+          "tableFrom": "oppettider",
+          "tableTo": "foretag",
+          "columnsFrom": [
+            "foretagsslug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "oppettider_utforare_id_anvandare_id_fk": {
+          "name": "oppettider_utforare_id_anvandare_id_fk",
+          "tableFrom": "oppettider",
+          "tableTo": "anvandare",
+          "columnsFrom": [
+            "utforare_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.lunchtider": {
+      "name": "lunchtider",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "foretagsslug": {
+          "name": "foretagsslug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "datum": {
+          "name": "datum",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "start_tid": {
+          "name": "start_tid",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slut_tid": {
+          "name": "slut_tid",
+          "type": "time",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "skapad_datum": {
+          "name": "skapad_datum",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "lunchtider_foretagsslug_foretag_slug_fk": {
+          "name": "lunchtider_foretagsslug_foretag_slug_fk",
+          "tableFrom": "lunchtider",
+          "tableTo": "foretag",
+          "columnsFrom": [
+            "foretagsslug"
+          ],
+          "columnsTo": [
+            "slug"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.account": {
+      "name": "account",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "accountId": {
+          "name": "accountId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "providerId": {
+          "name": "providerId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accessToken": {
+          "name": "accessToken",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refreshToken": {
+          "name": "refreshToken",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "idToken": {
+          "name": "idToken",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "accessTokenExpiresAt": {
+          "name": "accessTokenExpiresAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refreshTokenExpiresAt": {
+          "name": "refreshTokenExpiresAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scope": {
+          "name": "scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "account_userId_user_id_fk": {
+          "name": "account_userId_user_id_fk",
+          "tableFrom": "account",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.session": {
+      "name": "session",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "expiresAt": {
+          "name": "expiresAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "ipAddress": {
+          "name": "ipAddress",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "userAgent": {
+          "name": "userAgent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "userId": {
+          "name": "userId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "session_userId_user_id_fk": {
+          "name": "session_userId_user_id_fk",
+          "tableFrom": "session",
+          "tableTo": "user",
+          "columnsFrom": [
+            "userId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "session_token_unique": {
+          "name": "session_token_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "emailVerified": {
+          "name": "emailVerified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "roll": {
+          "name": "roll",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'kund'"
+        },
+        "foretagsslug": {
+          "name": "foretagsslug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_email_unique": {
+          "name": "user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.verification": {
+      "name": "verification",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "identifier": {
+          "name": "identifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expiresAt": {
+          "name": "expiresAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
