@@ -101,7 +101,7 @@ export async function skapaBokning(data: BokningInput): Promise<BokningResult> {
 }
 
 export async function hämtaBokningar(): Promise<
-  Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null }>
+  Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }>
 > {
   try {
     const session = await auth.api.getSession({
@@ -320,7 +320,7 @@ export async function raderaBokning(
 
 export async function hämtaBokningarMedRelationer(
   foretagsslug: string
-): Promise<Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null }>> {
+): Promise<Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }>> {
   try {
     const foretagBokningar = await db
       .select({

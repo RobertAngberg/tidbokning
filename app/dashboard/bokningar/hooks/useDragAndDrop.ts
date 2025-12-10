@@ -4,12 +4,13 @@ import { useRouter } from "next/navigation";
 import type { Bokning } from "../../../_server/db/schema/bokningar";
 import type { Kund } from "../../../_server/db/schema/kunder";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
+import type { Utforare } from "../../../_server/db/schema/utforare";
 import { flyttaBokning } from "../actions/bokningar";
 import { flyttaLunch } from "../actions/lunchtider";
 
 interface DraggedItem {
   type: "booking" | "lunch";
-  booking?: Bokning & { kund: Kund | null; tjanst: Tjanst | null };
+  booking?: Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null };
   sourceDate: Date;
   sourceTime: string;
 }
@@ -31,7 +32,7 @@ export function useDragAndDrop(foretagsslug: string, onSuccess?: () => void) {
     type: "booking" | "lunch",
     date: Date,
     time: string,
-    booking?: Bokning & { kund: Kund | null; tjanst: Tjanst | null }
+    booking?: Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }
   ) => {
     setDraggedItem({ type, booking, sourceDate: date, sourceTime: time });
     e.dataTransfer.effectAllowed = "move";

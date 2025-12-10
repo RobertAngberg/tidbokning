@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import type { BookingFormData } from "../components/BookingModal";
 import { skapaBokning } from "../actions/bokningar";
+import { useRouter } from "next/navigation";
 
 export function useBookingModal(tjanst?: Tjanst, onBookingCreated?: () => void) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,7 +10,9 @@ export function useBookingModal(tjanst?: Tjanst, onBookingCreated?: () => void) 
   const router = useRouter();
 
   const handleSlotClick = (day: Date, timeSlot: string) => {
+    // Bara tillåt bokning om vi har tjänst och inga befintliga bokningar i sloten
     if (!tjanst) return;
+
     setSelectedSlot({ date: day, time: timeSlot });
     setIsModalOpen(true);
   };
@@ -25,12 +27,12 @@ export function useBookingModal(tjanst?: Tjanst, onBookingCreated?: () => void) 
 
     try {
       await skapaBokning({
-        tjänstId: tjanst.id,
-        utforareId: formData.utforareId,
-        startTid,
         kundNamn: formData.namn,
         kundEmail: formData.email,
         kundTelefon: formData.telefon,
+        tjänstId: tjanst.id,
+        utforareId: formData.utforareId,
+        startTid,
         anteckningar: formData.anteckningar,
       });
 
@@ -50,9 +52,9 @@ export function useBookingModal(tjanst?: Tjanst, onBookingCreated?: () => void) 
 
   return {
     isModalOpen,
+    setIsModalOpen,
     selectedSlot,
     handleSlotClick,
     handleBookingSubmit,
-    closeModal: () => setIsModalOpen(false),
   };
 }

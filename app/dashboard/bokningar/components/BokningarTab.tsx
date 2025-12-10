@@ -41,7 +41,7 @@ import { Trash2 } from "lucide-react";
 import type { Utforare } from "../../../_server/db/schema/utforare";
 
 interface BokningarTabProps {
-  bokningar: Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null }>;
+  bokningar: Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }>;
   tjanster: Tjanst[];
   utforare: Utforare[];
   lunchtider: Lunchtid[];
