@@ -15,7 +15,9 @@ export function useTjanster(initialTjanster: Tjanst[]) {
 
   // Hämta unika kategorier
   const kategorier = useMemo(() => {
-    return Array.from(new Set(initialTjanster.map((t) => t.kategori).filter(Boolean)));
+    return Array.from(
+      new Set(initialTjanster.map((t) => t.kategori).filter((k): k is string => k !== null))
+    );
   }, [initialTjanster]);
 
   // Filtrera tjänster
