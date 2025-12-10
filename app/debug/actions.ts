@@ -7,7 +7,7 @@ import { anvandare } from "../_server/db/schema/anvandare";
 import { kunder } from "../_server/db/schema/kunder";
 import { recensioner } from "../_server/db/schema/recensioner";
 import { utforare, utforareTjanster } from "../_server/db/schema/utforare";
-import { user, session, account } from "../_server/db/schema/auth";
+import { user, session, account, verification } from "../_server/db/schema/auth";
 import { foretag } from "../_server/db/schema/foretag";
 import { inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -127,5 +127,38 @@ export async function raderaRecensioner(ids: string[]) {
   } catch (error) {
     console.error("Fel vid radering av recensioner:", error);
     return { success: false, error: "Kunde inte radera recensioner" };
+  }
+}
+
+export async function raderaSessions(ids: string[]) {
+  try {
+    await db.delete(session).where(inArray(session.id, ids));
+    revalidatePath("/debug");
+    return { success: true };
+  } catch (error) {
+    console.error("Fel vid radering av sessions:", error);
+    return { success: false, error: "Kunde inte radera sessions" };
+  }
+}
+
+export async function raderaAccounts(ids: string[]) {
+  try {
+    await db.delete(account).where(inArray(account.id, ids));
+    revalidatePath("/debug");
+    return { success: true };
+  } catch (error) {
+    console.error("Fel vid radering av accounts:", error);
+    return { success: false, error: "Kunde inte radera accounts" };
+  }
+}
+
+export async function raderaVerifications(ids: string[]) {
+  try {
+    await db.delete(verification).where(inArray(verification.id, ids));
+    revalidatePath("/debug");
+    return { success: true };
+  } catch (error) {
+    console.error("Fel vid radering av verifications:", error);
+    return { success: false, error: "Kunde inte radera verifications" };
   }
 }

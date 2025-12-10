@@ -7,6 +7,7 @@ import {
   hämtaTjänstForFöretag,
 } from "../../../../dashboard/bokningar/actions/bokningar";
 import { hämtaAktivaUtförareForFöretag } from "../../../../dashboard/utforare/actions/utforare";
+import { hamtaLunchtider } from "../../../../dashboard/bokningar/actions/lunchtider";
 
 interface BokaPageProps {
   params: Promise<{ slug: string; tjanstId: string }>;
@@ -27,6 +28,9 @@ export default async function BokaTjanstPage({ params }: BokaPageProps) {
 
   // Hämta utförare för denna tjänst
   const tjanstUtforare = await hämtaAktivaUtförareForFöretag(slug);
+
+  // Hämta lunchtider för företaget
+  const lunchtider = await hamtaLunchtider(slug);
 
   return (
     <div className="min-h-screen p-8">
@@ -132,6 +136,8 @@ export default async function BokaTjanstPage({ params }: BokaPageProps) {
               bokningar={foretagBokningar}
               tjanst={tjanst}
               utforare={tjanstUtforare}
+              lunchtider={lunchtider}
+              foretagsslug={slug}
             />
           </div>
         </div>

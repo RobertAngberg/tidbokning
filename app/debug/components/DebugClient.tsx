@@ -11,6 +11,9 @@ import {
   raderaUtförareTjänster,
   raderaUsers,
   raderaFöretag,
+  raderaSessions,
+  raderaAccounts,
+  raderaVerifications,
 } from "../actions";
 import type { Tjanst } from "../../_server/db/schema/tjanster";
 import type { Bokning } from "../../_server/db/schema/bokningar";
@@ -48,6 +51,35 @@ interface Recension {
   skapadDatum: Date;
 }
 
+interface Session {
+  id: string;
+  userId: string;
+  expiresAt: Date;
+  ipAddress: string | null;
+  userAgent: string | null;
+}
+
+interface Account {
+  id: string;
+  userId: string;
+  providerId: string;
+  accountId: string;
+  accessToken: string | null;
+  refreshToken: string | null;
+  expiresAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface Verification {
+  id: string;
+  identifier: string;
+  value: string;
+  expiresAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 interface DebugClientProps {
   tjanster: Tjanst[];
   bokningar: Bokning[];
@@ -58,9 +90,9 @@ interface DebugClientProps {
   utforareTjanster: UtforareTjanster[];
   users: User[];
   foretag: Foretag[];
-  sessions: any[];
-  accounts: any[];
-  verifications: any[];
+  sessions: Session[];
+  accounts: Account[];
+  verifications: Verification[];
 }
 
 export function DebugClient({
@@ -676,7 +708,9 @@ export function DebugClient({
             title="Sessions"
             data={sessions}
             color="emerald"
+            onDelete={raderaSessions}
             columns={[
+              { key: "select", label: "" },
               {
                 key: "id",
                 label: "ID",
@@ -719,7 +753,9 @@ export function DebugClient({
             title="Accounts"
             data={accounts}
             color="teal"
+            onDelete={raderaAccounts}
             columns={[
+              { key: "select", label: "" },
               {
                 key: "id",
                 label: "ID",
@@ -762,7 +798,9 @@ export function DebugClient({
             title="Verifications"
             data={verifications}
             color="green"
+            onDelete={raderaVerifications}
             columns={[
+              { key: "select", label: "" },
               {
                 key: "id",
                 label: "ID",

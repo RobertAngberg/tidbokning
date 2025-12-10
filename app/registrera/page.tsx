@@ -24,7 +24,6 @@ export default function RegisteraPage() {
         email,
         password,
         name: "Admin",
-        roll: "admin",
       });
 
       if (signUpResult.error) {
