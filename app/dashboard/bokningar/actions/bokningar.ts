@@ -320,7 +320,9 @@ export async function raderaBokning(
 
 export async function hämtaBokningarMedRelationer(
   foretagsslug: string
-): Promise<Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }>> {
+): Promise<
+  Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }>
+> {
   try {
     const foretagBokningar = await db
       .select({

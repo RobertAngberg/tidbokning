@@ -17,7 +17,9 @@ import type { Foretag } from "../../../_server/db/schema/foretag";
 import type { Lunchtid } from "../../../_server/db/schema/lunchtider";
 
 interface DashboardClientProps {
-  bokningar: Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }>;
+  bokningar: Array<
+    Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }
+  >;
   tjanster: Tjanst[];
   utforare: Utforare[];
   foretag: Foretag | null;

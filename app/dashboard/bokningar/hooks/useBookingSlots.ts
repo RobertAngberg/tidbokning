@@ -4,7 +4,11 @@ import type { Kund } from "../../../_server/db/schema/kunder";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import type { Utforare } from "../../../_server/db/schema/utforare";
 
-type BokningMedRelationer = Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null };
+type BokningMedRelationer = Bokning & {
+  kund: Kund | null;
+  tjanst: Tjanst | null;
+  utforare: Utforare | null;
+};
 
 export function useBookingSlots(bokningar: BokningMedRelationer[]) {
   // Tidslots från 08:00 till 17:00 (30 min intervall)
