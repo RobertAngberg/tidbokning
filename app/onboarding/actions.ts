@@ -18,7 +18,7 @@ const foretagOnboardingSchema = z.object({
   webbplats: z.string().optional(),
 });
 
-export async function skapaFöretagOchAdminAction(
+export async function skapaForetagOchAdminAction(
   _prevState: unknown,
   formData: FormData
 ): Promise<{ success: boolean; error?: string }> {

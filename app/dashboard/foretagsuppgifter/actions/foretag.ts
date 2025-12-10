@@ -29,7 +29,7 @@ const foretagSchema = z.object({
 
 type ForetagInput = z.infer<typeof foretagSchema>;
 
-export async function hämtaFöretag(foretagsslug: string) {
+export async function hamtaForetag(foretagsslug: string) {
   try {
     const result = await db.select().from(foretag).where(eq(foretag.slug, foretagsslug)).limit(1);
     return { success: true, data: result[0] || null };
@@ -39,7 +39,7 @@ export async function hämtaFöretag(foretagsslug: string) {
   }
 }
 
-export async function uppdateraFöretag(id: string, data: ForetagInput) {
+export async function uppdateraForetag(id: string, data: ForetagInput) {
   try {
     const validated = foretagSchema.parse(data);
 
@@ -85,7 +85,7 @@ export async function uppdateraFöretag(id: string, data: ForetagInput) {
   }
 }
 
-export async function skapaFöretag(data: ForetagInput) {
+export async function skapaForetag(data: ForetagInput) {
   try {
     const validated = foretagSchema.parse(data);
 
@@ -151,7 +151,7 @@ const foretagFormDataSchema = z.object({
   logoUrl: z.string().url("Ogiltig URL").max(500).optional().or(z.literal("")),
 });
 
-export async function uppdateraFöretagAction(
+export async function uppdateraForetagAction(
   _prevState: unknown,
   formData: FormData
 ): Promise<{ success: boolean; error?: string }> {
@@ -177,7 +177,7 @@ export async function uppdateraFöretagAction(
     return { success: false, error: result.error.issues[0].message };
   }
 
-  const updateResult = await uppdateraFöretag(id, {
+  const updateResult = await uppdateraForetag(id, {
     ...result.data,
     aktiv: true,
   });
@@ -185,7 +185,7 @@ export async function uppdateraFöretagAction(
   return updateResult.success ? { success: true } : { success: false, error: updateResult.error };
 }
 
-export async function skapaFöretagAction(
+export async function skapaForetagAction(
   _prevState: unknown,
   formData: FormData
 ): Promise<{ success: boolean; error?: string }> {
@@ -206,14 +206,14 @@ export async function skapaFöretagAction(
     return { success: false, error: result.error.issues[0].message };
   }
 
-  const createResult = await skapaFöretag({
+  const createResult = await skapaForetag({
     ...result.data,
     aktiv: true,
   });
   return createResult.success ? { success: true } : { success: false, error: createResult.error };
 }
 
-export async function hämtaFöretagBySlug(slug: string) {
+export async function hamtaForetagBySlug(slug: string) {
   try {
     const [foretagData] = await db.select().from(foretag).where(eq(foretag.slug, slug)).limit(1);
     return foretagData || null;

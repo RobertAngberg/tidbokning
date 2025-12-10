@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { laddaUppFil } from "../../foretagsuppgifter/actions/upload";
-import { hämtaBilder, laddaUppBild, raderaBild } from "../actions/bilder";
+import { hamtaBilder, laddaUppBild, raderaBild } from "../actions/bilder";
 import type { ForetagBild } from "../../../_server/db/schema/foretagBilder";
 
 export function useForetagBilder() {
@@ -12,7 +12,7 @@ export function useForetagBilder() {
   useEffect(() => {
     async function initiera() {
       setLoading(true);
-      const resultat = await hämtaBilder();
+      const resultat = await hamtaBilder();
       if (resultat.success && resultat.data) {
         setBilder(resultat.data);
       }
@@ -21,9 +21,9 @@ export function useForetagBilder() {
     initiera();
   }, []);
 
-  const hämtaBilderFn = async () => {
+  const hamtaBilderFn = async () => {
     setLoading(true);
-    const resultat = await hämtaBilder();
+    const resultat = await hamtaBilder();
     if (resultat.success && resultat.data) {
       setBilder(resultat.data);
     }
@@ -55,7 +55,7 @@ export function useForetagBilder() {
       await Promise.all(uppladdningar);
 
       setUppladdning(false);
-      await hämtaBilderFn();
+      await hamtaBilderFn();
 
       // Återställ input
       if (filInputRef.current) {
@@ -72,7 +72,7 @@ export function useForetagBilder() {
 
     const resultat = await raderaBild(id);
     if (resultat.success) {
-      await hämtaBilderFn();
+      await hamtaBilderFn();
     }
   }
 

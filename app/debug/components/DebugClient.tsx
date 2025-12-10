@@ -2,15 +2,15 @@
 
 import { DebugTable } from "./DebugTable";
 import {
-  raderaTjänster,
+  raderaTjanster,
   raderaBokningar,
-  raderaAnvändare,
+  raderaAnvandare,
   raderaKunder,
   raderaRecensioner,
-  raderaUtförare,
-  raderaUtförareTjänster,
+  raderaUtforare,
+  raderaUtforareTjanster,
   raderaUsers,
-  raderaFöretag,
+  raderaForetag,
   raderaSessions,
   raderaAccounts,
   raderaVerifications,
@@ -289,8 +289,8 @@ export function DebugClient({
           <DebugTable
             title="Företag"
             data={foretag}
-            color="blue"
-            onDelete={raderaFöretag}
+            color="amber"
+            onDelete={raderaForetag}
             columns={[
               { key: "select", label: "" },
               {
@@ -359,7 +359,7 @@ export function DebugClient({
             title="Tjänster"
             data={tjanster}
             color="blue"
-            onDelete={raderaTjänster}
+            onDelete={raderaTjanster}
             columns={[
               { key: "select", label: "" },
               {
@@ -573,7 +573,7 @@ export function DebugClient({
             title="Användare"
             data={anvandare}
             color="green"
-            onDelete={raderaAnvändare}
+            onDelete={raderaAnvandare}
             columns={[
               { key: "select", label: "" },
               {
@@ -612,8 +612,8 @@ export function DebugClient({
           <DebugTable
             title="Utförare"
             data={utforare}
-            color="amber"
-            onDelete={raderaUtförare}
+            color="purple"
+            onDelete={raderaUtforare}
             columns={[
               { key: "select", label: "" },
               {
@@ -668,7 +668,7 @@ export function DebugClient({
             title="Tjänster per utförare"
             data={utforareTjanster}
             color="pink"
-            onDelete={raderaUtförareTjänster}
+            onDelete={raderaUtforareTjanster}
             columns={[
               { key: "select", label: "" },
               {

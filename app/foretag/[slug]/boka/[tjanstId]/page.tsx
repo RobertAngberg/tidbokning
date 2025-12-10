@@ -3,10 +3,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { KalenderSchema } from "../../../../dashboard/bokningar/components/KalenderSchema";
 import {
-  hämtaBokningarMedRelationer,
-  hämtaTjänstForFöretag,
+  hamtaBokningarMedRelationer,
+  hamtaTjanstForForetag,
 } from "../../../../dashboard/bokningar/actions/bokningar";
-import { hämtaAktivaUtförareForFöretag } from "../../../../dashboard/utforare/actions/utforare";
+import { hamtaAktivaUtforareForForetag } from "../../../../dashboard/utforare/actions/utforare";
 import { hamtaLunchtider } from "../../../../dashboard/bokningar/actions/lunchtider";
 
 interface BokaPageProps {
@@ -17,17 +17,17 @@ export default async function BokaTjanstPage({ params }: BokaPageProps) {
   const { slug, tjanstId } = await params;
 
   // Hämta tjänst för detta företag
-  const tjanst = await hämtaTjänstForFöretag(tjanstId, slug);
+  const tjanst = await hamtaTjanstForForetag(tjanstId, slug);
 
   if (!tjanst) {
     notFound();
   }
 
   // Hämta bokningar för detta företag
-  const foretagBokningar = await hämtaBokningarMedRelationer(slug);
+  const foretagBokningar = await hamtaBokningarMedRelationer(slug);
 
   // Hämta utförare för denna tjänst
-  const tjanstUtforare = await hämtaAktivaUtförareForFöretag(slug);
+  const tjanstUtforare = await hamtaAktivaUtforareForForetag(slug);
 
   // Hämta lunchtider för företaget
   const lunchtider = await hamtaLunchtider(slug);

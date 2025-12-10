@@ -14,7 +14,7 @@ import {
   AlertDialogTrigger,
 } from "../../../_components/AlertDialog";
 import { UtforareFormModal } from "./UtforareFormModal";
-import { skapaUtförareAction, uppdateraUtförareAction } from "../actions/utforare";
+import { skapaUtforareAction, uppdateraUtforareAction } from "../actions/utforare";
 import { useUtforare } from "../hooks/useUtforare";
 import type { Utforare } from "../../../_server/db/schema/utforare";
 import { Pencil, Trash2, Mail, Phone } from "lucide-react";
@@ -146,7 +146,7 @@ export function UtforareTab({ utforare }: UtforareTabProps) {
       <UtforareFormModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        action={editingUtforare ? uppdateraUtförareAction : skapaUtförareAction}
+        action={editingUtforare ? uppdateraUtforareAction : skapaUtforareAction}
         utforare={editingUtforare}
       />
     </div>

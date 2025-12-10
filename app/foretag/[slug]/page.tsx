@@ -2,11 +2,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { MapPin, Phone, Mail, Globe, Clock, Star } from "lucide-react";
-import { hämtaFöretagBySlug } from "../../dashboard/foretagsuppgifter/actions/foretag";
-import { hämtaTjänsterForFöretag } from "../../dashboard/tjanster/actions/tjanster";
-import { hämtaBilderForFöretag } from "../../dashboard/bilder/actions/bilder";
-import { hämtaÖppettiderForFöretag } from "../../dashboard/oppettider/actions/oppettider";
-import { hämtaRecensioner, hämtaSnittbetyg } from "../../dashboard/recensioner/actions/recensioner";
+import { hamtaForetagBySlug } from "../../dashboard/foretagsuppgifter/actions/foretag";
+import { hamtaTjansterForForetag } from "../../dashboard/tjanster/actions/tjanster";
+import { hamtaBilderForForetag } from "../../dashboard/bilder/actions/bilder";
+import { hamtaOppettiderForForetag } from "../../dashboard/oppettider/actions/oppettider";
+import { hamtaRecensioner, hamtaSnittbetyg } from "../../dashboard/recensioner/actions/recensioner";
 import { RecensionsFormular } from "./components/RecensionsFormular";
 
 interface ForetagPageProps {
@@ -17,7 +17,7 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
   const { slug } = await params;
 
   // Hämta företag
-  const foretagData = await hämtaFöretagBySlug(slug);
+  const foretagData = await hamtaForetagBySlug(slug);
 
   if (!foretagData) {
     notFound();
@@ -26,11 +26,11 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
   // Hämta företagets tjänster, bilder, öppettider och recensioner
   const [foretagTjanster, foretagBilder, foretagOppettider, recensioner, snittbetyg] =
     await Promise.all([
-      hämtaTjänsterForFöretag(slug),
-      hämtaBilderForFöretag(slug),
-      hämtaÖppettiderForFöretag(slug),
-      hämtaRecensioner(slug),
-      hämtaSnittbetyg(slug),
+      hamtaTjansterForForetag(slug),
+      hamtaBilderForForetag(slug),
+      hamtaOppettiderForForetag(slug),
+      hamtaRecensioner(slug),
+      hamtaSnittbetyg(slug),
     ]);
 
   // Gruppera tjänster per kategori

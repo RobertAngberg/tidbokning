@@ -1,8 +1,8 @@
-import { hämtaBokningar } from "./bokningar/actions/bokningar";
-import { hämtaTjänster } from "./tjanster/actions/tjanster";
+import { hamtaBokningar } from "./bokningar/actions/bokningar";
+import { hamtaTjanster } from "./tjanster/actions/tjanster";
 import { hämtaUtförare } from "./utforare/actions/utforare";
-import { hämtaFöretag } from "./foretagsuppgifter/actions/foretag";
-import { hämtaRecensioner, hämtaSnittbetyg } from "./recensioner/actions/recensioner";
+import { hamtaForetag } from "./foretagsuppgifter/actions/foretag";
+import { hamtaRecensioner, hamtaSnittbetyg } from "./recensioner/actions/recensioner";
 import { hamtaLunchtider } from "./bokningar/actions/lunchtider";
 import { DashboardClient } from "./_shared/components/DashboardClient";
 import { DashboardLogin } from "./_shared/components/DashboardLogin";
@@ -47,12 +47,12 @@ export default async function DashboardPage() {
 
   const [bokningar, tjanster, utforareResult, foretagResult, recensioner, snittbetyg, lunchtider] =
     await Promise.all([
-      hämtaBokningar(),
-      hämtaTjänster(),
+      hamtaBokningar(),
+      hamtaTjanster(),
       hämtaUtförare(),
-      hämtaFöretag(foretagsslug),
-      hämtaRecensioner(foretagsslug),
-      hämtaSnittbetyg(foretagsslug),
+      hamtaForetag(foretagsslug),
+      hamtaRecensioner(foretagsslug),
+      hamtaSnittbetyg(foretagsslug),
       hamtaLunchtider(foretagsslug),
     ]);
 

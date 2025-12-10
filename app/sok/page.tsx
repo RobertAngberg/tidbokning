@@ -1,4 +1,4 @@
-import { sökForetag } from "./actions/search";
+import { sokForetag } from "./actions/search";
 import { SokResultat } from "./components/SokResultat";
 import Link from "next/link";
 
@@ -9,7 +9,7 @@ interface SökPageProps {
 export default async function SökPage({ searchParams }: SökPageProps) {
   const params = await searchParams;
   const sökterm = params.q || "";
-  const resultat = sökterm ? await sökForetag(sökterm) : { success: true, data: [] };
+  const resultat = sökterm ? await sokForetag(sökterm) : { success: true, data: [] };
 
   return (
     <div className="min-h-screen px-4 py-12">

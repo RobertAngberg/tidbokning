@@ -8,7 +8,7 @@ import { revalidatePath } from "next/cache";
 import { auth } from "../../../_server/auth";
 import { headers } from "next/headers";
 
-export async function hämtaBilder() {
+export async function hamtaBilder() {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -31,7 +31,7 @@ export async function hämtaBilder() {
   }
 }
 
-export async function hämtaBilderForFöretag(foretagsslug: string): Promise<ForetagBild[]> {
+export async function hamtaBilderForForetag(foretagsslug: string): Promise<ForetagBild[]> {
   try {
     const bilder = await db
       .select()

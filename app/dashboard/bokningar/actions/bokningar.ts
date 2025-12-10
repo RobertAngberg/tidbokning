@@ -100,7 +100,7 @@ export async function skapaBokning(data: BokningInput): Promise<BokningResult> {
   }
 }
 
-export async function hämtaBokningar(): Promise<
+export async function hamtaBokningar(): Promise<
   Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }>
 > {
   try {
@@ -130,13 +130,13 @@ export async function hämtaBokningar(): Promise<
   }
 }
 
-export async function hämtaTjänster(): Promise<Tjanst[]> {
+export async function hamtaTjanster(): Promise<Tjanst[]> {
   try {
-    const allaTjänster = await db.query.tjanster.findMany({
+    const allaTjanster = await db.query.tjanster.findMany({
       where: eq(tjanster.aktiv, 1),
     });
 
-    return allaTjänster;
+    return allaTjanster;
   } catch (error) {
     console.error("Fel vid hämtning av tjänster:", error);
     return [];
@@ -148,7 +148,7 @@ const tillgangligaTiderSchema = z.object({
   tjanstId: z.string().uuid("Ogiltigt tjänst-ID"),
 });
 
-export async function hämtaTillgängligaTider(
+export async function hamtaTillgangligaTider(
   datum: Date,
   tjanstId: string
 ): Promise<TillgängligTid[]> {
@@ -319,7 +319,7 @@ export async function raderaBokning(
   }
 }
 
-export async function hämtaBokningarMedRelationer(
+export async function hamtaBokningarMedRelationer(
   foretagsslug: string
 ): Promise<
   Array<Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }>
@@ -356,7 +356,7 @@ export async function hämtaBokningarMedRelationer(
   }
 }
 
-export async function hämtaTjänstForFöretag(
+export async function hamtaTjanstForForetag(
   tjanstId: string,
   foretagsslug: string
 ): Promise<Tjanst | null> {

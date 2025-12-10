@@ -1,6 +1,6 @@
 import { useState, useTransition, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { raderaUtförare } from "../actions/utforare";
+import { raderaUtforare } from "../actions/utforare";
 import type { Utforare } from "../../../_server/db/schema/utforare";
 
 export function useUtforare(initialUtforare: Utforare[]) {
@@ -26,7 +26,7 @@ export function useUtforare(initialUtforare: Utforare[]) {
   // Hantera radering
   const handleDelete = async (id: string) => {
     startTransition(async () => {
-      await raderaUtförare(id);
+      await raderaUtforare(id);
       router.refresh();
     });
   };

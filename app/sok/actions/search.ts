@@ -5,13 +5,13 @@ import { foretag } from "../../_server/db/schema/foretag";
 import { tjanster } from "../../_server/db/schema/tjanster";
 import { ilike, or, inArray } from "drizzle-orm";
 
-export async function sökForetag(sökterm: string) {
+export async function sokForetag(sokterm: string) {
   try {
-    if (!sökterm || sökterm.trim().length < 2) {
+    if (!sokterm || sokterm.trim().length < 2) {
       return { success: true, data: [] };
     }
 
-    const searchPattern = `%${sökterm.trim()}%`;
+    const searchPattern = `%${sokterm.trim()}%`;
 
     // Sök först efter tjänster med matchande namn, beskrivning eller kategori
     const tjänstResultat = await db

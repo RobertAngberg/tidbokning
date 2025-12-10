@@ -8,7 +8,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 // Hämta öppettider för inloggat företag
-export async function hämtaÖppettider() {
+export async function hamtaOppettider() {
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session?.user?.foretagsslug) {
@@ -23,7 +23,7 @@ export async function hämtaÖppettider() {
 }
 
 // Hämta öppettider för specifikt företag (publikt)
-export async function hämtaÖppettiderForFöretag(slug: string) {
+export async function hamtaOppettiderForForetag(slug: string) {
   return await db
     .select()
     .from(oppettider)
@@ -32,7 +32,7 @@ export async function hämtaÖppettiderForFöretag(slug: string) {
 }
 
 // Uppdatera eller skapa öppettid
-export async function sparaÖppettid(data: {
+export async function sparaOppettid(data: {
   veckodag: string;
   oppnar: string | null;
   stanger: string | null;

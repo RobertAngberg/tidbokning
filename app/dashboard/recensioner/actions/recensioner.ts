@@ -91,7 +91,7 @@ export async function skapaRecension(data: RecensionInput): Promise<RecensionRes
   }
 }
 
-export async function hämtaRecensioner(foretagsslug: string) {
+export async function hamtaRecensioner(foretagsslug: string) {
   try {
     const foretagRecensioner = await db
       .select({
@@ -115,7 +115,7 @@ export async function hämtaRecensioner(foretagsslug: string) {
   }
 }
 
-export async function hämtaSnittbetyg(foretagsslug: string): Promise<number | null> {
+export async function hamtaSnittbetyg(foretagsslug: string): Promise<number | null> {
   try {
     const foretagRecensioner = await db
       .select({

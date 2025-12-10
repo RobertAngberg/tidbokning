@@ -12,7 +12,7 @@ import { foretag } from "../_server/db/schema/foretag";
 import { inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function raderaTjänster(ids: string[]) {
+export async function raderaTjanster(ids: string[]) {
   try {
     await db.delete(tjanster).where(inArray(tjanster.id, ids));
     revalidatePath("/debug");
@@ -34,7 +34,7 @@ export async function raderaBokningar(ids: string[]) {
   }
 }
 
-export async function raderaAnvändare(ids: string[]) {
+export async function raderaAnvandare(ids: string[]) {
   try {
     // Radera först alla bokningar kopplade till dessa användare
     await db.delete(bokningar).where(inArray(bokningar.kundId, ids));
@@ -50,7 +50,7 @@ export async function raderaAnvändare(ids: string[]) {
   }
 }
 
-export async function raderaUtförare(ids: string[]) {
+export async function raderaUtforare(ids: string[]) {
   try {
     await db.delete(utforare).where(inArray(utforare.id, ids));
     revalidatePath("/debug");
@@ -61,7 +61,7 @@ export async function raderaUtförare(ids: string[]) {
   }
 }
 
-export async function raderaUtförareTjänster(ids: string[]) {
+export async function raderaUtforareTjanster(ids: string[]) {
   try {
     await db.delete(utforareTjanster).where(inArray(utforareTjanster.id, ids));
     revalidatePath("/debug");
@@ -89,7 +89,7 @@ export async function raderaUsers(ids: string[]) {
   }
 }
 
-export async function raderaFöretag(ids: string[]) {
+export async function raderaForetag(ids: string[]) {
   try {
     await db.delete(foretag).where(inArray(foretag.id, ids));
     revalidatePath("/debug");

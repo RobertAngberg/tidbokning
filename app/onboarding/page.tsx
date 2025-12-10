@@ -2,14 +2,14 @@
 
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { skapaFöretagOchAdminAction } from "./actions";
+import { skapaForetagOchAdminAction } from "./actions";
 
 type ActionState = { success: boolean; error?: string } | null;
 
 export default function OnboardingPage() {
   const router = useRouter();
   const [state, formAction, isPending] = useActionState<ActionState, FormData>(
-    skapaFöretagOchAdminAction,
+    skapaForetagOchAdminAction,
     null
   );
 

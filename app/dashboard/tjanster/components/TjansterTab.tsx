@@ -20,7 +20,7 @@ import {
   AlertDialogTrigger,
 } from "../../../_components/AlertDialog";
 import { TjanstFormModal } from "./TjanstFormModal";
-import { skapaTjänstAction, uppdateraTjänstAction } from "../actions/tjanster";
+import { skapaTjanstAction, uppdateraTjanstAction } from "../actions/tjanster";
 import { useTjanster } from "../hooks/useTjanster";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
 import { Pencil, Trash2 } from "lucide-react";
@@ -186,7 +186,7 @@ export function TjansterTab({ tjanster }: TjansterTabProps) {
       <TjanstFormModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        action={editingTjanst ? uppdateraTjänstAction : skapaTjänstAction}
+        action={editingTjanst ? uppdateraTjanstAction : skapaTjanstAction}
         tjanst={editingTjanst}
         existingKategorier={kategorier}
       />

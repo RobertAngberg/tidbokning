@@ -20,7 +20,7 @@ const tjanstSchema = z.object({
 
 type TjanstInput = z.infer<typeof tjanstSchema>;
 
-export async function hämtaTjänster() {
+export async function hamtaTjanster() {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -51,7 +51,7 @@ export async function hämtaTjänst(id: string) {
   }
 }
 
-export async function skapaTjänst(data: {
+export async function skapaTjanst(data: {
   namn: string;
   beskrivning?: string;
   varaktighet: number;
@@ -95,7 +95,7 @@ export async function skapaTjänst(data: {
   }
 }
 
-export async function uppdateraTjänst(
+export async function uppdateraTjanst(
   id: string,
   data: {
     namn: string;
@@ -202,7 +202,7 @@ const tjanstFormDataSchema = z.object({
     .transform((val) => val === "on"),
 });
 
-export async function skapaTjänstAction(_prevState: unknown, formData: FormData) {
+export async function skapaTjanstAction(_prevState: unknown, formData: FormData) {
   const rawData = {
     namn: formData.get("namn"),
     beskrivning: formData.get("beskrivning") || "",
@@ -217,10 +217,10 @@ export async function skapaTjänstAction(_prevState: unknown, formData: FormData
     return { success: false, error: result.error.issues[0].message };
   }
 
-  return await skapaTjänst(result.data);
+  return await skapaTjanst(result.data);
 }
 
-export async function uppdateraTjänstAction(_prevState: unknown, formData: FormData) {
+export async function uppdateraTjanstAction(_prevState: unknown, formData: FormData) {
   const id = formData.get("id");
   if (!id || typeof id !== "string") {
     return { success: false, error: "ID krävs" };
@@ -240,10 +240,10 @@ export async function uppdateraTjänstAction(_prevState: unknown, formData: Form
     return { success: false, error: result.error.issues[0].message };
   }
 
-  return await uppdateraTjänst(id, result.data);
+  return await uppdateraTjanst(id, result.data);
 }
 
-export async function hämtaTjänsterForFöretag(foretagsslug: string) {
+export async function hamtaTjansterForForetag(foretagsslug: string) {
   try {
     const foretagTjanster = await db
       .select()

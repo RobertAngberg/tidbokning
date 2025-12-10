@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { hämtaÖppettider, sparaÖppettid } from "../actions/oppettider";
+import { hamtaOppettider, sparaOppettid } from "../actions/oppettider";
 import type { Oppettid } from "../../../_server/db/schema/oppettider";
 
 type OppettidChange = {
@@ -20,7 +20,7 @@ export function useOppettider() {
     const loadData = async () => {
       if (mounted) {
         setLoading(true);
-        const data = await hämtaÖppettider();
+        const data = await hamtaOppettider();
         if (mounted) {
           setOppettider(data);
           setLoading(false);
@@ -62,7 +62,7 @@ export function useOppettider() {
 
     // Spara alla ändringar
     for (const [_, andring] of andringar) {
-      await sparaÖppettid({
+      await sparaOppettid({
         veckodag: andring.veckodag,
         oppnar: andring.stangt ? null : andring.oppnar || null,
         stanger: andring.stangt ? null : andring.stanger || null,
@@ -72,7 +72,7 @@ export function useOppettider() {
 
     // Hämta uppdaterad data
     setLoading(true);
-    const data = await hämtaÖppettider();
+    const data = await hamtaOppettider();
     setOppettider(data);
     setLoading(false);
     setAndringar(new Map());

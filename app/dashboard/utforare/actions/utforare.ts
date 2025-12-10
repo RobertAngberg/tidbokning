@@ -70,7 +70,7 @@ export async function hämtaEnUtförare(id: string) {
   }
 }
 
-export async function skapaUtförare(data: unknown) {
+export async function skapaUtforare(data: unknown) {
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -82,7 +82,7 @@ export async function skapaUtförare(data: unknown) {
 
     const validated = utforareInput.parse(data);
 
-    const [nyUtförare] = await db
+    const [nyUtforare] = await db
       .insert(utforare)
       .values({
         namn: validated.namn,
@@ -96,7 +96,7 @@ export async function skapaUtförare(data: unknown) {
       .returning();
 
     revalidatePath("/dashboard");
-    return { success: true, data: nyUtförare };
+    return { success: true, data: nyUtforare };
   } catch (error) {
     console.error("Fel vid skapande av utförare:", error);
     if (error instanceof Error) {
@@ -106,11 +106,11 @@ export async function skapaUtförare(data: unknown) {
   }
 }
 
-export async function uppdateraUtförare(id: string, data: unknown) {
+export async function uppdateraUtforare(id: string, data: unknown) {
   try {
     const validated = utforareInput.parse(data);
 
-    const [uppdateradUtförare] = await db
+    const [uppdateradUtforare] = await db
       .update(utforare)
       .set({
         namn: validated.namn,
@@ -125,7 +125,7 @@ export async function uppdateraUtförare(id: string, data: unknown) {
       .returning();
 
     revalidatePath("/dashboard");
-    return { success: true, data: uppdateradUtförare };
+    return { success: true, data: uppdateradUtforare };
   } catch (error) {
     console.error("Fel vid uppdatering av utförare:", error);
     if (error instanceof Error) {
@@ -135,7 +135,7 @@ export async function uppdateraUtförare(id: string, data: unknown) {
   }
 }
 
-export async function raderaUtförare(id: string) {
+export async function raderaUtforare(id: string) {
   try {
     await db.delete(utforare).where(eq(utforare.id, id));
 
@@ -163,7 +163,7 @@ const utforareFormDataSchema = z.object({
     .transform((val) => val === "on"),
 });
 
-export async function skapaUtförareAction(_prevState: unknown, formData: FormData) {
+export async function skapaUtforareAction(_prevState: unknown, formData: FormData) {
   const rawData = {
     namn: formData.get("namn"),
     email: formData.get("email") || "",
@@ -178,10 +178,10 @@ export async function skapaUtförareAction(_prevState: unknown, formData: FormDa
     return { success: false, error: result.error.issues[0].message };
   }
 
-  return await skapaUtförare(result.data);
+  return await skapaUtforare(result.data);
 }
 
-export async function uppdateraUtförareAction(_prevState: unknown, formData: FormData) {
+export async function uppdateraUtforareAction(_prevState: unknown, formData: FormData) {
   const id = formData.get("id");
   if (!id || typeof id !== "string") {
     return { success: false, error: "ID krävs" };
@@ -201,10 +201,10 @@ export async function uppdateraUtförareAction(_prevState: unknown, formData: Fo
     return { success: false, error: result.error.issues[0].message };
   }
 
-  return await uppdateraUtförare(id, result.data);
+  return await uppdateraUtforare(id, result.data);
 }
 
-export async function hämtaAktivaUtförareForFöretag(foretagsslug: string): Promise<Utforare[]> {
+export async function hamtaAktivaUtforareForForetag(foretagsslug: string): Promise<Utforare[]> {
   try {
     const aktiva = await db
       .select()

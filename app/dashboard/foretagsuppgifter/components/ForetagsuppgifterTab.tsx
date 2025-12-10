@@ -4,7 +4,7 @@ import { Card } from "../../../_components/Card";
 import { Label } from "../../../_components/Label";
 import { Input } from "../../../_components/Input";
 import { Button } from "../../../_components/Button";
-import { uppdateraFöretagAction, skapaFöretagAction } from "../actions/foretag";
+import { uppdateraForetagAction, skapaForetagAction } from "../actions/foretag";
 import { BildUppladdare } from "../../bilder/components/BildUppladdare";
 import { useForetagsuppgifter } from "../hooks/useForetagsuppgifter";
 import type { Foretag } from "../../../_server/db/schema/foretag";
@@ -14,7 +14,7 @@ interface ForetagsuppgifterTabProps {
 }
 
 export function ForetagsuppgifterTab({ foretag }: ForetagsuppgifterTabProps) {
-  const action = foretag ? uppdateraFöretagAction : skapaFöretagAction;
+  const action = foretag ? uppdateraForetagAction : skapaForetagAction;
 
   const { logoUrl, isLoggingOut, state, isPending, formAction, handleLogoUpload, handleLoggaUt } =
     useForetagsuppgifter({ foretag, action });
