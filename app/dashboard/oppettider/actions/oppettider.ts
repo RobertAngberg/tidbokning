@@ -37,6 +37,8 @@ export async function sparaOppettid(data: {
   oppnar: string | null;
   stanger: string | null;
   stangt: boolean;
+  lunchStart: string | null;
+  lunchSlut: string | null;
 }) {
   const session = await auth.api.getSession({ headers: await headers() });
 
@@ -67,6 +69,8 @@ export async function sparaOppettid(data: {
           oppnar: data.oppnar,
           stanger: data.stanger,
           stangt: data.stangt,
+          lunchStart: data.lunchStart,
+          lunchSlut: data.lunchSlut,
         })
         .where(eq(oppettider.id, befintlig.id));
     } else {
@@ -77,6 +81,8 @@ export async function sparaOppettid(data: {
         oppnar: data.oppnar,
         stanger: data.stanger,
         stangt: data.stangt,
+        lunchStart: data.lunchStart,
+        lunchSlut: data.lunchSlut,
       });
     }
 

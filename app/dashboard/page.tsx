@@ -78,9 +78,11 @@ export default async function DashboardPage() {
       open: o.oppnar ? o.oppnar.substring(0, 5) : "08:00", // "HH:MM:SS" -> "HH:MM"
       close: o.stanger ? o.stanger.substring(0, 5) : "17:00", // "HH:MM:SS" -> "HH:MM"
       stangt: o.stangt,
+      lunchStart: o.lunchStart || null,
+      lunchSlut: o.lunchSlut || null,
     };
     return acc;
-  }, {} as { [key: string]: { open: string; close: string; stangt: boolean } });
+  }, {} as { [key: string]: { open: string; close: string; stangt: boolean; lunchStart: string | null; lunchSlut: string | null } });
 
   return (
     <div className="min-h-screen p-8">

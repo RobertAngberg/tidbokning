@@ -25,6 +25,8 @@ interface BokningPageClientProps {
       open: string;
       close: string;
       stangt: boolean;
+      lunchStart?: string | null;
+      lunchSlut?: string | null;
     };
   };
 }

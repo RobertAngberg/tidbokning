@@ -43,6 +43,13 @@
       "when": 1765343697191,
       "tag": "0005_green_grey_gargoyle",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1765442967467,
+      "tag": "0006_add_lunch_to_oppettider",
+      "breakpoints": true
     }
   ]
 }

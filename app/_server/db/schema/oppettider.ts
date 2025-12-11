@@ -10,6 +10,8 @@ export const oppettider = pgTable("oppettider", {
   oppnar: time("oppnar"), // t.ex. "09:00"
   stanger: time("stanger"), // t.ex. "17:00"
   stangt: boolean("stangt").notNull().default(false),
+  lunchStart: time("lunch_start"), // t.ex. "12:00"
+  lunchSlut: time("lunch_slut"), // t.ex. "13:00"
 });
 
 export type Oppettid = typeof oppettider.$inferSelect;

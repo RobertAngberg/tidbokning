@@ -9,6 +9,7 @@ import { BilderTab } from "../../bilder/components/BilderTab";
 import { OppettiderTab } from "../../oppettider/components/OppettiderTab";
 import { ForetagsuppgifterTab } from "../../foretagsuppgifter/components/ForetagsuppgifterTab";
 import { RecensionerTab } from "../../recensioner/components/RecensionerTab";
+import { KunderTab } from "../../kunder/components/KunderTab";
 import type { Bokning } from "../../../_server/db/schema/bokningar";
 import type { Kund } from "../../../_server/db/schema/kunder";
 import type { Tjanst, TjanstMedKategori } from "../../../_server/db/schema/tjanster";
@@ -42,6 +43,8 @@ interface DashboardClientProps {
       open: string;
       close: string;
       stangt: boolean;
+      lunchStart?: string | null;
+      lunchSlut?: string | null;
     };
   };
 }
@@ -85,6 +88,12 @@ export function DashboardClient({
           className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
         >
           Utförare
+        </TabsTrigger>
+        <TabsTrigger
+          value="kunder"
+          className="flex-1 lg:w-full lg:justify-start px-4 py-3 data-[state=active]:bg-teal-500 data-[state=active]:text-white"
+        >
+          Kunder
         </TabsTrigger>
         <TabsTrigger
           value="bilder"
@@ -136,6 +145,10 @@ export function DashboardClient({
 
         <TabsContent value="utforare" className="mt-0">
           <UtforareTab utforare={utforare} />
+        </TabsContent>
+
+        <TabsContent value="kunder" className="mt-0">
+          <KunderTab />
         </TabsContent>
 
         <TabsContent value="bilder" className="mt-0">

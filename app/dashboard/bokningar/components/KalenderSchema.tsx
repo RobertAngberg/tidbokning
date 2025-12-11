@@ -37,6 +37,8 @@ interface KalenderSchemaProps {
       open: string;
       close: string;
       stangt: boolean;
+      lunchStart?: string | null;
+      lunchSlut?: string | null;
     };
   } | null;
 }
@@ -92,6 +94,14 @@ export function KalenderSchema({
     handleConfirmMove,
     handleCancelMove,
   } = useDragAndDrop(foretagsslug, onBookingCreated);
+
+  // Funktion för att kolla om en tid har passerat
+  const isPastTimeSlot = (day: Date, timeSlot: string): boolean => {
+    const [hour, minute] = timeSlot.split(":").map(Number);
+    const slotDateTime = new Date(day);
+    slotDateTime.setHours(hour, minute, 0, 0);
+    return slotDateTime < new Date();
+  };
 
   // Funktion för att kolla om tid är inom företagets öppettider
   const isWithinOpeningHours = (day: Date, timeSlot: string): boolean => {
@@ -226,6 +236,16 @@ export function KalenderSchema({
                   <React.Fragment key={timeSlot}>
                     {/* Dagkolumner - kort för varje timslot */}
                     {weekDays.map((day) => {
+                      // Dölj passerade tidsslots
+                      if (isPastTimeSlot(day, timeSlot)) {
+                        return (
+                          <div
+                            key={`${day.toISOString()}-${timeSlot}`}
+                            className="p-1 bg-stone-50"
+                          />
+                        );
+                      }
+
                       const booking = getBookingForSlot(day, timeSlot);
                       const datumStr = format(day, "yyyy-MM-dd");
 
@@ -236,17 +256,33 @@ export function KalenderSchema({
                           lunch.datum === datumStr && lunch.startTid.substring(0, 5) === timeSlot
                       );
 
-                      // Default lunch: weekdays at 12:00, unless there's a custom lunch time for this day
+                      // Hämta lunch från öppettider för aktuell veckodag
+                      const veckodagarLunch = [
+                        "söndag",
+                        "måndag",
+                        "tisdag",
+                        "onsdag",
+                        "torsdag",
+                        "fredag",
+                        "lördag",
+                      ];
+                      const veckodagLunch = veckodagarLunch[day.getDay()];
+                      const dagensOppettid = oppettider?.[veckodagLunch];
+
+                      // Kolla om timeslot är inom öppettidernas lunch-tid
+                      const lunchStart = dagensOppettid?.lunchStart?.substring(0, 5); // "HH:MM:SS" -> "HH:MM"
+                      const lunchSlut = dagensOppettid?.lunchSlut?.substring(0, 5);
+                      const isWithinOppettiderLunch =
+                        lunchStart && lunchSlut && timeSlot >= lunchStart && timeSlot < lunchSlut;
+
+                      // Kolla om det finns custom lunch för just denna dag (flyttad lunch i kalendern)
                       const hasCustomLunchThisDay = lunchtider.some(
                         (lunch) => lunch.datum === datumStr
                       );
-                      const isWeekday = day.getDay() >= 1 && day.getDay() <= 5;
-                      const isDefaultLunchTime = timeSlot === "12:00";
-                      const shouldShowDefaultLunch =
-                        isWeekday && isDefaultLunchTime && !hasCustomLunchThisDay;
 
-                      // Show lunch if: custom lunch for this slot OR default lunch time
-                      const shouldShowLunch = lunchForSlot || shouldShowDefaultLunch;
+                      // Show lunch if: custom lunch for this slot OR within öppettider lunch (och ingen custom lunch finns för dagen)
+                      const shouldShowLunch =
+                        lunchForSlot || (isWithinOppettiderLunch && !hasCustomLunchThisDay);
 
                       if (shouldShowLunch && !booking) {
                         const isDashboardMode = !tjanst && tjanster.length > 0;

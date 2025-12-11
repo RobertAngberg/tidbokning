@@ -7,6 +7,8 @@ type OppettidChange = {
   oppnar: string;
   stanger: string;
   stangt: boolean;
+  lunchStart: string | null;
+  lunchSlut: string | null;
 };
 
 export function useOppettider() {
@@ -42,15 +44,24 @@ export function useOppettider() {
         oppnar: andring.oppnar,
         stanger: andring.stanger,
         stangt: andring.stangt,
+        lunchStart: andring.lunchStart,
+        lunchSlut: andring.lunchSlut,
       } as Oppettid;
     }
     return oppettider.find((o) => o.veckodag === dag);
   };
 
-  const handleChange = (veckodag: string, oppnar: string, stanger: string, stangt: boolean) => {
+  const handleChange = (
+    veckodag: string,
+    oppnar: string,
+    stanger: string,
+    stangt: boolean,
+    lunchStart: string | null,
+    lunchSlut: string | null
+  ) => {
     setAndringar((prev) => {
       const ny = new Map(prev);
-      ny.set(veckodag, { veckodag, oppnar, stanger, stangt });
+      ny.set(veckodag, { veckodag, oppnar, stanger, stangt, lunchStart, lunchSlut });
       return ny;
     });
   };
@@ -67,6 +78,8 @@ export function useOppettider() {
         oppnar: andring.stangt ? null : andring.oppnar || null,
         stanger: andring.stangt ? null : andring.stanger || null,
         stangt: andring.stangt,
+        lunchStart: andring.stangt ? null : andring.lunchStart,
+        lunchSlut: andring.stangt ? null : andring.lunchSlut,
       });
     }
 
