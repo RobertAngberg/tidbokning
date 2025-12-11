@@ -12,6 +12,7 @@ import { RecensionerTab } from "../../recensioner/components/RecensionerTab";
 import type { Bokning } from "../../../_server/db/schema/bokningar";
 import type { Kund } from "../../../_server/db/schema/kunder";
 import type { Tjanst } from "../../../_server/db/schema/tjanster";
+import type { Kategori } from "../../../_server/db/schema/kategorier";
 import type { Utforare } from "../../../_server/db/schema/utforare";
 import type { Foretag } from "../../../_server/db/schema/foretag";
 import type { Lunchtid } from "../../../_server/db/schema/lunchtider";
@@ -21,6 +22,7 @@ interface DashboardClientProps {
     Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }
   >;
   tjanster: Tjanst[];
+  kategorier: Kategori[];
   utforare: Utforare[];
   foretag: Foretag | null;
   lunchtider: Lunchtid[];
@@ -47,6 +49,7 @@ interface DashboardClientProps {
 export function DashboardClient({
   bokningar,
   tjanster,
+  kategorier,
   utforare,
   foretag,
   recensioner,
@@ -128,7 +131,7 @@ export function DashboardClient({
         </TabsContent>
 
         <TabsContent value="tjanster" className="mt-0">
-          <TjansterTab tjanster={tjanster} />
+          <TjansterTab tjanster={tjanster} kategorier={kategorier} foretagsslug={foretagsslug} />
         </TabsContent>
 
         <TabsContent value="utforare" className="mt-0">

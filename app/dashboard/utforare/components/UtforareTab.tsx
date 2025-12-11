@@ -27,6 +27,7 @@ export function UtforareTab({ utforare }: UtforareTabProps) {
   const {
     isModalOpen,
     editingUtforare,
+    editingTillganglighet,
     searchTerm,
     visaInaktiva,
     filteredUtforare,
@@ -47,12 +48,6 @@ export function UtforareTab({ utforare }: UtforareTabProps) {
         >
           + Lägg till utförare
         </button>
-        <Input
-          placeholder="Sök på namn eller email..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="flex-1 min-w-[200px] max-w-[400px] bg-background"
-        />
         <label className="flex items-center gap-2 cursor-pointer">
           <input
             type="checkbox"
@@ -148,6 +143,7 @@ export function UtforareTab({ utforare }: UtforareTabProps) {
         onClose={closeModal}
         action={editingUtforare ? uppdateraUtforareAction : skapaUtforareAction}
         utforare={editingUtforare}
+        tillganglighet={editingTillganglighet}
       />
     </div>
   );

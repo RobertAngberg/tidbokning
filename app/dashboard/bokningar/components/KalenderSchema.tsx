@@ -129,7 +129,7 @@ export function KalenderSchema({
 
     // Hitta tillgänglighet för vald utförare och denna veckodag
     const tillganglighet = utforareTillganglighet.find(
-      (t) => t.utforareId === selectedUtforareId && t.veckodag === veckodag && t.ledig
+      (t) => t.utforareId === selectedUtforareId && t.veckodag === veckodag && !t.ledig
     );
 
     // Om ingen tillgänglighet finns för denna dag, visa inte tiden
@@ -331,22 +331,22 @@ export function KalenderSchema({
                               }
                             }}
                             disabled={!isClickable}
-                            className={`w-full h-full p-2 rounded-lg border transition-all ${
+                            className={`w-full h-full p-2 rounded-lg border-2 transition-all ${
                               isClickable
-                                ? "border-amber-200 bg-white hover:bg-amber-50 hover:border-amber-400 hover:shadow-md cursor-pointer active:scale-95"
+                                ? "border-emerald-400 bg-emerald-50 hover:bg-emerald-100 hover:border-emerald-500 hover:shadow-md cursor-pointer active:scale-95"
                                 : "border-stone-200 bg-stone-50 cursor-not-allowed"
                             }`}
                           >
                             <div className="text-center">
                               <div
                                 className={`text-sm font-bold ${
-                                  isClickable ? "text-stone-800" : "text-stone-400"
+                                  isClickable ? "text-emerald-700" : "text-stone-400"
                                 }`}
                               >
                                 {timeSlot}
                               </div>
                               {tjanst && isClickable && (
-                                <div className="text-amber-600 text-xs font-semibold">
+                                <div className="text-emerald-600 text-xs font-semibold">
                                   {tjanst.pris / 100} kr
                                 </div>
                               )}

@@ -29,3 +29,38 @@ export async function hamtaAllaUtforareTillganglighet(foretagsslug: string) {
     .innerJoin(utforare, eq(utforareTillganglighet.utforareId, utforare.id))
     .where(eq(utforare.foretagsslug, foretagsslug));
 }
+
+export async function sparaTillganglighet(data: {
+  utforareId: string;
+  tillganglighet: Array<{
+    veckodag: string;
+    ledig: boolean;
+    startTid?: string;
+    slutTid?: string;
+  }>;
+}) {
+  try {
+    // Radera befintlig tillgänglighet för denna utförare
+    await db
+      .delete(utforareTillganglighet)
+      .where(eq(utforareTillganglighet.utforareId, data.utforareId));
+
+    // Lägg till ny tillgänglighet
+    if (data.tillganglighet.length > 0) {
+      await db.insert(utforareTillganglighet).values(
+        data.tillganglighet.map((t) => ({
+          utforareId: data.utforareId,
+          veckodag: t.veckodag,
+          ledig: t.ledig,
+          startTid: !t.ledig && t.startTid ? t.startTid : null,
+          slutTid: !t.ledig && t.slutTid ? t.slutTid : null,
+        }))
+      );
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Fel vid sparande av tillgänglighet:", error);
+    return { success: false, error: "Kunde inte spara tillgänglighet" };
+  }
+}

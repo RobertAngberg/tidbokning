@@ -5,6 +5,7 @@ import * as kunderSchema from "./schema/kunder";
 import * as bokningarSchema from "./schema/bokningar";
 import * as recensionerSchema from "./schema/recensioner";
 import * as tjansterSchema from "./schema/tjanster";
+import * as kategoriSchema from "./schema/kategorier";
 import * as utforareSchema from "./schema/utforare";
 import * as oppettiderSchema from "./schema/oppettider";
 import * as lunchtiderSchema from "./schema/lunchtider";
@@ -17,6 +18,7 @@ const schema = {
   ...bokningarSchema,
   ...recensionerSchema,
   ...tjansterSchema,
+  ...kategoriSchema,
   ...utforareSchema,
   ...oppettiderSchema,
   ...lunchtiderSchema,

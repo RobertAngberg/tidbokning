@@ -106,12 +106,12 @@ export function TjanstFormModal({
             <Label htmlFor="kategori">Kategori</Label>
             <div className="relative">
               <Input
-                id="kategori"
-                name="kategori"
+                id="kategori-display"
                 value={kategoriInput}
                 onChange={(e) => setKategoriInput(e.target.value)}
                 placeholder="Skapa ny kategori..."
               />
+              <input type="hidden" name="kategori" value={kategoriInput} />
 
               {existingKategorier.length > 0 && (
                 <div className="mt-2">
@@ -119,9 +119,9 @@ export function TjanstFormModal({
                     Välj befintlig kategori:
                   </span>
                   <div className="flex flex-wrap gap-2">
-                    {existingKategorier.map((kat) => (
+                    {existingKategorier.map((kat, index) => (
                       <button
-                        key={kat}
+                        key={`kategori-${index}-${kat}`}
                         type="button"
                         onClick={() => handleKategoriSelect(kat)}
                         className="px-3 py-1.5 text-sm bg-stone-100 hover:bg-stone-200 rounded-md transition-colors"

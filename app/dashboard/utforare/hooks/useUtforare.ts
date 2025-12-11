@@ -1,7 +1,9 @@
 import { useState, useTransition, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { raderaUtforare } from "../actions/utforare";
+import { hamtaUtforareTillganglighet } from "../actions/tillganglighet";
 import type { Utforare } from "../../../_server/db/schema/utforare";
+import type { UtforareTillganglighet } from "../../../_server/db/schema/tillganglighet";
 
 export function useUtforare(initialUtforare: Utforare[]) {
   const router = useRouter();
@@ -9,6 +11,9 @@ export function useUtforare(initialUtforare: Utforare[]) {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingUtforare, setEditingUtforare] = useState<Utforare | undefined>();
+  const [editingTillganglighet, setEditingTillganglighet] = useState<
+    UtforareTillganglighet[] | undefined
+  >();
   const [searchTerm, setSearchTerm] = useState("");
   const [visaInaktiva, setVisaInaktiva] = useState(false);
 
@@ -34,23 +39,31 @@ export function useUtforare(initialUtforare: Utforare[]) {
   // Modal-hantering
   const openCreateModal = () => {
     setEditingUtforare(undefined);
+    setEditingTillganglighet(undefined);
     setIsModalOpen(true);
   };
 
-  const openEditModal = (person: Utforare) => {
+  const openEditModal = async (person: Utforare) => {
     setEditingUtforare(person);
+
+    // Hämta tillgänglighet för utföraren
+    const tillganglighet = await hamtaUtforareTillganglighet(person.id);
+    setEditingTillganglighet(tillganglighet);
+
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingUtforare(undefined);
+    setEditingTillganglighet(undefined);
   };
 
   return {
     // State
     isModalOpen,
     editingUtforare,
+    editingTillganglighet,
     searchTerm,
     visaInaktiva,
     isPending,

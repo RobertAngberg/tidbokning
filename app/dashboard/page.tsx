@@ -1,5 +1,6 @@
 import { hamtaBokningar } from "./bokningar/actions/bokningar";
 import { hamtaTjanster } from "./tjanster/actions/tjanster";
+import { hamtaKategorier } from "./tjanster/actions/kategorier";
 import { hämtaUtförare } from "./utforare/actions/utforare";
 import { hamtaForetag } from "./foretagsuppgifter/actions/foretag";
 import { hamtaRecensioner, hamtaSnittbetyg } from "./recensioner/actions/recensioner";
@@ -49,6 +50,7 @@ export default async function DashboardPage() {
   const [
     bokningar,
     tjanster,
+    kategorier,
     utforareResult,
     foretagResult,
     recensioner,
@@ -58,6 +60,7 @@ export default async function DashboardPage() {
   ] = await Promise.all([
     hamtaBokningar(),
     hamtaTjanster(),
+    hamtaKategorier(foretagsslug),
     hämtaUtförare(),
     hamtaForetag(foretagsslug),
     hamtaRecensioner(foretagsslug),
@@ -85,6 +88,7 @@ export default async function DashboardPage() {
         <DashboardClient
           bokningar={bokningar}
           tjanster={tjanster}
+          kategorier={kategorier}
           utforare={utforare}
           foretag={foretag ?? null}
           recensioner={recensioner}

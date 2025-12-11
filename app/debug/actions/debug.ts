@@ -2,6 +2,7 @@
 
 import { db } from "../../_server/db";
 import { tjanster } from "../../_server/db/schema/tjanster";
+import { kategorier } from "../../_server/db/schema/kategorier";
 import { bokningar } from "../../_server/db/schema/bokningar";
 import { anvandare } from "../../_server/db/schema/anvandare";
 import { kunder } from "../../_server/db/schema/kunder";
@@ -20,6 +21,17 @@ export async function raderaTjanster(ids: string[]) {
   } catch (error) {
     console.error("Fel vid radering av tjänster:", error);
     return { success: false, error: "Kunde inte radera tjänster" };
+  }
+}
+
+export async function raderaKategorier(ids: string[]) {
+  try {
+    await db.delete(kategorier).where(inArray(kategorier.id, ids));
+    revalidatePath("/debug");
+    return { success: true };
+  } catch (error) {
+    console.error("Fel vid radering av kategorier:", error);
+    return { success: false, error: "Kunde inte radera kategorier" };
   }
 }
 

@@ -8,6 +8,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "../../../_server/auth";
 import { headers } from "next/headers";
+import { sparaTillganglighet } from "./tillganglighet";
 
 // Zod schema
 const utforareInput = z.object({
@@ -95,6 +96,28 @@ export async function skapaUtforare(data: unknown) {
       })
       .returning();
 
+    // Spara arbetstider om de finns
+    if ((data as any).arbetstider) {
+      try {
+        const arbetstider = JSON.parse((data as any).arbetstider);
+        const tillganglighetData = Object.entries(arbetstider).map(
+          ([veckodag, info]: [string, any]) => ({
+            veckodag,
+            ledig: info.ledig,
+            startTid: info.startTid,
+            slutTid: info.slutTid,
+          })
+        );
+
+        await sparaTillganglighet({
+          utforareId: nyUtforare.id,
+          tillganglighet: tillganglighetData,
+        });
+      } catch (e) {
+        console.error("Fel vid sparande av arbetstider:", e);
+      }
+    }
+
     revalidatePath("/dashboard");
     return { success: true, data: nyUtforare };
   } catch (error) {
@@ -123,6 +146,28 @@ export async function uppdateraUtforare(id: string, data: unknown) {
       })
       .where(eq(utforare.id, id))
       .returning();
+
+    // Spara arbetstider om de finns
+    if ((data as any).arbetstider) {
+      try {
+        const arbetstider = JSON.parse((data as any).arbetstider);
+        const tillganglighetData = Object.entries(arbetstider).map(
+          ([veckodag, info]: [string, any]) => ({
+            veckodag,
+            ledig: info.ledig,
+            startTid: info.startTid,
+            slutTid: info.slutTid,
+          })
+        );
+
+        await sparaTillganglighet({
+          utforareId: id,
+          tillganglighet: tillganglighetData,
+        });
+      } catch (e) {
+        console.error("Fel vid sparande av arbetstider:", e);
+      }
+    }
 
     revalidatePath("/dashboard");
     return { success: true, data: uppdateradUtforare };
@@ -178,7 +223,12 @@ export async function skapaUtforareAction(_prevState: unknown, formData: FormDat
     return { success: false, error: result.error.issues[0].message };
   }
 
-  return await skapaUtforare(result.data);
+  const dataWithArbetstider = {
+    ...result.data,
+    arbetstider: formData.get("arbetstider"),
+  };
+
+  return await skapaUtforare(dataWithArbetstider);
 }
 
 export async function uppdateraUtforareAction(_prevState: unknown, formData: FormData) {
@@ -201,7 +251,12 @@ export async function uppdateraUtforareAction(_prevState: unknown, formData: For
     return { success: false, error: result.error.issues[0].message };
   }
 
-  return await uppdateraUtforare(id, result.data);
+  const dataWithArbetstider = {
+    ...result.data,
+    arbetstider: formData.get("arbetstider"),
+  };
+
+  return await uppdateraUtforare(id, dataWithArbetstider);
 }
 
 export async function hamtaAktivaUtforareForForetag(foretagsslug: string): Promise<Utforare[]> {

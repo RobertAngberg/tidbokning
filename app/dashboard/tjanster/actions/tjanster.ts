@@ -2,7 +2,7 @@
 
 import { db } from "../../../_server/db";
 import { tjanster } from "../../../_server/db/schema/tjanster";
-import { eq } from "drizzle-orm";
+import { eq, asc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { auth } from "../../../_server/auth";
@@ -30,10 +30,28 @@ export async function hamtaTjanster() {
       throw new Error("Ingen företagsslug i session");
     }
 
+    const { kategorier } = await import("../../../_server/db/schema/kategorier");
+
     const allaTjanster = await db
-      .select()
+      .select({
+        id: tjanster.id,
+        namn: tjanster.namn,
+        beskrivning: tjanster.beskrivning,
+        varaktighet: tjanster.varaktighet,
+        pris: tjanster.pris,
+        foretagsslug: tjanster.foretagsslug,
+        kategoriId: tjanster.kategoriId,
+        kategori: kategorier.namn,
+        ordning: tjanster.ordning,
+        aktiv: tjanster.aktiv,
+        skapadDatum: tjanster.skapadDatum,
+        uppdateradDatum: tjanster.uppdateradDatum,
+      })
       .from(tjanster)
-      .where(eq(tjanster.foretagsslug, session.user.foretagsslug));
+      .leftJoin(kategorier, eq(tjanster.kategoriId, kategorier.id))
+      .where(eq(tjanster.foretagsslug, session.user.foretagsslug))
+      .orderBy(asc(tjanster.ordning), asc(tjanster.namn));
+
     return allaTjanster;
   } catch (error) {
     console.error("Fel vid hämtning av tjänster:", error);
@@ -71,6 +89,27 @@ export async function skapaTjanst(data: {
     // Validera input
     const validatedData = tjanstSchema.parse(data);
 
+    // Hitta kategori-ID baserat på kategorinamn
+    let kategoriId: string | null = null;
+    if (validatedData.kategori) {
+      const { kategorier } = await import("../../../_server/db/schema/kategorier");
+      const { and } = await import("drizzle-orm");
+      const kategoriResult = await db
+        .select()
+        .from(kategorier)
+        .where(
+          and(
+            eq(kategorier.namn, validatedData.kategori),
+            eq(kategorier.foretagsslug, session.user.foretagsslug)
+          )
+        )
+        .limit(1);
+
+      if (kategoriResult.length > 0) {
+        kategoriId = kategoriResult[0].id;
+      }
+    }
+
     const [nyTjanst] = await db
       .insert(tjanster)
       .values({
@@ -78,7 +117,7 @@ export async function skapaTjanst(data: {
         beskrivning: validatedData.beskrivning || null,
         varaktighet: validatedData.varaktighet,
         pris: validatedData.pris,
-        kategori: validatedData.kategori || null,
+        kategoriId: kategoriId,
         aktiv: validatedData.aktiv ? 1 : 0,
         foretagsslug: session.user.foretagsslug,
       })
@@ -107,8 +146,38 @@ export async function uppdateraTjanst(
   }
 ) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.foretagsslug) {
+      return { success: false, error: "Ingen företagsslug i session" };
+    }
+
     // Validera input
     const validatedData = tjanstSchema.parse(data);
+
+    // Hitta kategori-ID baserat på kategorinamn
+    let kategoriId: string | null = null;
+    if (validatedData.kategori) {
+      const { kategorier } = await import("../../../_server/db/schema/kategorier");
+      const { eq, and } = await import("drizzle-orm");
+
+      const kategoriResult = await db
+        .select()
+        .from(kategorier)
+        .where(
+          and(
+            eq(kategorier.namn, validatedData.kategori),
+            eq(kategorier.foretagsslug, session.user.foretagsslug)
+          )
+        )
+        .limit(1);
+
+      if (kategoriResult.length > 0) {
+        kategoriId = kategoriResult[0].id;
+      }
+    }
 
     const [uppdateradTjanst] = await db
       .update(tjanster)
@@ -117,7 +186,7 @@ export async function uppdateraTjanst(
         beskrivning: validatedData.beskrivning || null,
         varaktighet: validatedData.varaktighet,
         pris: validatedData.pris,
-        kategori: validatedData.kategori || null,
+        kategoriId: kategoriId,
         aktiv: validatedData.aktiv ? 1 : 0,
         uppdateradDatum: new Date(),
       })
@@ -197,7 +266,7 @@ const tjanstFormDataSchema = z.object({
   }),
   kategori: z.string().optional(),
   aktiv: z
-    .string()
+    .union([z.string(), z.null()])
     .optional()
     .transform((val) => val === "on"),
 });
@@ -243,6 +312,29 @@ export async function uppdateraTjanstAction(_prevState: unknown, formData: FormD
   return await uppdateraTjanst(id, result.data);
 }
 
+export async function raderaTjanstAction(id: string) {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.foretagsslug) {
+      return { success: false, error: "Ingen företagsslug i session" };
+    }
+
+    await db.delete(tjanster).where(eq(tjanster.id, id));
+
+    revalidatePath("/dashboard");
+    return { success: true };
+  } catch (error) {
+    console.error("Fel vid radering av tjänst:", error);
+    if (error instanceof Error) {
+      return { success: false, error: error.message };
+    }
+    return { success: false, error: "Kunde inte radera tjänst" };
+  }
+}
+
 export async function hamtaTjansterForForetag(foretagsslug: string) {
   try {
     const foretagTjanster = await db
@@ -253,5 +345,22 @@ export async function hamtaTjansterForForetag(foretagsslug: string) {
   } catch (error) {
     console.error("Fel vid hämtning av tjänster:", error);
     return [];
+  }
+}
+
+// Uppdatera sorteringsordning för tjänster
+export async function uppdateraTjanstOrdning(tjanstOrdningar: { id: string; ordning: number }[]) {
+  try {
+    await Promise.all(
+      tjanstOrdningar.map(({ id, ordning }) =>
+        db.update(tjanster).set({ ordning }).where(eq(tjanster.id, id))
+      )
+    );
+
+    revalidatePath("/dashboard/tjanster");
+    return { success: true };
+  } catch (error) {
+    console.error("Fel vid uppdatering av tjänstordning:", error);
+    return { success: false, error: "Kunde inte uppdatera ordning" };
   }
 }

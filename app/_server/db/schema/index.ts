@@ -3,6 +3,7 @@ export * from "./kunder";
 export * from "./bokningar";
 export * from "./recensioner";
 export * from "./tjanster";
+export * from "./kategorier";
 export * from "./utforare";
 export * from "./utforare-tillganglighet";
 export * from "./foretag";

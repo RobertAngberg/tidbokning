@@ -167,7 +167,12 @@ export default async function ForetagPage({ params }: ForetagPageProps) {
                           {oppettid.veckodag}
                         </span>
                         <span className="text-stone-600">
-                          {oppettid.stangt ? "Stängt" : `${oppettid.oppnar} - ${oppettid.stanger}`}
+                          {oppettid.stangt
+                            ? "Stängt"
+                            : `${oppettid.oppnar?.substring(0, 5)} - ${oppettid.stanger?.substring(
+                                0,
+                                5
+                              )}`}
                         </span>
                       </div>
                     ))}
