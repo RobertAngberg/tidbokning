@@ -6,12 +6,12 @@ import { Label } from "../../../_components/Label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../../../_components/Dialog";
 import { Button } from "../../../_components/Button";
 import { useTjanstForm } from "../hooks/useTjanstForm";
-import type { Tjanst } from "../../../_server/db/schema/tjanster";
+import type { TjanstMedKategori } from "../../../_server/db/schema/tjanster";
 
 interface TjanstFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  tjanst?: Tjanst;
+  tjanst?: TjanstMedKategori;
   action: (prevState: unknown, formData: FormData) => Promise<{ success: boolean; error?: string }>;
   existingKategorier: string[];
 }

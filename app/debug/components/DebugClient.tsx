@@ -16,7 +16,7 @@ import {
   raderaAccounts,
   raderaVerifications,
 } from "../actions/debug";
-import type { Tjanst } from "../../_server/db/schema/tjanster";
+import type { TjanstMedKategori } from "../../_server/db/schema/tjanster";
 import type { Kategori } from "../../_server/db/schema/kategorier";
 import type { Bokning } from "../../_server/db/schema/bokningar";
 import type { Anvandare } from "../../_server/db/schema/anvandare";
@@ -87,7 +87,7 @@ interface Verification {
 }
 
 interface DebugClientProps {
-  tjanster: Tjanst[];
+  tjanster: TjanstMedKategori[];
   kategorier: Kategori[];
   bokningar: Bokning[];
   anvandare: Anvandare[];

@@ -27,3 +27,6 @@ export const tjansterRelations = relations(tjanster, ({ many, one }) => ({
 
 export type Tjanst = typeof tjanster.$inferSelect;
 export type NyTjanst = typeof tjanster.$inferInsert;
+
+// Typ för tjänst med kategorinamn (via JOIN)
+export type TjanstMedKategori = Tjanst & { kategori: string | null };

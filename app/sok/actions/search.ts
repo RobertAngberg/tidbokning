@@ -3,7 +3,8 @@
 import { db } from "../../_server/db";
 import { foretag } from "../../_server/db/schema/foretag";
 import { tjanster } from "../../_server/db/schema/tjanster";
-import { ilike, or, inArray } from "drizzle-orm";
+import { kategorier } from "../../_server/db/schema/kategorier";
+import { ilike, or, inArray, eq } from "drizzle-orm";
 
 export async function sokForetag(sokterm: string) {
   try {
@@ -19,11 +20,12 @@ export async function sokForetag(sokterm: string) {
         foretagsslug: tjanster.foretagsslug,
       })
       .from(tjanster)
+      .leftJoin(kategorier, eq(tjanster.kategoriId, kategorier.id))
       .where(
         or(
           ilike(tjanster.namn, searchPattern),
           ilike(tjanster.beskrivning, searchPattern),
-          ilike(tjanster.kategori, searchPattern)
+          ilike(kategorier.namn, searchPattern)
         )
       );
 

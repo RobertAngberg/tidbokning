@@ -11,7 +11,7 @@ import { ForetagsuppgifterTab } from "../../foretagsuppgifter/components/Foretag
 import { RecensionerTab } from "../../recensioner/components/RecensionerTab";
 import type { Bokning } from "../../../_server/db/schema/bokningar";
 import type { Kund } from "../../../_server/db/schema/kunder";
-import type { Tjanst } from "../../../_server/db/schema/tjanster";
+import type { Tjanst, TjanstMedKategori } from "../../../_server/db/schema/tjanster";
 import type { Kategori } from "../../../_server/db/schema/kategorier";
 import type { Utforare } from "../../../_server/db/schema/utforare";
 import type { Foretag } from "../../../_server/db/schema/foretag";
@@ -21,7 +21,7 @@ interface DashboardClientProps {
   bokningar: Array<
     Bokning & { kund: Kund | null; tjanst: Tjanst | null; utforare: Utforare | null }
   >;
-  tjanster: Tjanst[];
+  tjanster: TjanstMedKategori[];
   kategorier: Kategori[];
   utforare: Utforare[];
   foretag: Foretag | null;

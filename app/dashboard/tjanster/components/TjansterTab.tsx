@@ -28,12 +28,12 @@ import {
   raderaKategori,
   uppdateraKategoriOrdning,
 } from "../actions/kategorier";
-import type { Tjanst } from "../../../_server/db/schema/tjanster";
+import type { TjanstMedKategori } from "../../../_server/db/schema/tjanster";
 import type { Kategori } from "../../../_server/db/schema/kategorier";
 import { Pencil, Trash2, GripVertical, Plus } from "lucide-react";
 
 interface TjansterTabProps {
-  tjanster: Tjanst[];
+  tjanster: TjanstMedKategori[];
   kategorier: Kategori[];
   foretagsslug: string;
 }
@@ -46,7 +46,7 @@ export function TjansterTab({
   const router = useRouter();
   const [isTjanstModalOpen, setIsTjanstModalOpen] = useState(false);
   const [isKategoriModalOpen, setIsKategoriModalOpen] = useState(false);
-  const [editingTjanst, setEditingTjanst] = useState<Tjanst | undefined>();
+  const [editingTjanst, setEditingTjanst] = useState<TjanstMedKategori | undefined>();
   const [editingKategori, setEditingKategori] = useState<Kategori | undefined>();
 
   // Kategori drag-and-drop state
@@ -82,7 +82,7 @@ export function TjansterTab({
     setIsTjanstModalOpen(true);
   };
 
-  const openEditTjanstModal = (tjanst: Tjanst) => {
+  const openEditTjanstModal = (tjanst: TjanstMedKategori) => {
     setEditingTjanst(tjanst);
     setIsTjanstModalOpen(true);
   };

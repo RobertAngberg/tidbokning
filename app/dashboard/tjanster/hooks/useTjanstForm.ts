@@ -1,8 +1,8 @@
 import { useActionState, useEffect } from "react";
-import type { Tjanst } from "../../../_server/db/schema/tjanster";
+import type { TjanstMedKategori } from "../../../_server/db/schema/tjanster";
 
 interface UseTjanstFormProps {
-  tjanst?: Tjanst;
+  tjanst?: TjanstMedKategori;
   action: (prevState: unknown, formData: FormData) => Promise<{ success: boolean; error?: string }>;
   onClose: () => void;
 }

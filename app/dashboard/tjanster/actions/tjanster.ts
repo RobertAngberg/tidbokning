@@ -337,10 +337,27 @@ export async function raderaTjanstAction(id: string) {
 
 export async function hamtaTjansterForForetag(foretagsslug: string) {
   try {
+    const { kategorier } = await import("../../../_server/db/schema/kategorier");
+
     const foretagTjanster = await db
-      .select()
+      .select({
+        id: tjanster.id,
+        namn: tjanster.namn,
+        beskrivning: tjanster.beskrivning,
+        varaktighet: tjanster.varaktighet,
+        pris: tjanster.pris,
+        foretagsslug: tjanster.foretagsslug,
+        kategoriId: tjanster.kategoriId,
+        kategori: kategorier.namn,
+        ordning: tjanster.ordning,
+        aktiv: tjanster.aktiv,
+        skapadDatum: tjanster.skapadDatum,
+        uppdateradDatum: tjanster.uppdateradDatum,
+      })
       .from(tjanster)
-      .where(eq(tjanster.foretagsslug, foretagsslug));
+      .leftJoin(kategorier, eq(tjanster.kategoriId, kategorier.id))
+      .where(eq(tjanster.foretagsslug, foretagsslug))
+      .orderBy(asc(tjanster.ordning), asc(tjanster.namn));
     return foretagTjanster;
   } catch (error) {
     console.error("Fel vid hämtning av tjänster:", error);
